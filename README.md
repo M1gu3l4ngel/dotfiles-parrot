@@ -32,76 +32,86 @@ Antes de instalar, necesitas tener funcionando:
 
 ---
 
-## 🚀 Instalación
+## 🚀 Paso 1 — Clonar el repo
 
-### Paso 1 — Clonar el repo
+    git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
+    cd ~/dotfiles
 
-```bash
-git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
-cd ~/dotfiles
+---
 
-Paso 2 — Ejecutar el instalador
+## 🚀 Paso 2 — Ejecutar el instalador
 
-./install.sh
+    ./install.sh
 
 El script:
-- Crea backup de tus configs actuales (.pre-dotfiles.bak)
-- Crea symlinks desde ~/.config/ y ~ hacia los archivos del repo
+- Crea backup de tus configs actuales (`.pre-dotfiles.bak`)
+- Crea symlinks desde `~/.config/` y `~` hacia los archivos del repo
 
-Paso 3 — Aplicar zsh
+---
 
-chsh -s $(which zsh)
+## 🚀 Paso 3 — Aplicar zsh
+
+    chsh -s $(which zsh)
 
 Cierra sesión y vuelve a entrar.
 
-Paso 4 — Reload de bspwm/polybar
+---
+
+## 🚀 Paso 4 — Reload de bspwm/polybar
 
 Dentro de bspwm:
 
-- Super + Shift + R → recargar polybar
-- Super + Escape → recargar sxhkd
+- `Super + Shift + R` → recargar polybar
+- `Super + Escape` → recargar sxhkd
 
 ---
-🔑 SSH (opcional, recomendado)
+
+## 🔑 SSH (opcional, recomendado)
 
 Para no escribir la passphrase en cada terminal:
 
-sudo apt install keychain -y
+    sudo apt install keychain -y
 
-Ya está configurado en el .zshrc. Solo necesitas tener tu llave en ~/.ssh/id_ed25519.
-
----
-📂 Estructura
-
-dotfiles/
-├── bspwm/        → ~/.config/bspwm/
-├── sxhkd/        → ~/.config/sxhkd/
-├── polybar/      → ~/.config/polybar/
-├── picom/        → ~/.config/picom/
-├── rofi/         → ~/.config/rofi/
-├── kitty/        → ~/.config/kitty/
-├── nvim/         → ~/.config/nvim/
-├── scripts/      → ~/.config/scripts/
-├── zsh/.zshrc    → ~/.zshrc
-├── zsh/.p10k.zsh → ~/.p10k.zsh
-└── install.sh
+Ya está configurado en el `.zshrc`. Solo necesitas tener tu llave en `~/.ssh/id_ed25519`.
 
 ---
-🛠 Personalizar
 
-Edita los archivos en ~/dotfiles/ — los symlinks hacen que los cambios se apliquen inmediatamente al recargar el componente correspondiente.
+## 📂 Estructura
+
+    dotfiles/
+    ├── bspwm/        → ~/.config/bspwm/
+    ├── sxhkd/        → ~/.config/sxhkd/
+    ├── polybar/      → ~/.config/polybar/
+    ├── picom/        → ~/.config/picom/
+    ├── rofi/         → ~/.config/rofi/
+    ├── kitty/        → ~/.config/kitty/
+    ├── nvim/         → ~/.config/nvim/
+    ├── scripts/      → ~/.config/scripts/
+    ├── zsh/.zshrc    → ~/.zshrc
+    ├── zsh/.p10k.zsh → ~/.p10k.zsh
+    └── install.sh
 
 ---
-🙏 Créditos
 
-Este setup está basado en el curso de personalización de Linux de S4vitar (https://github.com/s4vitar). Las configuraciones de bspwm, sxhkd, polybar y picom siguen su estilo y enfoque pedagógico.
+## 🛠 Personalizar
 
-Adaptado por M1gu3l4ng3l para su flujo personal de pentesting.
-
----
-📜 Licencia
-
-MIT (LICENSE) — usa, copia, modifica libremente.
+Edita los archivos en `~/dotfiles/` — los symlinks hacen que los cambios se apliquen inmediatamente al recargar el componente correspondiente.
 
 ---
-Hecho con 🦜 por M1gu3l4ng3l (https://github.com/M1gu3l4ngel)
+
+## 🙏 Créditos
+
+Este setup está basado en el curso de personalización de Linux de **[S4vitar](https://github.com/s4vitar)**. Las configuraciones de **bspwm**, **sxhkd**, **polybar** y **picom** siguen su estilo y enfoque
+pedagógico.
+
+Adaptado por **M1gu3l4ng3l** para su flujo personal de pentesting.
+
+---
+
+## 📜 Licencia
+
+[MIT](LICENSE) — usa, copia, modifica libremente.
+
+---
+
+Hecho con 🦜 por **[M1gu3l4ng3l](https://github.com/M1gu3l4ngel)**
