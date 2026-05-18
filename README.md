@@ -1,83 +1,107 @@
-# 🦜 dotfiles — bytebit
+# 🦜 dotfiles
 
-  Configuraciones personales de Linux (Parrot OS) versionadas con git.
+Configuración personal de Parrot Security con bspwm + polybar + kitty + zsh.
+Pensado para pentesting, rice limpio y productividad en VM.
 
-  Setup pro completo: bspwm + sxhkd + polybar + picom + rofi + kitty + zsh + Powerlevel10k + NvChad.
+---
 
-  ---
+## ✨ Stack
 
-  ## 📦 Componentes incluidos
+| Componente | Para qué sirve |
+|---|---|
+| **bspwm** | Tiling window manager |
+| **sxhkd** | Atajos de teclado |
+| **polybar** | Barra de estado |
+| **picom** | Compositor (sombras, transparencia) |
+| **rofi** | Lanzador de aplicaciones |
+| **kitty** | Emulador de terminal |
+| **zsh + Powerlevel10k** | Shell + prompt |
+| **NvChad** | Distribución de Neovim |
+| **feh** | Wallpaper |
+| **dunst** | Notificaciones |
 
-  | Componente | Ruta original | Descripción |
-  |---|---|---|
-  | **bspwm** | `~/.config/bspwm/bspwmrc` | Window manager (Binary Space Partitioning) |
-  | **sxhkd** | `~/.config/sxhkd/sxhkdrc` | Atajos de teclado |
-  | **kitty** | `~/.config/kitty/` | Terminal emulator (GPU accelerated) |
-  | **picom** | `~/.config/picom/` | Compositor (sombras, transparencias) |
-  | **polybar** | `~/.config/polybar/` | Barra de estado |
-  | **rofi** | `~/.config/rofi/` | Application launcher |
-  | **nvim** | `~/.config/nvim/` | NvChad (Neovim framework) |
-  | **scripts** | `~/.config/scripts/` | Scripts personalizados (target, vpn, ethernet) |
-  | **zsh** | `~/.zshrc`, `~/.p10k.zsh` | Shell + Powerlevel10k prompt |
+---
 
-  ---
+## 📋 Pre-requisitos
 
-  ## 🚀 Instalación en máquina nueva
+Antes de instalar, necesitas tener funcionando:
 
-  ```bash
-  git clone https://github.com/USER/dotfiles.git ~/dotfiles
-  cd ~/dotfiles
-  ./install.sh
+- Parrot Security (probado en 7.2)
+- Los paquetes del stack ya instalados (bspwm, sxhkd, polybar, picom, rofi, kitty, zsh, neovim, feh, dunst)
+- `git` y `stow` (opcional pero recomendado)
 
-  El script install.sh es idempotente: puede correrse N veces. Hace backup automático de cualquier archivo existente con sufijo .pre-dotfiles.bak.
+---
 
-  ---
-  🔧 Dependencias
+## 🚀 Instalación
 
-  Paquetes necesarios
+### Paso 1 — Clonar el repo
 
-  sudo apt install -y bspwm sxhkd kitty picom polybar rofi neovim zsh dunst feh
+```bash
+git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
+cd ~/dotfiles
 
-  Herramientas opcionales
+Paso 2 — Ejecutar el instalador
 
-  sudo apt install -y bat lsd fzf
+./install.sh
 
-  Fuentes
+El script:
+- Crea backup de tus configs actuales (.pre-dotfiles.bak)
+- Crea symlinks desde ~/.config/ y ~ hacia los archivos del repo
 
-  Hack Nerd Font (requerida para íconos en Polybar y Powerlevel10k):
+Paso 3 — Aplicar zsh
 
-  mkdir -p ~/.local/share/fonts
-  cd ~/.local/share/fonts
-  curl -fLo "Hack.zip" https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
-  unzip Hack.zip && rm Hack.zip
-  fc-cache -fv
+chsh -s $(which zsh)
 
-  Powerlevel10k
+Cierra sesión y vuelve a entrar.
 
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-  echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc
+Paso 4 — Reload de bspwm/polybar
 
-  ---
-  📚 Documentación
+Dentro de bspwm:
 
-  Ver docs/ para notas detalladas por componente (cuando estén creadas).
+- Super + Shift + R → recargar polybar
+- Super + Escape → recargar sxhkd
 
-  ---
-  🔄 Workflow
+---
+🔑 SSH (opcional, recomendado)
 
-  Hacer un cambio
+Para no escribir la passphrase en cada terminal:
 
-  1. Editar el archivo en su ruta normal (ej: nvim ~/.config/bspwm/bspwmrc)
-  2. Los cambios se aplican al archivo real en ~/dotfiles/... (vía symlink)
-  3. cd ~/dotfiles && git status para ver qué cambió
-  4. git diff para revisar cambios
-  5. git add -A && git commit -m "feat(bspwm): descripcion" cuando estés feliz
+sudo apt install keychain -y
 
-  Sincronizar con remote
+Ya está configurado en el .zshrc. Solo necesitas tener tu llave en ~/.ssh/id_ed25519.
 
-  cd ~/dotfiles
-  git push    # subir cambios
-  git pull    # bajar cambios desde otra máquina
+---
+📂 Estructura
 
-  ---
-  Mantenido por bytebit · Estado: vivo
+dotfiles/
+├── bspwm/        → ~/.config/bspwm/
+├── sxhkd/        → ~/.config/sxhkd/
+├── polybar/      → ~/.config/polybar/
+├── picom/        → ~/.config/picom/
+├── rofi/         → ~/.config/rofi/
+├── kitty/        → ~/.config/kitty/
+├── nvim/         → ~/.config/nvim/
+├── scripts/      → ~/.config/scripts/
+├── zsh/.zshrc    → ~/.zshrc
+├── zsh/.p10k.zsh → ~/.p10k.zsh
+└── install.sh
+
+---
+🛠 Personalizar
+
+Edita los archivos en ~/dotfiles/ — los symlinks hacen que los cambios se apliquen inmediatamente al recargar el componente correspondiente.
+
+---
+🙏 Créditos
+
+Este setup está basado en el curso de personalización de Linux de S4vitar (https://github.com/s4vitar). Las configuraciones de bspwm, sxhkd, polybar y picom siguen su estilo y enfoque pedagógico.
+
+Adaptado por M1gu3l4ng3l para su flujo personal de pentesting.
+
+---
+📜 Licencia
+
+MIT (LICENSE) — usa, copia, modifica libremente.
+
+---
+Hecho con 🦜 por M1gu3l4ng3l (https://github.com/M1gu3l4ngel)
