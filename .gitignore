@@ -1,47 +1,43 @@
-  # === Backups creados durante migración ===
-  *.bak
-  *.pre-dotfiles.bak
+# === Backups creados durante migración ===
+*.bak
+*.pre-dotfiles.bak
 
-  # === Editor temp files ===
-  *.swp
-  *.swo
-  *~
+# === Editor temp files ===
+*.swp
+*.swo
+*~
 
-  # === OS junk ===
-  .DS_Store
-  Thumbs.db
-  desktop.ini
+# === OS junk ===
+.DS_Store
+Thumbs.db
+desktop.ini
 
-  # === Log files ===
-  *.log
+# === Log files ===
+*.log
 
-  # === Cache de aplicaciones ===
-  .cache/
-  *.cache
+# === Cache de aplicaciones ===
+.cache/
+*.cache
 
-  # === Datos sensibles (NUNCA commitear) ===
-  .env
-  .env.*
-  *.key
-  *.pem
-  *_rsa
-  *_dsa
-  *_ed25519
-  secrets/
-  .config/bin/target
+# === Datos sensibles (NUNCA commitear) ===
+.env
+.env.*
+*.key
+*.pem
+*_rsa
+*_dsa
+*_ed25519
+secrets/
+.config/bin/target
 
-  # === Fuentes pesadas (opcional, comentar si quieres incluirlas) ===
-  # polybar/.config/polybar/fonts/
+# === Fuentes pesadas (opcional, comentar si quieres incluirlas) ===
+# polybar/.config/polybar/fonts/
 
-  # === Lock files que crean ruido (excepto los importantes) ===
-  # Nvim: SÍ versionamos lazy-lock.json (versiones reproducibles)
-  # Polybar/picom: nada que ignorar
+# === Lock files que crean ruido (excepto los importantes) ===
+# Nvim: SÍ versionamos lazy-lock.json (versiones reproducibles)
+# Polybar/picom: nada que ignorar
 
-  # === Logs generados por scripts ===
-  *.tmp
-  *.swp
+# === Logs generados por scripts ===
+*.tmp
+*.swp
 
-  EOF
-
-  echo "✓ .gitignore creado"
-  cat .gitignore | head -20
