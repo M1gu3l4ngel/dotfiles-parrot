@@ -44,7 +44,7 @@ case $chosen in
         systemctl suspend
         ;;
     $logout)
-        # openbox --exit: hereda del setup original. En bspwm cambia por `bspc quit`.
-        openbox --exit
+        # Cierra la sesión de bspwm (vuelve al login manager).
+        bspc quit
         ;;
 esac
