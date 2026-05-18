@@ -1,3 +1,8 @@
+# ---- SSH agent (keychain) ----
+# Mantiene el ssh-agent vivo entre sesiones de zsh.
+# Pide passphrase 1 vez por arranque de la VM.
+eval $(keychain --eval --quiet id_ed25519)
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
