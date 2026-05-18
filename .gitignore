@@ -12,9 +12,11 @@
 Thumbs.db
 desktop.ini
 
-# === Asistentes de IA / agentes (CLAUDE.md SÍ se versiona, es doc) ===
-# .claude/ contiene preferencias personales del usuario sobre Claude Code
-# (settings.json, agentes custom, etc.). No tiene sentido compartirlas.
+# === Asistentes de IA / agentes ===
+# CLAUDE.md SÍ se versiona (lo leen Claude Code, Cursor, etc. para entender
+# las convenciones del proyecto al abrirlo). Lo que sí se ignora son los
+# directorios .claude/, .cursor/, etc. que contienen preferencias personales
+# del usuario sobre el agente y no aportan nada compartirlas.
 .claude/
 .cursor/
 .aider*

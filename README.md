@@ -9,8 +9,6 @@
 ![Platform](https://img.shields.io/badge/platform-Parrot%20%7C%20Debian%20%7C%20Ubuntu-blue)
 ![Shell](https://img.shields.io/badge/shell-zsh-89e051)
 ![Status](https://img.shields.io/badge/status-mantenido-success)
-![Last commit](https://img.shields.io/github/last-commit/M1gu3l4ngel/dotfiles-parrot)
-![GitHub stars](https://img.shields.io/github/stars/M1gu3l4ngel/dotfiles-parrot?style=flat)
 
 ---
 
@@ -106,6 +104,34 @@ Para el atajo Super+Shift+X (bloquear pantalla con blur):
 ```bash
 sudo apt install -y i3lock-fancy
 ```
+
+### 6. (Opcional) Llave SSH
+
+El `.zshrc` incluye una línea que cachea tu llave SSH con `keychain`, para no
+tener que escribir la passphrase cada vez que haces `git push` o te conectas
+a un servidor remoto:
+
+```bash
+eval $(keychain --eval --quiet id_ed25519)
+```
+
+¿Para qué se usa la llave SSH?
+
+- **GitHub / GitLab:** clonar repos privados con `git clone git@github.com:...`,
+  hacer push sin pedir credenciales cada vez.
+- **Servers remotos:** SSH a VPS, máquinas de laboratorio, etc.
+
+Si **no tienes una llave todavía**, créala con:
+
+```bash
+ssh-keygen -t ed25519 -C "tu_email@example.com"
+# Se guarda en ~/.ssh/id_ed25519 (privada) y ~/.ssh/id_ed25519.pub (pública).
+# La pública es la que pegas en GitHub → Settings → SSH and GPG keys.
+```
+
+Si tu llave **se llama distinto** (`id_rsa` por ejemplo), edita la línea de
+`keychain` en `zsh/.zshrc` con el nombre correcto. Si no usas SSH para nada,
+puedes comentar esa línea entera.
 
 ---
 
@@ -351,7 +377,7 @@ dotfiles/
 ├── zsh/.p10k.zsh        → ~/.p10k.zsh
 ├── assets/              → preview.png + wallpaper.jpg default
 ├── install.sh           → instalador idempotente
-├── CLAUDE.md            → convenciones del proyecto
+├── CONTRIBUTING.md      → convenciones del proyecto (guía para PRs)
 ├── LICENSE              → MIT
 └── README.md            → este archivo
 ```
@@ -445,9 +471,10 @@ Renombra el `.bak` al nombre original si quieres restaurar.
 
 ## 📐 Convenciones del proyecto
 
-Si vas a contribuir o adaptar el repo, las reglas de estilo, formato y
-flujo de trabajo (incluyendo cómo trabajar con Claude Code en este proyecto)
-están en [`CLAUDE.md`](CLAUDE.md).
+Si vas a contribuir, adaptar el repo o abrir un PR, las reglas de estilo,
+formato de commits y archivos protegidos están documentadas en
+[`CONTRIBUTING.md`](CONTRIBUTING.md). El `.editorconfig` de la raíz hace
+además que tu editor respete la indentación correcta automáticamente.
 
 ---
 
@@ -459,8 +486,6 @@ Setup originalmente basado en el curso de personalización de Linux de
 
 Adaptado y mantenido por **[M1gu3l4ng3l](https://github.com/M1gu3l4ngel)**
 para flujo personal de pentesting.
-
-Comentarios pedagógicos y refactor de estilo asistidos con Claude Code.
 
 ---
 
