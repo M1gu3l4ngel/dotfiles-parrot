@@ -1,127 +1,184 @@
-#
-# wm independent hotkeys
-#
+# ~/.config/sxhkd/sxhkdrc
+# Definición de todos los atajos de teclado del entorno.
+# sxhkd (Simple X Hotkey Daemon) corre en background — bspwm lo lanza al
+# iniciar — y traduce cada combinación de teclas en el comando indicado.
+# Para recargar este archivo sin reiniciar la sesión: Super+Escape.
 
-# terminal emulator
+# =============================================================================
+# ATAJOS INDEPENDIENTES DEL WINDOW MANAGER
+# =============================================================================
+# Acciones que no dependen de bspwm: lanzar terminal, lanzar menús, etc.
+
+# ----- TERMINAL -----
+# Abre kitty (terminal por defecto). Usamos la ruta absoluta a /opt para
+# asegurarnos de ejecutar la versión instalada manualmente, no la del paquete.
 super + Return
 	/opt/kitty/bin/kitty
 
-# program launcher
+# ----- LANZADOR DE PROGRAMAS -----
+# Abre rofi en modo "run": permite escribir el nombre de cualquier ejecutable
+# del $PATH y lanzarlo. Reemplaza al menú clásico de aplicaciones.
 super + d
 	/usr/bin/rofi -show run
 
-# make sxhkd reload its configuration files:
+# ----- RECARGAR SXHKD -----
+# Envía la señal USR1 al daemon, que lo obliga a releer este archivo.
+# Útil cuando se añade un nuevo binding y no se quiere cerrar sesión.
 super + Escape
 	pkill -USR1 -x sxhkd
 
-#
-# bspwm hotkeys
-#
+# =============================================================================
+# ATAJOS DE BSPWM
+# =============================================================================
+# Controlan el window manager directamente vía el cliente `bspc`.
 
-# quit/restart bspwm
+# ----- SALIR / REINICIAR BSPWM -----
+# Super+Shift+Q cierra bspwm (cierra la sesión X);
+# Super+Shift+R reinicia bspwm en caliente (recarga bspwmrc sin perder ventanas).
 super + shift + {q,r}
 	bspc {quit,wm -r}
 
-# close and kill
+# ----- CERRAR / MATAR VENTANA -----
+# Super+Q cierra la ventana enfocada de forma "amable" (manda WM_DELETE);
+# Super+Shift+Q la mata a la fuerza (SIGKILL al proceso). Usar -k si la app no responde.
 super + {_,shift + }q
 	bspc node -{c,k}
 
-# alternate between the tiled and monocle layout
+# ----- ALTERNAR LAYOUT TILED / MONOCLE -----
+# Monocle = una sola ventana visible a pantalla completa, las demás ocultas.
+# Útil para concentrarse en una tarea sin cerrar las otras ventanas.
 super + m
 	bspc desktop -l next
 
-# send the newest marked node to the newest preselected node
+# ----- MOVER NODO MARCADO AL PRESELECCIONADO -----
+# Workflow avanzado: marcar una ventana con Super+Ctrl+M, preseleccionar
+# una posición con Super+Ctrl+Alt+<dir>, y pegarla allí con esta tecla.
 super + y
 	bspc node newest.marked.local -n newest.!automatic.local
 
-# swap the current node and the biggest window
+# ----- INTERCAMBIAR CON LA VENTANA MÁS GRANDE -----
+# Pone la ventana actual en el lugar de la más grande del workspace.
+# Atajo rápido para "promover" la ventana sin tener que moverse direccionalmente.
 super + g
 	bspc node -s biggest.window
 
-#
-# state/flags
-#
+# =============================================================================
+# ESTADO Y FLAGS DE VENTANA
+# =============================================================================
 
-# set the window state
+# ----- CAMBIAR ESTADO DE LA VENTANA -----
+# T = tiled (normal, parte del layout);
+# Shift+T = pseudo_tiled (centrada con bordes pero respeta gaps);
+# S = floating (libre, arrastrable con el ratón);
+# F = fullscreen (sin barra, sin gaps, sobre todo).
 super + {t,shift + t,s,f}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-# set the node flags
+# ----- FLAGS DEL NODO -----
+# marked: lo marca para operaciones posteriores (ver Super+Y arriba);
+# locked: lo protege para no cerrarlo con Super+Q por accidente;
+# sticky: la ventana sigue visible al cambiar de workspace;
+# private: prefiere mantener su tamaño cuando aparecen otras ventanas.
 super + ctrl + {m,x,y,z}
 	bspc node -g {marked,locked,sticky,private}
 
-#
-# focus/swap
-#
+# =============================================================================
+# FOCO Y MOVIMIENTO ENTRE VENTANAS
+# =============================================================================
 
-# focus the node in the given direction
+# ----- MOVER FOCO / INTERCAMBIAR VENTANAS POR DIRECCIÓN -----
+# Solo flechas = mover el foco;
+# Shift + flechas = intercambiar la ventana enfocada con la vecina en esa dirección.
 super + {_,shift + }{Left,Down,Up,Right}
 	bspc node -{f,s} {west,south,north,east}
 
-# focus the node for the given path jump
+# ----- NAVEGACIÓN POR EL ÁRBOL DEL LAYOUT -----
+# bspwm organiza las ventanas en un árbol binario. Estos atajos saltan
+# entre padres, hermanos y primeros/segundos hijos del árbol.
 super + {p,b,comma,period}
 	bspc node -f @{parent,brother,first,second}
 
-# focus the next/previous window in the current desktop
+# ----- SIGUIENTE / ANTERIOR VENTANA DEL WORKSPACE -----
+# Ciclo lineal entre ventanas visibles del escritorio actual.
 super + {_,shift + }c
 	bspc node -f {next,prev}.local.!hidden.window
 
-# focus the next/previous desktop in the current monitor
+# ----- SIGUIENTE / ANTERIOR ESCRITORIO -----
+# Mismo monitor. Los corchetes [ y ] están al lado de la P y son cómodos
+# para cambiar rápido sin tener que usar números.
 super + bracket{left,right}
 	bspc desktop -f {prev,next}.local
 
-# focus the last node/desktop
+# ----- ÚLTIMO NODO / ESCRITORIO VISITADO -----
+# Super+` (grave): vuelve a la ventana anterior (estilo Alt+Tab de un solo paso);
+# Super+Tab: vuelve al escritorio anterior.
 super + {grave,Tab}
 	bspc {node,desktop} -f last
 
-# focus the older or newer node in the focus history
+# ----- HISTORIAL DE FOCO -----
+# Navega por el historial de ventanas enfocadas. Se desactiva temporalmente
+# la grabación del historial (-h off) para que este propio salto no se grabe.
 super + {o,i}
 	bspc wm -h off; \
 	bspc node {older,newer} -f; \
 	bspc wm -h on
 
-# focus or send to the given desktop
+# ----- IR A / ENVIAR AL ESCRITORIO -----
+# Super+N = saltar al escritorio N;
+# Super+Shift+N = enviar la ventana actual al escritorio N.
+# El 0 representa el escritorio 10.
 super + {_,shift + }{1-9,0}
 	bspc {desktop -f,node -d} '^{1-9,10}'
 
-#
-# preselect
-#
+# =============================================================================
+# PRESELECCIÓN
+# =============================================================================
+# La preselección reserva un "hueco" para la próxima ventana que se abra.
 
-# preselect the direction
+# ----- PRESELECCIONAR DIRECCIÓN -----
+# Marca el lado del nodo donde aparecerá la próxima ventana nueva.
 super + ctrl + alt + {Left,Down,Up,Right}
 	bspc node -p {west,south,north,east}
 
-# preselect the ratio
+# ----- PRESELECCIONAR RATIO -----
+# Define qué porcentaje del nodo ocupará la nueva ventana (0.1 a 0.9).
 super + ctrl + {1-9}
 	bspc node -o 0.{1-9}
 
-# cancel the preselection for the focused node
+# ----- CANCELAR PRESELECCIÓN -----
+# Solo en el nodo enfocado.
 super + ctrl + alt + space
 	bspc node -p cancel
 
-# cancel the preselection for the focused desktop
+# ----- CANCELAR TODA PRESELECCIÓN DEL DESKTOP -----
+# Recorre todos los nodos del escritorio actual y borra cualquier preselección.
 super + ctrl + shift + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-#
-# move/resize
-#
+# =============================================================================
+# MOVER Y REDIMENSIONAR
+# =============================================================================
 
-# move a floating window
+# ----- MOVER VENTANA FLOTANTE -----
+# Solo aplica a ventanas en estado floating. El desplazamiento es de 20px.
 super + shift + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 
-# Custom Resize
-
+# ----- REDIMENSIONAR (script personalizado) -----
+# El script auxiliar decide si crecer o encoger según el borde más cercano
+# en esa dirección, evitando tener que pensar en "expand/contract" manualmente.
 super + alt + {Left,Down,Up,Right}
-    /home/bytebit/.config/bspwm/scripts/bspwm_resize {west,south,north,east}
+	~/.config/bspwm/scripts/bspwm_resize {west,south,north,east}
 
-# Open Firefox
+# =============================================================================
+# APLICACIONES DIRECTAS
+# =============================================================================
 
+# ----- FIREFOX -----
 super + shift + f
-    /usr/bin/firefox
+	/usr/bin/firefox
 
-# Lock Screen
+# ----- BLOQUEAR PANTALLA -----
+# i3lock-fancy hace un screenshot, lo difumina y lo usa como fondo del lock.
 super + shift +x
 	/usr/bin/i3lock-fancy

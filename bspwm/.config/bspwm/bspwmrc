@@ -1,25 +1,67 @@
 #! /bin/sh
+# ~/.config/bspwm/bspwmrc
+# Archivo principal de configuración de bspwm (tiling window manager).
+# Se ejecuta automáticamente cuando bspwm arranca la sesión.
+# Para recargar en caliente: Super+Alt+R (definido en sxhkdrc).
 
+# ----- DAEMONS Y TECLADO -----
+# sxhkd es el daemon que escucha atajos de teclado; sin él no funciona ningún
+# binding (Super+Enter, Super+D, etc). Lo lanzamos solo si no está corriendo
+# ya, para que un reload de bspwm no abra una segunda instancia.
 pgrep -x sxhkd > /dev/null || sxhkd &
+# Layouts de teclado disponibles: inglés (US) y latino, intercambiables en
+# caliente con Alt+Shift. El default al iniciar la sesión es el primero (US).
 setxkbmap -layout us,latam -option 'grp:alt_shift_toggle' &
 
+# ----- WORKSPACES -----
+# Diez escritorios virtuales numerados en romanos (I..X), uno por monitor
+# por defecto. Se cambia entre ellos con Super+<número> desde sxhkd.
 bspc monitor -d I II III IV V VI VII VIII IX X
 
+# ----- BORDES Y GAPS -----
+# Borde inicial de 2px: bspwm lo necesita > 0 para calcular ciertos layouts.
+# Al final del archivo lo bajamos a 0 para que no se vea en pantalla.
 bspc config border_width         2
+# Separación entre ventanas en píxeles. Mientras más alto, más "aire" entre
+# las ventanas (estética tipo rice).
 bspc config window_gap          12
 
+# ----- LAYOUT -----
+# Proporción inicial al hacer split: 52% para la ventana principal.
 bspc config split_ratio          0.52
+# En modo monocle (una sola ventana visible) no se dibujan bordes ni gaps,
+# para aprovechar toda la pantalla.
 bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
+# ----- REGLAS DE VENTANAS -----
+# Cada regla dice "cuando aparezca una ventana de esta app, hazle esto".
+# Útil para forzar workspace, modo floating, foco, etc.
 bspc rule -a Gimp desktop='^8' state=floating follow=on
 bspc rule -a Chromium desktop='^2'
 bspc rule -a mplayer2 state=floating
 bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
+
+# ----- AUTOSTART -----
+# Integración con VMware (solo aplica si estamos en VM; no hace nada en host real).
 vmware-user &
-/bin/feh --bg-fill /home/bytebit/Desktop/bytebit/Fondos/Fondo.jpg
+# Wallpaper de fondo. install.sh enlaza ~/.config/wallpaper.jpg al wallpaper
+# por defecto del repo (assets/wallpaper.jpg) la primera vez. Para usar tu
+# propio fondo: sobrescribe ese archivo o cambia esta ruta.
+# El `|| true` evita que un wallpaper faltante rompa el inicio de bspwm.
+/bin/feh --bg-fill ~/.config/wallpaper.jpg 2>/dev/null || true
+# Notificaciones de escritorio.
 dunst &
-~/.config/polybar/./launch.sh &
+# Barra de estado (polybar).
+~/.config/polybar/launch.sh &
+# Compositor: sombras, transparencias y blur. Sin él las ventanas se ven planas.
 picom &
+
+# ----- FIN: OCULTAR BORDE -----
+# Después de que todo esté inicializado, ponemos el borde a 0 para que no
+# se vea ninguna línea alrededor de las ventanas. Se hace al final (y no
+# desde el inicio) porque bspwm necesita un border_width > 0 al cargar las
+# reglas para calcular bien ciertos layouts; después se baja a 0 puramente
+# por estética.
 bspc config border_width 0

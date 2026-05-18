@@ -1,0 +1,41 @@
+# .editorconfig
+# Define las convenciones de formato del proyecto. Lo leen automáticamente
+# casi todos los editores modernos (VS Code, Neovim, Sublime, JetBrains,
+# kitty, etc.), así que cualquiera que clone el repo escribe en el mismo
+# estilo sin tener que configurar su editor a mano.
+#
+# Documentación: https://editorconfig.org
+# Para verificar que tu editor lo lee: abrir cualquier archivo del repo y
+# comprobar que respeta el indent de abajo automáticamente.
+
+# Indica que este es el archivo raíz; el editor deja de buscar .editorconfig
+# en directorios superiores al llegar aquí.
+root = true
+
+# ----- DEFAULTS PARA TODOS LOS ARCHIVOS -----
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# ----- MARKDOWN -----
+# Los 2 espacios al final de una línea en Markdown son un "soft break"
+# (forzar salto de línea sin párrafo nuevo); no se deben recortar.
+# 4 espacios para listas anidadas se ven mejor en renderizado.
+[*.md]
+indent_size = 4
+trim_trailing_whitespace = false
+
+# ----- SXHKD: CONVENCIÓN ES TABS -----
+# sxhkd usa tabs para indentar el comando bajo el binding. Mantenemos su
+# convención original aunque el resto del repo use espacios.
+[sxhkdrc]
+indent_style = tab
+
+# ----- MAKEFILES (por si alguna vez se añade uno) -----
+# Make exige tabs literales; si pones espacios, falla con "missing separator".
+[Makefile]
+indent_style = tab

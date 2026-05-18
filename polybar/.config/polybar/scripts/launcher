@@ -1,3 +1,11 @@
 #!/bin/sh
-
+# ~/.config/polybar/scripts/launcher
+# Lanza rofi en modo drun (apps con .desktop) con tema personalizado.
+# Pensado para asociarse al click izquierdo del módulo `apps` en polybar
+# (ver current.ini → [module/apps]). También se puede invocar desde sxhkd
+# como alternativa más visual a `rofi -show run` (Super+D).
+#
+# -no-lazy-grab: rofi captura el teclado de inmediato, evita perder la
+#   primera tecla cuando se abre rápido.
+# -show drun:    lista aplicaciones por .desktop (más bonito que -show run).
 rofi -no-lazy-grab -show drun -theme $HOME/.config/polybar/scripts/themes/launcher.rasi
