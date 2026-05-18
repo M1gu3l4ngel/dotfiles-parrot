@@ -1,6 +1,6 @@
 # 🦜 dotfiles
 
-Configuración personal de Parrot Security con bspwm + polybar + kitty + zsh.
+Configuración al estilo S4vitar de Parrot Security con bspwm + polybar + kitty + zsh.
 Pensado para pentesting, rice limpio y productividad en VM.
 
 ---
