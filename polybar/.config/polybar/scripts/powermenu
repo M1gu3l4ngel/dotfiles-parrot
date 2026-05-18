@@ -49,9 +49,7 @@ case $chosen in
         systemctl suspend
         ;;
     $logout)
-        # openbox --exit cierra la sesión de openbox. En bspwm conviene usar
-        # `bspc quit` en su lugar (este script viene del setup original; si
-        # usas bspwm, ajusta la línea o ignora la opción Logout).
-        openbox --exit
+        # Cierra la sesión de bspwm (vuelve al login manager).
+        bspc quit
         ;;
 esac

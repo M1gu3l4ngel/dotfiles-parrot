@@ -180,5 +180,5 @@ super + shift + f
 
 # ----- BLOQUEAR PANTALLA -----
 # i3lock-fancy hace un screenshot, lo difumina y lo usa como fondo del lock.
-super + shift +x
+super + shift + x
 	/usr/bin/i3lock-fancy
