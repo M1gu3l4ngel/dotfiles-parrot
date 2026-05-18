@@ -1,21 +1,32 @@
 #!/bin/bash
+# ~/.config/polybar/scripts/powermenu_alt
+# Variante del powermenu: mismo comportamiento que `powermenu` pero con tema
+# rasi distinto (powermenu_alt.rasi) y prompt "System" en lugar del uptime.
+# Es el script que dispara el módulo `sysmenu` de polybar (click izquierdo
+# en el botón circular de la esquina derecha; ver current.ini → [module/sysmenu]).
 
-
+# ----- COMANDO ROFI BASE -----
 rofi_command="rofi -theme $HOME/.config/polybar/scripts/themes/powermenu_alt.rasi"
 
+# Uptime sin el prefijo "up " (queda calculado aunque este script no lo muestre,
+# por simetría con powermenu y por si quieres añadirlo al prompt).
 uptime=$(uptime -p | sed -e 's/up //g')
 
-# Options
-shutdown=" Shutdown"
-reboot=" Restart"
-lock=" Lock"
-suspend=" Sleep"
-logout=" Logout"
+# ----- OPCIONES -----
+# Cada string comienza con un icono Nerd Font.
+shutdown=" Shutdown"
+reboot=" Restart"
+lock=" Lock"
+suspend=" Sleep"
+logout=" Logout"
 
-# Variable passed to rofi
+# Orden de aparición en rofi.
 options="$lock\n$suspend\n$logout\n$reboot\n$shutdown"
 
+# Prompt fijo "System" (la variante con uptime es powermenu, no este).
 chosen="$(echo -e "$options" | $rofi_command -p "System" -dmenu -selected-row 0)"
+
+# ----- ACCIÓN SEGÚN LA OPCIÓN ELEGIDA -----
 case $chosen in
     $shutdown)
         systemctl poweroff
@@ -27,12 +38,13 @@ case $chosen in
         i3lock
         ;;
     $suspend)
+        # Pausar mpd y silenciar antes de suspender; evita audio fantasma al despertar.
         mpc -q pause
         amixer set Master mute
         systemctl suspend
         ;;
     $logout)
+        # openbox --exit: hereda del setup original. En bspwm cambia por `bspc quit`.
         openbox --exit
         ;;
 esac
-

@@ -12,6 +12,14 @@
 Thumbs.db
 desktop.ini
 
+# === Asistentes de IA / agentes (CLAUDE.md SÍ se versiona, es doc) ===
+# .claude/ contiene preferencias personales del usuario sobre Claude Code
+# (settings.json, agentes custom, etc.). No tiene sentido compartirlas.
+.claude/
+.cursor/
+.aider*
+.windsurfrules
+
 # === Log files ===
 *.log
 

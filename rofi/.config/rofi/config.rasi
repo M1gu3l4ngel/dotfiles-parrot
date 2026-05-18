@@ -1,2 +1,21 @@
-//@theme "/home/bytebit/.config/rofi/themes/nord.rasi"
-@theme "/home/bytebit/.config/rofi/themes/squared-nord.rasi"
+/*
+ * ~/.config/rofi/config.rasi
+ * Configuración global de rofi. Lo único que se hace aquí es cargar el tema
+ * que se aplica a todos los modos (run, drun, window, etc.).
+ *
+ * Los temas viven en ~/.config/rofi/themes/ (más de 25 disponibles). Cambiar
+ * de tema = comentar la línea activa y descomentar la del tema deseado.
+ *
+ * Algunos scripts (powermenu, powermenu_alt, launcher) pasan su propio tema
+ * con `-theme <ruta>` y sobrescriben temporalmente este default.
+ *
+ * Para probar un tema sin tocar este archivo:
+ *   rofi -show run -theme ~/.config/rofi/themes/<nombre>.rasi
+ */
+
+// Tema anterior (queda comentado por si se quiere volver a él rápido).
+//@theme "themes/nord"
+
+// Tema activo. Rutas relativas al directorio del config (~/.config/rofi/),
+// para que el repo sea portable entre máquinas con distinto $HOME.
+@theme "themes/squared-nord"

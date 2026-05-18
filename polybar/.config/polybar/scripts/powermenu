@@ -1,21 +1,36 @@
 #!/bin/bash
+# ~/.config/polybar/scripts/powermenu
+# Menú de apagado / reinicio / bloqueo / suspensión / logout usando rofi.
+# Muestra el uptime como subtítulo. Variante visual con tema "powermenu.rasi".
+# Existe un gemelo (`powermenu_alt`) que usa otro tema y otro prompt; el módulo
+# `sysmenu` de polybar invoca el "_alt", este queda como alternativa.
 
-
+# ----- COMANDO ROFI BASE -----
+# Centraliza la invocación de rofi con el tema correspondiente para evitar
+# repetirlo en cada rama del case.
 rofi_command="rofi -theme $HOME/.config/polybar/scripts/themes/powermenu.rasi"
 
+# Tiempo encendido del sistema, sin el prefijo "up " que añade uptime -p.
 uptime=$(uptime -p | sed -e 's/up //g')
 
-# Options
-shutdown=" Shutdown"
-reboot=" Restart"
-lock=" Lock"
-suspend=" Sleep"
-logout=" Logout"
+# ----- OPCIONES -----
+# Cada string comienza con un icono Nerd Font. El orden visual lo decide la
+# variable $options más abajo (lock primero, shutdown último).
+shutdown=" Shutdown"
+reboot=" Restart"
+lock=" Lock"
+suspend=" Sleep"
+logout=" Logout"
 
-# Variable passed to rofi
+# Lista en el orden que se mostrará en rofi.
 options="$lock\n$suspend\n$logout\n$reboot\n$shutdown"
 
+# -dmenu: rofi se comporta como dmenu (lee opciones de stdin).
+# -selected-row 0: arranca con la primera opción (lock) preseleccionada.
+# -p: prompt que aparece como label arriba (muestra el uptime).
 chosen="$(echo -e "$options" | $rofi_command -p "UP - $uptime" -dmenu -selected-row 0)"
+
+# ----- ACCIÓN SEGÚN LA OPCIÓN ELEGIDA -----
 case $chosen in
     $shutdown)
         systemctl poweroff
@@ -27,12 +42,16 @@ case $chosen in
         i3lock
         ;;
     $suspend)
+        # Pausar mpd y silenciar antes de dormir, para no quedarse con audio
+        # sonando al volver del suspend.
         mpc -q pause
         amixer set Master mute
         systemctl suspend
         ;;
     $logout)
+        # openbox --exit cierra la sesión de openbox. En bspwm conviene usar
+        # `bspc quit` en su lugar (este script viene del setup original; si
+        # usas bspwm, ajusta la línea o ignora la opción Logout).
         openbox --exit
         ;;
 esac
-
