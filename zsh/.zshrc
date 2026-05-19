@@ -10,7 +10,7 @@
 # ----- SSH AGENT (keychain) -----
 # Mantiene el ssh-agent vivo entre sesiones de zsh. Pide la passphrase una
 # sola vez por arranque de la VM y la cachea para los siguientes shells.
-eval $(keychain --eval --quiet id_ed25519)
+[ -f "$HOME/.ssh/id_ed25519" ] && eval $(keychain --eval --quiet id_ed25519)
 
 # ----- PROMPT: OH-MY-POSH -----
 # Prompt unificado con dotfiles-windows usando el tema capr4n.omp.json del
@@ -18,7 +18,7 @@ eval $(keychain --eval --quiet id_ed25519)
 # PATH con ~/.local/bin se exporta al final de este archivo; de lo contrario
 # el comando no se encontraría aquí. Para cambiar de tema, edita el .omp.json
 # o sustituye por otro de ~/.cache/oh-my-posh/themes/ (built-ins).
-eval "$($HOME/.local/bin/oh-my-posh init zsh --config $HOME/dotfiles/oh-my-posh/capr4n.omp.json)"
+[ -x "$HOME/.local/bin/oh-my-posh" ] && eval "$($HOME/.local/bin/oh-my-posh init zsh --config $HOME/dotfiles/oh-my-posh/capr4n.omp.json)"
 
 # ----- HISTORIAL -----
 # Doble underscore en HISTFILE para no chocar con el ~/.zsh_history default;
