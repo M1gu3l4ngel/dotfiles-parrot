@@ -55,7 +55,7 @@
             "fetch_status": true,
             "fetch_upstream_icon": true
           },
-          "template": " {{ .HEAD }}{{ if or .Working.Changed .Staging.Changed }} \uf044{{ end }}{{ if gt .Ahead 0 }} \uf062{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} \uf063{{ .Behind }}{{ end }} ",
+          "template": " {{ .HEAD }}{{ if or .Working.Changed .Staging.Changed }} \uf044{{ end }}{{ if gt .Ahead 0 }} ↑ {{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ↓ {{ .Behind }}{{ end }} ",
           "foreground": "#193549",
           "powerline_symbol": "\ue0b0",
           "background": "#95ffa4",
