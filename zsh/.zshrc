@@ -5,26 +5,20 @@
 # pero por simplicidad este setup las mete aquí.
 #
 # Para recargar sin reabrir terminal:  exec zsh
-# Powerlevel10k se configura aparte en ~/.p10k.zsh (auto-generado).
+# Prompt manejado por oh-my-posh con el tema capr4n (unificado con dotfiles-windows).
 
 # ----- SSH AGENT (keychain) -----
 # Mantiene el ssh-agent vivo entre sesiones de zsh. Pide la passphrase una
 # sola vez por arranque de la VM y la cachea para los siguientes shells.
 eval $(keychain --eval --quiet id_ed25519)
 
-# ----- POWERLEVEL10K INSTANT PROMPT -----
-# Carga el prompt cacheado para que aparezca al instante mientras el resto
-# del .zshrc termina de ejecutarse. Debe ir CERCA DEL INICIO del archivo;
-# cualquier cosa que pida input al usuario (passwords, [y/n]) tiene que ir
-# ANTES de este bloque para no romper el cache.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# ----- TEMA POWERLEVEL10K -----
-# Carga la lógica del tema desde la instalación manual en ~/powerlevel10k.
-# Si se mueve el clon, ajustar esta ruta.
-source $HOME/powerlevel10k/powerlevel10k.zsh-theme
+# ----- PROMPT: OH-MY-POSH -----
+# Prompt unificado con dotfiles-windows usando el tema capr4n.omp.json del
+# mismo repo. Se usa $HOME/.local/bin/oh-my-posh (path absoluto) porque el
+# PATH con ~/.local/bin se exporta al final de este archivo; de lo contrario
+# el comando no se encontraría aquí. Para cambiar de tema, edita el .omp.json
+# o sustituye por otro de ~/.cache/oh-my-posh/themes/ (built-ins).
+eval "$($HOME/.local/bin/oh-my-posh init zsh --config $HOME/dotfiles/oh-my-posh/capr4n.omp.json)"
 
 # ----- HISTORIAL -----
 # Doble underscore en HISTFILE para no chocar con el ~/.zsh_history default;
@@ -126,11 +120,6 @@ LS_COLORS="rs=0:di=34:ln=36:mh=00:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:o
 # El resto son los paths estándar de Debian/Parrot.
 export PATH="/opt/kitty/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/sbin/:/opt/nvim-linux-x86_64/bin"
 
-# ----- POWERLEVEL10K USER CONFIG -----
-# Configuración del prompt (segmentos, colores, iconos). Generada con `p10k configure`.
-# El test `-f` evita errores si todavía no se ha corrido la configuración inicial.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 # =============================================================================
 # PENTEST: GESTIÓN DEL TARGET
 # =============================================================================
@@ -166,5 +155,5 @@ export NVM_DIR="$HOME/.nvm"
 
 # ----- PATH FINAL: BINARIOS LOCALES DEL USUARIO -----
 # Se añade al inicio del PATH para que `~/.local/bin/<algo>` tenga precedencia
-# sobre la versión del sistema.
+# sobre la versión del sistema. Aquí también vive oh-my-posh (instalado vía curl).
 export PATH="$HOME/.local/bin:$PATH"
