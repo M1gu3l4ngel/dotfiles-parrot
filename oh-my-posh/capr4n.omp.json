@@ -13,7 +13,7 @@
           },
           "leading_diamond": "\ue0b6",
           "trailing_diamond": "\ue0b0",
-          "template": "{{ if gt .Code 0 }} \uf00d {{ else }} \uf00c {{ end }}",
+          "template": "{{ if gt .Code 0 }} ✗ {{ else }} ✓ {{ end }}",
           "foreground": "#193549",
           "background": "#95ffa4",
           "type": "status",
