@@ -18,8 +18,9 @@
 #   - Click izquierdo en el módulo "anon_status" de polybar
 #   - Manual: ~/.config/scripts/toggle_anonymity.sh
 #
-# Requisitos sudoers (sudo visudo, agregar línea):
-#   bytebit ALL=(root) NOPASSWD: /usr/bin/anonsurf, /usr/sbin/ip6tables, /usr/sbin/iptables
+# Requisitos sudoers: el archivo dotfiles/system/setup.sh instala
+# /etc/sudoers.d/anon_toggle con la regla NOPASSWD necesaria (anonsurf +
+# ip6tables + iptables). Idempotente, correr una vez tras el install.sh.
 
 STATE_FILE="$HOME/.config/bin/anon_state"
 mkdir -p "$(dirname "$STATE_FILE")"

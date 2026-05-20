@@ -70,6 +70,7 @@ sudo apt update && sudo apt install -y \
   bspwm sxhkd polybar picom rofi kitty zsh feh dunst \
   bat lsd tmux git stow keychain \
   zsh-autosuggestions zsh-syntax-highlighting \
+  ufw anonsurf \
   fzf
 ```
 
@@ -165,7 +166,24 @@ El script:
 - Crea `~/.config/bin/target` vacío para que el módulo de target en polybar no falle la primera vez.
 - Es **idempotente**: corre N veces sin romper nada.
 
-### Paso 3 — Cambiar el shell a zsh
+### Paso 3 — Configurar firewall y anonimato (opcional pero recomendado)
+
+Si querés el firewall baseline (`ufw`) y la regla `sudoers` para el toggle de anonimato (`Super+A`), corré:
+
+```bash
+sudo ./system/setup.sh
+```
+
+El script:
+
+- Instala `/etc/sudoers.d/anon_toggle` con permisos 0440, sustituye el placeholder `__USER__` por tu usuario actual, y valida con `visudo -c`.
+- Aplica reglas baseline de `ufw`: `default deny incoming`, `default allow outgoing`, `allow in on lo`, `allow in on tun+` (para VPNs HTB/THM).
+- Verifica que `IPV6=yes` esté en `/etc/default/ufw` (lo fuerza si no).
+- Activa `ufw` con start-on-boot.
+
+Es **idempotente**: correrlo varias veces no rompe nada. Detalles en [`system/README.md`](system/README.md).
+
+### Paso 4 — Cambiar el shell a zsh
 
 ```bash
 chsh -s $(which zsh)
@@ -173,7 +191,7 @@ chsh -s $(which zsh)
 
 Cierra sesión y vuelve a entrar para que el cambio tenga efecto. La primera vez que abras zsh, oh-my-posh cargará el tema capr4n directamente desde `~/dotfiles/oh-my-posh/capr4n.omp.json` (no requiere wizard ni configuración inicial).
 
-### Paso 4 — Probar dentro de bspwm
+### Paso 5 — Probar dentro de bspwm
 
 Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar. Atajos clave para empezar:
 
@@ -194,6 +212,7 @@ Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
 |---|---|
 | `Super + Enter` | Abrir terminal (kitty) |
 | `Super + D` | Lanzador rofi |
+| `Super + A` | Toggle anonimato (Tor + anonsurf) |
 | `Super + Shift + F` | Firefox |
 | `Super + Shift + X` | Bloquear pantalla (i3lock-fancy) |
 | `Super + Escape` | Recargar sxhkd |
@@ -269,6 +288,26 @@ Si tu VPN usa otra interfaz (WireGuard, varios túneles), ajusta el script en `s
 ### Ethernet status
 
 La otra mini-barra de la izquierda muestra la IP de la interfaz Ethernet (por defecto `ens33`, típica en VMs). Para cambiarla, edita `scripts/.config/scripts/ethernet_status.sh`.
+
+### Anonimato (Tor + anonsurf)
+
+`Super + A` activa/desactiva todo el tráfico vía Tor. El script `scripts/.config/scripts/toggle_anonymity.sh` orquesta:
+
+1. `anonsurf start` redirige TCP + DNS a Tor vía iptables.
+2. `ip6tables -P OUTPUT DROP` bloquea IPv6 (anonsurf solo cubre IPv4).
+3. `iptables OUTPUT -p icmp -j DROP` bloquea ping/traceroute leaks.
+4. `curl https://check.torproject.org/api/ip` valida `"IsTor":true` antes de declarar éxito. Si falla, rollback automático completo.
+
+El módulo `anon_status` en polybar cambia entre power-off gris (OFF) y user-secret verde (ON). Click izquierdo también funciona como toggle.
+
+**Pre-requisitos:** correr una vez `sudo ./system/setup.sh` para instalar la regla sudoers que permite al script ejecutar `anonsurf`/`ip6tables`/`iptables` sin password.
+
+**Verificación manual:**
+
+```bash
+curl --max-time 15 -s https://check.torproject.org/api/ip
+# {"IsTor":true,"IP":"x.x.x.x"} si todo OK
+```
 
 ---
 
@@ -373,11 +412,18 @@ dotfiles/
 ├── nvim/                → ~/.config/nvim/  (NvChad como base)
 ├── oh-my-posh/          → ~/dotfiles/oh-my-posh/  (capr4n.omp.json, sincronizado con dotfiles-windows)
 ├── scripts/             → ~/.config/scripts/
-│   ├── ethernet_status.sh  → IP Ethernet (polybar)
-│   ├── vpn_status.sh       → estado VPN (polybar)
-│   └── victim_to_hack.sh   → lee target activo (polybar)
+│   ├── ethernet_status.sh   → IP Ethernet (polybar)
+│   ├── vpn_status.sh        → estado VPN (polybar)
+│   ├── victim_to_hack.sh    → lee target activo (polybar)
+│   ├── toggle_anonymity.sh  → toggle Tor + anonsurf (Super+A)
+│   └── anon_module.sh       → estado anon para polybar
 ├── zsh/.zshrc           → ~/.zshrc
 ├── assets/              → preview.png + wallpaper.jpg default
+├── system/              → configs de /etc (sudoers + ufw)
+│   ├── README.md
+│   ├── setup.sh         → instalador idempotente para sudoers + ufw
+│   └── sudoers.d/
+│       └── anon_toggle  → template con __USER__ placeholder
 ├── install.sh           → instalador idempotente
 ├── CONTRIBUTING.md      → convenciones del proyecto (guía para PRs)
 ├── LICENSE              → MIT
