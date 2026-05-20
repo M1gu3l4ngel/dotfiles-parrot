@@ -134,13 +134,21 @@ settarget() {
   # (install.sh también lo crea, pero esto cubre el caso de instalación manual).
   mkdir -p "$HOME/.config/bin"
   echo "$ip_address $machine_name" > "$HOME/.config/bin/target"
-  echo "Target establecido: $1 $2"
+  # Feedback vía dunst (mismo estilo que toggle_anonymity.sh). Visible
+  # también si se invoca desde script no-interactivo. Icono bullseye
+  # Font Awesome ( = \xef\x85\x80).
+  notify-send -u normal -t 3000 \
+    $'\xef\x85\x80  Target establecido' \
+    "$ip_address  ·  $machine_name"
 }
 
 cleartarget() {
   mkdir -p "$HOME/.config/bin"
   echo '' > "$HOME/.config/bin/target"
-  echo "Target limpiado"
+  # Icono eraser Font Awesome ( = \xef\x84\xad).
+  notify-send -u low -t 3000 \
+    $'\xef\x84\xad  Target limpiado' \
+    "Sin objetivo activo"
 }
 
 # ----- FZF -----
