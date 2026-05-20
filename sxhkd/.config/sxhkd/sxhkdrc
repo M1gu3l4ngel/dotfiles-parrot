@@ -182,3 +182,9 @@ super + shift + f
 # i3lock-fancy hace un screenshot, lo difumina y lo usa como fondo del lock.
 super + shift + x
 	/usr/bin/i3lock-fancy
+
+# ----- TOGGLE ANONIMATO (Tor + anonsurf) -----
+# Activa/desactiva el routing onion con notificación + indicador en polybar.
+# Mismo efecto que click izquierdo en el módulo "anon_status" de polybar.
+super + a
+	~/.config/scripts/toggle_anonymity.sh

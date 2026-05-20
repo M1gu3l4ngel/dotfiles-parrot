@@ -1,0 +1,102 @@
+# ~/.config/dunst/dunstrc
+# Configuración de dunst con paleta Monokai Soda alineada con kitty/polybar
+# (fondo #1A1A1A, texto crema, acentos amber/azul/rojo).
+#
+# Cambios vs default del sistema:
+#   - frame_width: 2 (en vez de 3) para borde subtle pero curvas suaves
+#   - corner_radius: 4 (esquinas redondeadas)
+#   - default_icon vacío (no usamos iconos image, los embeddemos en el title)
+#   - timeout corto en critical (era 0 = infinito)
+#   - background consistente en todas las urgencias (varía el frame_color)
+#   - paleta Monokai Soda en lugar de rojos/azules genéricos
+
+[global]
+    monitor = 0
+    follow = none
+    width = 320
+    height = (0, 300)
+    origin = top-right
+    offset = (15, 80)
+    scale = 0
+    notification_limit = 5
+
+    progress_bar = true
+    progress_bar_height = 8
+    progress_bar_frame_width = 0
+    progress_bar_min_width = 150
+    progress_bar_max_width = 300
+    progress_bar_corner_radius = 4
+
+    icon_corner_radius = 0
+
+    indicate_hidden = yes
+    transparency = 0
+    separator_height = 0
+    padding = 14
+    horizontal_padding = 16
+    text_icon_padding = 0
+    frame_width = 2
+    frame_color = "#2a2a2a"
+    gap_size = 10
+    separator_color = frame
+
+    sort = yes
+
+    font = CaskaydiaCove Nerd Font 10
+    line_height = 0
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = no
+
+    icon_position = off
+    min_icon_size = 0
+    max_icon_size = 0
+
+    sticky_history = yes
+    history_length = 20
+
+    dmenu = /usr/bin/dmenu -p dunst:
+    browser = /usr/bin/xdg-open
+
+    title = Dunst
+    class = Dunst
+
+    corner_radius = 12
+    ignore_dbusclose = false
+
+    force_xwayland = false
+    force_xinerama = false
+
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[experimental]
+    per_monitor_dpi = false
+
+[urgency_low]
+    background = "#1A1A1A"
+    foreground = "#888888"
+    frame_color = "#2a2a2a"
+    timeout = 4
+
+[urgency_normal]
+    background = "#1A1A1A"
+    foreground = "#C4C5B5"
+    frame_color = "#2495E7"
+    timeout = 5
+    override_pause_level = 30
+
+[urgency_critical]
+    background = "#1A1A1A"
+    foreground = "#C4C5B5"
+    frame_color = "#F4005F"
+    timeout = 6
+    override_pause_level = 60
