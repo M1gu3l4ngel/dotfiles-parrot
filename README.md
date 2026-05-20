@@ -2,6 +2,7 @@
 
 > Setup de **Parrot Security** con bspwm + polybar + kitty + zsh + Neovim.
 > Pensado para pentesting (HTB / THM), rice limpio y productividad en VM.
+> Prompt unificado con [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) vía oh-my-posh + tema capr4n.
 
 ![Preview](assets/preview.png)
 
@@ -22,7 +23,7 @@
 | **picom** | Compositor (sombras, transparencia, esquinas redondeadas) |
 | **rofi** | Lanzador de aplicaciones y menús (powermenu, drun) |
 | **kitty** | Emulador de terminal con soporte GPU |
-| **zsh + Powerlevel10k** | Shell interactiva + prompt con info de git, VPN, etc. |
+| **zsh + oh-my-posh (capr4n)** | Shell interactiva + prompt cross-platform con git, exit status, etc. |
 | **Neovim + NvChad** | Editor con LSP, autocompletado y formateadores |
 | **feh** | Wallpaper |
 | **dunst** | Notificaciones de escritorio |
@@ -34,18 +35,33 @@
 
 Lo que verás al iniciar sesión:
 
-- Barras flotantes en lugar de una sola barra: workspaces (centro-arriba), VPN
-  status (izquierda), Ethernet IP (izquierda), target de pentest (derecha) y
-  botón de power-menu (esquina derecha).
+- Paleta **Monokai Soda** unificada con [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) (fondo `#1A1A1A`, mismo en kitty, polybar y Windows Terminal).
+- Barras flotantes en lugar de una sola barra: workspaces (centro-arriba), VPN status (izquierda), Ethernet IP (izquierda), target de pentest (derecha) y botón de power-menu (esquina derecha).
+- Workspaces con indicador visual: dot azul si estás ahí, **amarillo** si tiene ventanas abiertas pero no estás, gris si vacío.
 - Esquinas redondeadas, transparencias y sombras a través de picom.
-- Tema de polybar conmutable entre **dark** y **light**.
+- Prompt oh-my-posh con tema capr4n: indicador de exit status (`✓`/`✗`), rama git con cambios pendientes (`✎`), commits ahead/behind (`↑ N` / `↓ N`).
 - Aliases para reemplazar `cat`/`ls` con `bat`/`lsd` (colores e iconos Nerd Font).
-- Funciones `settarget` y `cleartarget` integradas con la barra: la IP/nombre
-  del objetivo aparece en polybar mientras estás resolviendo una máquina.
+- Funciones `settarget` y `cleartarget` integradas con la barra: la IP/nombre del objetivo aparece en polybar mientras estás resolviendo una máquina.
+
+---
+
+## 🔄 Migración rápida (si ya tienes el stack instalado)
+
+¿Tu Parrot ya tiene bspwm, polybar, kitty, zsh, Neovim y los demás componentes funcionando, y solo quieres aplicar **mis configs** encima de las tuyas?
+
+**Salta los Pre-requisitos y arranca directo en el [Paso 1](#paso-1--clonar-el-repo)**. El `install.sh` es seguro para este caso porque:
+
+- Detecta cada archivo de config existente (bspwmrc, sxhkdrc, kitty.conf, .zshrc, etc.)
+- Le hace **backup automático** con sufijo `.pre-dotfiles.bak` antes de tocarlo
+- Crea un symlink hacia el archivo del repo
+
+Si después algo no te gusta, revertir es renombrar el `.pre-dotfiles.bak` de vuelta a su nombre original. No reinstala paquetes ni toca tus herramientas, solo cambia los archivos de configuración.
 
 ---
 
 ## 📋 Pre-requisitos
+
+Si vas desde cero (instalación nueva de Parrot o no tienes el stack todavía), sigue estos pasos. **Si ya lo tienes** (caso de migración arriba), salta directo al Paso 1.
 
 ### 1. Paquetes del sistema (apt)
 
@@ -71,31 +87,31 @@ sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 
 > El `.zshrc` añade `/opt/nvim-linux-x86_64/bin` al PATH automáticamente.
 
-### 3. Powerlevel10k y fzf (clonar en `$HOME`)
+### 3. oh-my-posh + fzf
 
 ```bash
-# Tema zsh
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+# Prompt cross-platform (mismo binario y tema en Windows y Parrot)
+curl -s https://ohmyposh.dev/install.sh | bash -s
 
 # Fuzzy finder (Ctrl+R en historial)
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install --all
 ```
 
-> El `.zshrc` espera **exactamente** `~/powerlevel10k/`. Si lo mueves a otro
-> sitio, ajusta la línea correspondiente.
+> oh-my-posh queda en `~/.local/bin/oh-my-posh`. El `.zshrc` lo invoca por path absoluto y solo si el binario existe, así que funciona también para root sin reconfiguración.
 
-### 4. Hack Nerd Font
+### 4. Hack Nerd Font o CaskaydiaCove Nerd Font
+
+El tema capr4n usa iconos Nerd Font. Cualquiera de las dos funciona, pero **CaskaydiaCove** es la usada por dotfiles-windows, así que para mantener match visual recomendado:
 
 ```bash
 wget -P /tmp \
-  https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
-sudo unzip -o /tmp/Hack.zip -d /usr/local/share/fonts/
+  https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip
+sudo unzip -o /tmp/CascadiaCode.zip -d /usr/local/share/fonts/
 sudo fc-cache -fv
 ```
 
-Las otras fuentes (Iosevka, Hurmit, Helvetica, Montserrat) usadas por polybar
-ya están incluidas en `polybar/.config/polybar/fonts/`.
+Las fuentes de polybar (Iosevka, Hurmit, Helvetica, Montserrat) ya están incluidas en `polybar/.config/polybar/fonts/`.
 
 ### 5. (Opcional) i3lock-fancy
 
@@ -107,18 +123,11 @@ sudo apt install -y i3lock-fancy
 
 ### 6. (Opcional) Llave SSH
 
-El `.zshrc` incluye una línea que cachea tu llave SSH con `keychain`, para no
-tener que escribir la passphrase cada vez que haces `git push` o te conectas
-a un servidor remoto:
-
-```bash
-eval $(keychain --eval --quiet id_ed25519)
-```
+El `.zshrc` incluye una línea condicional que cachea tu llave SSH con `keychain` (solo se ejecuta si la llave existe). Sirve para no escribir la passphrase en cada `git push` o ssh remoto.
 
 ¿Para qué se usa la llave SSH?
 
-- **GitHub / GitLab:** clonar repos privados con `git clone git@github.com:...`,
-  hacer push sin pedir credenciales cada vez.
+- **GitHub / GitLab:** clonar repos privados con `git clone git@github.com:...`, hacer push sin pedir credenciales cada vez.
 - **Servers remotos:** SSH a VPS, máquinas de laboratorio, etc.
 
 Si **no tienes una llave todavía**, créala con:
@@ -129,9 +138,7 @@ ssh-keygen -t ed25519 -C "tu_email@example.com"
 # La pública es la que pegas en GitHub → Settings → SSH and GPG keys.
 ```
 
-Si tu llave **se llama distinto** (`id_rsa` por ejemplo), edita la línea de
-`keychain` en `zsh/.zshrc` con el nombre correcto. Si no usas SSH para nada,
-puedes comentar esa línea entera.
+Si tu llave **se llama distinto** (`id_rsa` por ejemplo), edita la línea de `keychain` en `zsh/.zshrc` con el nombre correcto.
 
 ---
 
@@ -154,10 +161,8 @@ El script:
 
 - Hace **backup automático** de tus configs actuales con sufijo `.pre-dotfiles.bak`.
 - Crea symlinks desde `~/.config/` y `~/` hacia los archivos del repo.
-- Enlaza el wallpaper por defecto del repo a `~/.config/wallpaper.jpg`
-  **solo si no tienes ya uno** (no pisa wallpapers personales).
-- Crea `~/.config/bin/target` vacío para que el módulo de target en polybar
-  no falle la primera vez.
+- Enlaza el wallpaper por defecto del repo a `~/.config/wallpaper.jpg` **solo si no tienes ya uno** (no pisa wallpapers personales).
+- Crea `~/.config/bin/target` vacío para que el módulo de target en polybar no falle la primera vez.
 - Es **idempotente**: corre N veces sin romper nada.
 
 ### Paso 3 — Cambiar el shell a zsh
@@ -166,16 +171,11 @@ El script:
 chsh -s $(which zsh)
 ```
 
-Cierra sesión y vuelve a entrar para que el cambio tenga efecto.
-
-La primera vez que abras zsh, Powerlevel10k te lanzará su asistente
-(`p10k configure`). Si lo saltas o quieres rehacerlo: `p10k configure` desde
-cualquier terminal.
+Cierra sesión y vuelve a entrar para que el cambio tenga efecto. La primera vez que abras zsh, oh-my-posh cargará el tema capr4n directamente desde `~/dotfiles/oh-my-posh/capr4n.omp.json` (no requiere wizard ni configuración inicial).
 
 ### Paso 4 — Probar dentro de bspwm
 
-Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
-Atajos clave para empezar:
+Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar. Atajos clave para empezar:
 
 - **Super + Enter** → abrir kitty
 - **Super + D** → lanzador de apps (rofi)
@@ -237,8 +237,7 @@ Atajos clave para empezar:
 
 ## 🎯 Workflow de pentesting
 
-El setup tiene integración nativa para tracking del target activo (útil para
-HTB/THM).
+El setup tiene integración nativa para tracking del target activo (útil para HTB/THM).
 
 ### `settarget` y `cleartarget`
 
@@ -250,9 +249,7 @@ settarget 10.10.11.42 Cerberus
 cleartarget
 ```
 
-`settarget` escribe la IP + nombre en `~/.config/bin/target`. El script
-`victim_to_hack.sh` (corriendo cada 2s vía polybar) lee ese archivo y muestra
-la info en la barra superior derecha:
+`settarget` escribe la IP + nombre en `~/.config/bin/target`. El script `victim_to_hack.sh` (corriendo cada 2s vía polybar) lee ese archivo y muestra la info en la barra superior derecha:
 
 ```
 🎯 10.10.11.42 - Cerberus
@@ -262,24 +259,35 @@ Si no hay target, muestra `🎯 No target`.
 
 ### VPN status (HTB / THM)
 
-La barra izquierda muestra el estado de la VPN. Detecta automáticamente la
-interfaz `tun0` (la que crea OpenVPN):
+La barra izquierda muestra el estado de la VPN. Detecta automáticamente la interfaz `tun0` (la que crea OpenVPN):
 
 - **Conectada:** `📡 10.10.14.x`
 - **Desconectada:** `📡 Disconnected`
 
-Si tu VPN usa otra interfaz (WireGuard, varios túneles), ajusta el script
-en `scripts/.config/scripts/vpn_status.sh`.
+Si tu VPN usa otra interfaz (WireGuard, varios túneles), ajusta el script en `scripts/.config/scripts/vpn_status.sh`.
 
 ### Ethernet status
 
-La otra mini-barra de la izquierda muestra la IP de la interfaz Ethernet
-(por defecto `ens33`, típica en VMs). Para cambiarla, edita
-`scripts/.config/scripts/ethernet_status.sh`.
+La otra mini-barra de la izquierda muestra la IP de la interfaz Ethernet (por defecto `ens33`, típica en VMs). Para cambiarla, edita `scripts/.config/scripts/ethernet_status.sh`.
 
 ---
 
 ## 🎨 Personalización rápida
+
+### Cambiar tema de oh-my-posh (prompt)
+
+Edita `~/dotfiles/oh-my-posh/capr4n.omp.json` directamente, o sustituye por otro tema:
+
+```bash
+# Listar temas built-in:
+ls ~/.cache/oh-my-posh/themes/
+
+# Probar un tema sin tocar el repo:
+eval "$(oh-my-posh init zsh --config ~/.cache/oh-my-posh/themes/dracula.omp.json)"
+
+# Cambiar permanentemente:
+# Edita ~/dotfiles/zsh/.zshrc y cambia la ruta en la línea del eval de oh-my-posh.
+```
 
 ### Cambiar wallpaper
 
@@ -288,11 +296,6 @@ cp /ruta/a/tu/wallpaper.jpg ~/.config/wallpaper.jpg
 # Recargar bspwm:
 bspc wm -r
 ```
-
-`~/.config/wallpaper.jpg` por defecto es un symlink al wallpaper del repo
-(`assets/wallpaper.jpg`). Sobrescribirlo con un archivo real lo desconecta
-del repo; si quieres volver al default, borra el archivo y corre `install.sh`
-de nuevo.
 
 ### Cambiar tema de polybar (dark ↔ light ↔ default)
 
@@ -310,8 +313,7 @@ cp ~/dotfiles/polybar/.config/polybar/colors_light.ini \
 
 ### Cambiar tema de rofi
 
-Hay 25+ temas en `rofi/.config/rofi/themes/`. Edita
-`rofi/.config/rofi/config.rasi` y reemplaza el nombre tras `@theme`:
+Hay 25+ temas en `rofi/.config/rofi/themes/`. Edita `rofi/.config/rofi/config.rasi` y reemplaza el nombre tras `@theme`:
 
 ```rasi
 @theme "themes/spotlight-dark"   // ejemplo
@@ -345,7 +347,7 @@ Edita `sxhkd/.config/sxhkd/sxhkdrc` siguiendo el formato:
 
 ```
 super + shift + n
-	notify-send "hola"
+    notify-send "hola"
 ```
 
 Recarga con `Super + Escape`. No necesitas reiniciar la sesión.
@@ -361,7 +363,7 @@ dotfiles/
 ├── polybar/             → ~/.config/polybar/
 │   ├── current.ini      → bars activos (log, vpn, ethernet, target, primary)
 │   ├── workspace.ini    → bar central de workspaces
-│   ├── colors.ini       → paleta activa (sobrescribir con colors_dark/light)
+│   ├── colors.ini       → paleta activa (Monokai Soda — sobrescribir con colors_dark/light si quieres)
 │   ├── launch.sh        → mata y relanza todas las barras
 │   ├── scripts/         → launcher, powermenu (no scripts pentest)
 │   └── fonts/           → Iosevka, Hurmit, Helvetica, etc.
@@ -369,12 +371,12 @@ dotfiles/
 ├── rofi/                → ~/.config/rofi/  (config.rasi + themes/)
 ├── kitty/               → ~/.config/kitty/  (kitty.conf + color.ini)
 ├── nvim/                → ~/.config/nvim/  (NvChad como base)
+├── oh-my-posh/          → ~/dotfiles/oh-my-posh/  (capr4n.omp.json, sincronizado con dotfiles-windows)
 ├── scripts/             → ~/.config/scripts/
 │   ├── ethernet_status.sh  → IP Ethernet (polybar)
 │   ├── vpn_status.sh       → estado VPN (polybar)
 │   └── victim_to_hack.sh   → lee target activo (polybar)
 ├── zsh/.zshrc           → ~/.zshrc
-├── zsh/.p10k.zsh        → ~/.p10k.zsh
 ├── assets/              → preview.png + wallpaper.jpg default
 ├── install.sh           → instalador idempotente
 ├── CONTRIBUTING.md      → convenciones del proyecto (guía para PRs)
@@ -386,13 +388,36 @@ dotfiles/
 
 ## 🩺 Troubleshooting
 
-### "El prompt zsh tarda mucho en aparecer"
+### "El prompt no aparece o sale plano"
 
-Powerlevel10k usa un cache para el "instant prompt". Si lo desactivaste o lo
-borraste:
+Verifica que oh-my-posh está instalado y accesible:
 
 ```bash
-p10k configure
+ls -la ~/.local/bin/oh-my-posh
+oh-my-posh --version
+```
+
+Si no existe, reinstala:
+
+```bash
+curl -s https://ohmyposh.dev/install.sh | bash -s
+```
+
+### "Los iconos del prompt salen como cuadraditos"
+
+Tu fuente no tiene glyphs Nerd Font. Instala CaskaydiaCove o Hack:
+
+```bash
+wget -P /tmp \
+  https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip
+sudo unzip -o /tmp/CascadiaCode.zip -d /usr/local/share/fonts/
+sudo fc-cache -fv
+```
+
+Luego configura kitty para usarla en `kitty/.config/kitty/kitty.conf`:
+
+```conf
+font_family    CaskaydiaCove Nerd Font
 ```
 
 ### "polybar no muestra los workspaces"
@@ -413,8 +438,7 @@ settarget 10.10.10.1 TestMachine
 cat ~/.config/bin/target   # debe mostrar "10.10.10.1 TestMachine"
 ```
 
-Si el módulo sigue mostrando "No target", revisa que polybar tiene permisos
-de lectura (no debería ser un problema en uso normal).
+Si el módulo sigue mostrando "No target", revisa que polybar tiene permisos de lectura (no debería ser un problema en uso normal).
 
 ### "VPN status dice Disconnected aunque la VPN está activa"
 
@@ -424,8 +448,7 @@ El script asume que la interfaz se llama `tun0`. Verifica con `ip link`:
 ip link | grep -i 'tun\|wg'
 ```
 
-Si tu VPN usa otra interfaz (ej. `wg0`, `tun1`), edita
-`~/.config/scripts/vpn_status.sh` y reemplaza `tun0`.
+Si tu VPN usa otra interfaz (ej. `wg0`, `tun1`), edita `~/.config/scripts/vpn_status.sh` y reemplaza `tun0`.
 
 ### "keychain me pide la passphrase en cada terminal"
 
@@ -438,14 +461,25 @@ ls ~/.ssh/id_ed25519
 Si tienes otra llave (`id_rsa`, etc.), edita el `.zshrc`:
 
 ```bash
-eval $(keychain --eval --quiet id_rsa)   # o el nombre de tu llave
+[ -f "$HOME/.ssh/id_rsa" ] && eval $(keychain --eval --quiet id_rsa)
+```
+
+### "Como root no se ve el tema capr4n"
+
+Por defecto root no tiene oh-my-posh instalado (vive en `~/.local/bin/` del usuario, no del root). El `.zshrc` detecta esto y skipea el init silenciosamente. Para que root también tenga el tema:
+
+```bash
+# Symlink al binario del usuario:
+sudo mkdir -p /root/.local/bin
+sudo ln -sfn /home/$USER/.local/bin/oh-my-posh /root/.local/bin/oh-my-posh
+
+# Symlink al repo de dotfiles:
+sudo ln -sfn /home/$USER/dotfiles /root/dotfiles
 ```
 
 ### "El cursor de kitty es una barra, no un underline (o viceversa)"
 
-`kitty.conf` lo establece a `beam` (barra), sobrescribiendo el `Underline`
-que pone `color.ini`. Si quieres `Underline`, comenta la línea
-`cursor_shape beam` en `kitty.conf`.
+`kitty.conf` lo establece a `beam` (barra), sobrescribiendo el `Underline` que pone `color.ini`. Si quieres `Underline`, comenta la línea `cursor_shape beam` en `kitty.conf`.
 
 ### "Super + Alt + Flechas no redimensiona"
 
@@ -471,28 +505,23 @@ Renombra el `.bak` al nombre original si quieres restaurar.
 
 ## 📐 Convenciones del proyecto
 
-Si vas a contribuir, adaptar el repo o abrir un PR, las reglas de estilo,
-formato de commits y archivos protegidos están documentadas en
-[`CONTRIBUTING.md`](CONTRIBUTING.md). El `.editorconfig` de la raíz hace
-además que tu editor respete la indentación correcta automáticamente.
+Si vas a contribuir, adaptar el repo o abrir un PR, las reglas de estilo, formato de commits y archivos protegidos están documentadas en [`CONTRIBUTING.md`](CONTRIBUTING.md). El `.editorconfig` de la raíz hace además que tu editor respete la indentación correcta automáticamente.
 
 ---
 
 ## 🙏 Créditos
 
-Setup originalmente basado en el curso de personalización de Linux de
-**[S4vitar](https://github.com/s4vitar)**. Las configuraciones de **bspwm**,
-**sxhkd**, **polybar** y **picom** parten de su estilo y enfoque pedagógico.
+Setup originalmente basado en el curso de personalización de Linux de **[S4vitar](https://github.com/s4vitar)**. Las configuraciones de **bspwm**, **sxhkd**, **polybar** y **picom** parten de su estilo y enfoque pedagógico.
 
-Adaptado y mantenido por **[M1gu3l4ng3l](https://github.com/M1gu3l4ngel)**
-para flujo personal de pentesting.
+El prompt y la paleta visual (Monokai Soda + tema capr4n) están alineados con mi setup paralelo de Windows en [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) — mismo prompt cross-platform usando oh-my-posh.
+
+Adaptado y mantenido por **[M1gu3l4ng3l](https://github.com/M1gu3l4ngel)** para flujo personal de pentesting.
 
 ---
 
 ## 📜 Licencia
 
-[MIT](LICENSE) — usa, copia, modifica libremente. Si te resulta útil,
-una ⭐ siempre se agradece.
+[MIT](LICENSE) — usa, copia, modifica libremente. Si te resulta útil, una ⭐ siempre se agradece.
 
 ---
 
