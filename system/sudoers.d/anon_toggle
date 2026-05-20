@@ -1,0 +1,1 @@
+__USER__ ALL=(root) NOPASSWD: /usr/bin/anonsurf, /usr/sbin/ip6tables, /usr/sbin/iptables
