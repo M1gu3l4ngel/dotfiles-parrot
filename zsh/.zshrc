@@ -28,7 +28,19 @@ HISTSIZE=10000
 SAVEHIST=10000
 # histignorealldups: no guardar duplicados (incluso no consecutivos).
 # sharehistory: comandos de un terminal aparecen al instante en los demás.
-setopt histignorealldups sharehistory
+# histignorespace: comandos con espacio inicial NO se guardan al historial.
+# Útil para tipear tokens/passwords inline sin que queden en ~/.zsh__history.
+# Ejemplo: " curl -H 'Authorization: Bearer xyz'" con leading space → skip.
+setopt histignorealldups sharehistory histignorespace
+
+# HISTORY_IGNORE: patrón glob (zsh ext_glob) de líneas que se excluyen del
+# historial sin importar si tienen leading space. Red de seguridad: aunque
+# te olvides del espacio, lo más leakeable en pentest queda fuera.
+# - Authorization     → headers HTTP típicos en curl/wget
+# - Bearer            → tokens OAuth-like
+# - TOKEN=, SECRET=, PASSWORD=, API_KEY  → vars de entorno con creds
+# - sshpass           → conexiones SSH con password inline
+HISTORY_IGNORE='(*Authorization*|*Bearer *|*TOKEN=*|*SECRET=*|*PASSWORD=*|*API_KEY*|*sshpass*)'
 
 # ----- PLUGINS -----
 # zsh-autosuggestions: muestra en gris la sugerencia del próximo comando
