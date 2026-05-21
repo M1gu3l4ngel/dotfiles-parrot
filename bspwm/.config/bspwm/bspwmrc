@@ -11,7 +11,10 @@
 pgrep -x sxhkd > /dev/null || sxhkd &
 # Layouts de teclado disponibles: inglés (US) y latino, intercambiables en
 # caliente con Alt+Shift. El default al iniciar la sesión es el primero (US).
-setxkbmap -layout us,latam -option 'grp:alt_shift_toggle' &
+# `caps:capslock` se añade explícito porque `setxkbmap -option` REEMPLAZA
+# todas las opciones; sin esta línea, Caps Lock queda sin handler y aparece
+# un delay perceptible al soltar la tecla.
+setxkbmap -layout us,latam -option 'grp:alt_shift_toggle' -option 'caps:capslock' &
 
 # ----- WORKSPACES -----
 # Diez escritorios virtuales numerados en romanos (I..X), uno por monitor

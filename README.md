@@ -213,7 +213,8 @@ Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
 | `Super + Enter` | Abrir terminal (kitty) |
 | `Super + D` | Lanzador rofi |
 | `Super + A` | Toggle anonimato (Tor + anonsurf) |
-| `Super + Shift + F` | Firefox |
+| `Super + Shift + F` | Firefox personal (profile default-esr, intacto) |
+| `Super + Shift + P` | Firefox pentest (profile aislado + user.js hardening) |
 | `Super + Shift + X` | Bloquear pantalla (i3lock-fancy) |
 | `Super + Escape` | Recargar sxhkd |
 | `Super + Shift + R` | Reiniciar bspwm |
@@ -309,6 +310,60 @@ curl --max-time 15 -s https://check.torproject.org/api/ip
 # {"IsTor":true,"IP":"x.x.x.x"} si todo OK
 ```
 
+### Aislamiento de Firefox (profile pentest)
+
+Para evitar correlación entre tu identidad personal (Gmail, GitHub personal) y trabajo de pentest hay 2 profiles de Firefox separados:
+
+| Profile | Atajo | Polybar | Cuándo usarlo |
+|---|---|---|---|
+| `default-esr` | `Super + Shift + F` |  zorro rojo | Personal (mail, GitHub, banking, daily) |
+| `pentest` | `Super + Shift + P` |  bug verde | Targets, OSINT, links sospechosos, lab |
+
+El profile `pentest` aplica un `user.js` (en `system/firefox/pentest.user.js`) con hardening light:
+
+- WebRTC deshabilitado (previene leak de IP vía JS aún con VPN).
+- Telemetría de Mozilla off.
+- No guarda passwords ni autofill.
+- HTTPS-Only mode.
+- Limpia cookies, cache e historial al cerrar Firefox.
+
+`--no-remote` en los lanzadores permite que ambos profiles corran simultáneamente sin que Firefox abra nueva pestaña en la primera instancia.
+
+**Setup inicial (correr una vez):**
+
+```bash
+firefox -CreateProfile pentest          # crea el profile vacío
+sudo ./system/setup.sh                  # paso 5 copia el user.js al profile
+```
+
+Los 2 íconos en la barra `launchers` de polybar (a la izquierda del target) también disparan los profiles vía click.
+
+**Combo full anonimato:** `Super + A` (toggle ON) seguido de `Super + Shift + P` (Firefox pentest) = tráfico vía Tor + profile aislado + hardening. Es el stack más fuerte sin entrar en Tor Browser.
+
+**Para anonimato real (dark web, target nation-state):** Tor Browser, no Firefox normal. El profile pentest no resiste fingerprinting agresivo a propósito (`resistFingerprinting` rompe muchos sitios target).
+
+### Flujo de uso real
+
+`Super+A` no se queda siempre encendido. Tor agrega 3 hops (latencia 500-2000ms), muchos sitios bloquean exit nodes (Cloudflare, bancos, Google), HTB/THM VPN no funciona sobre Tor, y `apt update` se vuelve glacial. Es una herramienta puntual, no un escudo 24/7. (Para "always-on" la arquitectura correcta es Whonix/Tails, no anonsurf en una VM.)
+
+| Lo que vas a hacer | Anonimato | Profile Firefox | VPN |
+|---|---|---|---|
+| Gmail, GitHub personal, banking, daily browse | OFF | Personal | — |
+| Lab HTB / THM (boxes pedagógicas) | OFF | Personal o Pentest | HTB VPN (tun0) |
+| OSINT contra una persona/empresa real | **ON** | Pentest | — |
+| Engagement real con cliente firmado | OFF | Pentest | VPN del cliente si pidieron IP fija |
+| Click sospechoso / phishing / malware sandbox-ish | **ON** | Pentest | — |
+| Investigar dark web | **ON** + Tor Browser | (no Firefox normal) | — |
+| `apt update`, descargar herramientas | OFF | — | — |
+
+**Regla simple para activar `Super+A`:**
+
+- El target no debe ver tu IP real, **Y**
+- No tenés VPN específica del engagement, **Y**
+- Lo que vas a hacer no requiere latencia baja o ancho de banda alto.
+
+En todo lo demás: anonimato OFF. El error común es ver Tor como "ON = seguro, OFF = inseguro" — en realidad es "ON = ocultá la IP a costa de velocidad/funcionalidad". Lo elegís en cada momento según el contexto.
+
 ---
 
 ## 🎨 Personalización rápida
@@ -400,7 +455,7 @@ dotfiles/
 ├── bspwm/               → ~/.config/bspwm/  (bspwmrc + scripts/)
 ├── sxhkd/               → ~/.config/sxhkd/  (sxhkdrc)
 ├── polybar/             → ~/.config/polybar/
-│   ├── current.ini      → bars activos (log, vpn, ethernet, target, primary)
+│   ├── current.ini      → bars activos (log, vpn, ethernet, target, launchers, primary)
 │   ├── workspace.ini    → bar central de workspaces
 │   ├── colors.ini       → paleta activa (Monokai Soda — sobrescribir con colors_dark/light si quieres)
 │   ├── launch.sh        → mata y relanza todas las barras
@@ -412,18 +467,22 @@ dotfiles/
 ├── nvim/                → ~/.config/nvim/  (NvChad como base)
 ├── oh-my-posh/          → ~/dotfiles/oh-my-posh/  (capr4n.omp.json, sincronizado con dotfiles-windows)
 ├── scripts/             → ~/.config/scripts/
-│   ├── ethernet_status.sh   → IP Ethernet (polybar)
-│   ├── vpn_status.sh        → estado VPN (polybar)
-│   ├── victim_to_hack.sh    → lee target activo (polybar)
-│   ├── toggle_anonymity.sh  → toggle Tor + anonsurf (Super+A)
-│   └── anon_module.sh       → estado anon para polybar
+│   ├── ethernet_status.sh         → IP Ethernet (polybar)
+│   ├── vpn_status.sh              → estado VPN (polybar)
+│   ├── victim_to_hack.sh          → lee target activo (polybar)
+│   ├── toggle_anonymity.sh        → toggle Tor + anonsurf (Super+A)
+│   ├── anon_module.sh             → estado anon para polybar
+│   ├── firefox_personal_module.sh → icono launcher Firefox personal
+│   └── firefox_pentest_module.sh  → icono launcher Firefox pentest
 ├── zsh/.zshrc           → ~/.zshrc
 ├── assets/              → preview.png + wallpaper.jpg default
-├── system/              → configs de /etc (sudoers + ufw)
+├── system/              → configs de /etc + hardening de Firefox
 │   ├── README.md
-│   ├── setup.sh         → instalador idempotente para sudoers + ufw
-│   └── sudoers.d/
-│       └── anon_toggle  → template con __USER__ placeholder
+│   ├── setup.sh         → instalador idempotente (sudoers + ufw + Firefox user.js)
+│   ├── sudoers.d/
+│   │   └── anon_toggle  → template con __USER__ placeholder
+│   └── firefox/
+│       └── pentest.user.js → hardening para profile Firefox "pentest"
 ├── install.sh           → instalador idempotente
 ├── CONTRIBUTING.md      → convenciones del proyecto (guía para PRs)
 ├── LICENSE              → MIT
