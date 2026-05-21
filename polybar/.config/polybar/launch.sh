@@ -29,6 +29,8 @@ polybar vpn_bar -c ~/.config/polybar/current.ini &
 
 # IP de la víctima cuando se exporta $RHOST con `settarget` en zsh.
 polybar target_to_hack -c ~/.config/polybar/current.ini &
+# Launchers de Firefox (personal + pentest), profile-aislados.
+polybar launchers -c ~/.config/polybar/current.ini &
 # Botón circular en la esquina derecha que abre el power-menu.
 polybar primary -c ~/.config/polybar/current.ini &
 

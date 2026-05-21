@@ -11,6 +11,7 @@
 #   2. Aplica las 4 reglas baseline de ufw
 #   3. Verifica/fuerza IPV6=yes en /etc/default/ufw
 #   4. Activa ufw
+#   5. Copia user.js al profile de Firefox "pentest" si existe
 #
 # Uso:
 #   sudo ./system/setup.sh
@@ -57,7 +58,7 @@ if [ ! -f "$SUDOERS_SRC" ]; then
   exit 1
 fi
 
-echo "[1/4] Instalando $SUDOERS_DST (usuario: $TARGET_USER)"
+echo "[1/5] Instalando $SUDOERS_DST (usuario: $TARGET_USER)"
 sed "s/__USER__/$TARGET_USER/g" "$SUDOERS_SRC" \
   | install -m 0440 -o root -g root /dev/stdin "$SUDOERS_DST"
 visudo -c -f "$SUDOERS_DST"
@@ -68,7 +69,7 @@ visudo -c -f "$SUDOERS_DST"
 # allow in on lo          → loopback (apps locales que hablan entre sí)
 # allow in on tun+        → reverse shells / responses de VPN (HTB, THM)
 # Cada `ufw allow` es idempotente — si la regla ya existe no la duplica.
-echo "[2/4] Aplicando reglas baseline de ufw"
+echo "[2/5] Aplicando reglas baseline de ufw"
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow in on lo
@@ -77,7 +78,7 @@ ufw allow in on tun+ from any
 # ----- 3. Verificar IPV6=yes -----
 # Si IPV6=no, ufw solo protege IPv4 y el hardening de ip6tables del toggle
 # queda como única defensa contra leaks v6.
-echo "[3/4] Verificando IPV6=yes en /etc/default/ufw"
+echo "[3/5] Verificando IPV6=yes en /etc/default/ufw"
 if ! grep -q "^IPV6=yes" /etc/default/ufw; then
   echo "      IPV6 no estaba en yes, lo aplico"
   sed -i 's/^IPV6=.*/IPV6=yes/' /etc/default/ufw
@@ -85,8 +86,29 @@ fi
 
 # ----- 4. Activar ufw -----
 # --force evita el prompt "may disrupt ssh sessions [y|n]"
-echo "[4/4] Activando ufw"
+echo "[4/5] Activando ufw"
 ufw --force enable
+
+# ----- 5. Firefox pentest profile: user.js hardening -----
+# Si existe un profile *.pentest (creado con `firefox -CreateProfile pentest`),
+# copiamos el template de user.js. Si no existe el profile aún, mostramos la
+# instrucción para crearlo y rerunear; no es error fatal.
+TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
+USERJS_SRC="$REPO_DIR/firefox/pentest.user.js"
+PENTEST_PROFILE=$(ls -d "$TARGET_HOME"/.mozilla/firefox/*.pentest 2>/dev/null | head -1)
+
+echo "[5/5] Firefox pentest profile user.js"
+if [ -z "$PENTEST_PROFILE" ]; then
+  echo "      INFO: no se encontró profile *.pentest aún."
+  echo "      Crearlo con: firefox -CreateProfile pentest"
+  echo "      Después rerunear: sudo ./system/setup.sh"
+elif [ ! -f "$USERJS_SRC" ]; then
+  echo "      ERROR: no encuentro $USERJS_SRC"
+else
+  install -m 0644 -o "$TARGET_USER" -g "$TARGET_USER" \
+    "$USERJS_SRC" "$PENTEST_PROFILE/user.js"
+  echo "      Copiado a $PENTEST_PROFILE/user.js"
+fi
 
 echo
 echo "Setup completo. Verificar con:"

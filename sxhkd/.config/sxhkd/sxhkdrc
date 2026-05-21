@@ -174,9 +174,18 @@ super + alt + {Left,Down,Up,Right}
 # APLICACIONES DIRECTAS
 # =============================================================================
 
-# ----- FIREFOX -----
+# ----- FIREFOX (profiles separados) -----
+# Personal (Gmail, GitHub personal): default-esr profile, intacto.
+# Pentest (engagements, targets, lab): pentest profile + user.js hardening
+# (no WebRTC, no telemetry, clear cookies on close, HTTPS-only).
+# --no-remote permite que ambos profiles corran simultáneamente; sin el flag
+# Firefox abre nueva pestaña en la instancia existente en vez de levantar
+# la segunda con el otro profile.
 super + shift + f
-	/usr/bin/firefox
+	/usr/bin/firefox -P default-esr --no-remote
+
+super + shift + p
+	/usr/bin/firefox -P pentest --no-remote
 
 # ----- BLOQUEAR PANTALLA -----
 # i3lock-fancy hace un screenshot, lo difumina y lo usa como fondo del lock.
