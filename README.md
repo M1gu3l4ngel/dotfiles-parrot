@@ -70,7 +70,7 @@ sudo apt update && sudo apt install -y \
   bspwm sxhkd polybar picom rofi kitty zsh feh dunst \
   bat lsd tmux git stow keychain \
   zsh-autosuggestions zsh-syntax-highlighting \
-  ufw anonsurf \
+  ufw anonsurf unattended-upgrades pass \
   fzf
 ```
 
@@ -180,6 +180,8 @@ El script:
 - Aplica reglas baseline de `ufw`: `default deny incoming`, `default allow outgoing`, `allow in on lo`, `allow in on tun+` (para VPNs HTB/THM).
 - Verifica que `IPV6=yes` esté en `/etc/default/ufw` (lo fuerza si no).
 - Activa `ufw` con start-on-boot.
+- Copia `user.js` al profile `pentest` de Firefox si ya existe (sino, indica cómo crearlo).
+- Instala `/etc/apt/apt.conf.d/52parrot-hardening.conf` que limita `unattended-upgrades` a `parrot-security` y blacklista herramientas críticas (tor, anonsurf, nmap, msf, burp, kernel).
 
 Es **idempotente**: correrlo varias veces no rompe nada. Detalles en [`system/README.md`](system/README.md).
 
@@ -364,6 +366,60 @@ Los 2 íconos en la barra `launchers` de polybar (a la izquierda del target) tam
 
 En todo lo demás: anonimato OFF. El error común es ver Tor como "ON = seguro, OFF = inseguro" — en realidad es "ON = ocultá la IP a costa de velocidad/funcionalidad". Lo elegís en cada momento según el contexto.
 
+### Secrets management con `pass`
+
+Password manager Unix-style. Cada token/credencial se guarda como un archivo individual encriptado con GPG (la misma llave de la firma "Verified" en commits) bajo `~/.password-store/`. Convierte ese directorio en repo git automáticamente, así tenés historial de cambios y sync opcional entre máquinas — todo encriptado.
+
+**Por qué no en `.zshrc`:** un `export GITHUB_TOKEN=ghp_xxx` queda en texto plano, en backups del sistema, en el shared folder VMware, y posiblemente en git si commiteás `.zshrc` sin pensar. Con `pass`, el token nunca aparece en texto plano fuera del momento exacto de usarlo.
+
+**Setup inicial (una sola vez por máquina):**
+
+```bash
+sudo apt install -y pass            # ya está en pre-requisitos
+pass init <tu-gpg-fingerprint>      # del Tier 2 #5 (ver `gpg --list-secret-keys`)
+pass git init                       # versionar el store con historial automático
+```
+
+**Comandos diarios:**
+
+| Comando | Qué hace |
+|---|---|
+| `pass insert <nombre>` | Pide el valor (2 veces), lo encripta y guarda |
+| `pass <nombre>` | Descifra y muestra (gpg-agent te puede pedir passphrase) |
+| `pass -c <nombre>` | Copia al clipboard, auto-clear en 45s |
+| `pass ls` | Lista el árbol completo de secrets |
+| `pass edit <nombre>` | Abre en `$EDITOR`, re-encripta al guardar |
+| `pass rm <nombre>` | Borra (pide confirmación) |
+| `pass mv <viejo> <nuevo>` | Renombra/mueve |
+| `pass git log` | Historial de cambios al store |
+
+**Convención de organización:**
+
+```
+~/.password-store/
+├── api/         # tokens de servicios externos
+│   ├── shodan
+│   ├── github-pat
+│   └── virustotal
+├── htb/         # creds que encontrás en boxes de HackTheBox
+├── clients/     # engagements reales con clientes (rotar al cierre)
+└── personal/    # uso diario (gmail, github, etc.)
+```
+
+**Usar el valor sin pasarlo por texto plano:**
+
+```bash
+# En lugar de:
+curl -H "Authorization: Bearer ghp_xxxxxxxxxxxx" ...   # token visible en history
+
+# Usás:
+curl -H "Authorization: Bearer $(pass api/github-pat)" ...   # nunca aparece
+```
+
+El `$(pass ...)` se evalúa al runtime: el token se descifra, se pasa al comando, y el `HISTORY_IGNORE` del zshrc (matchea `Authorization`) lo bloquea del `~/.zsh__history`.
+
+**Sync opcional con otra máquina:** `pass git remote add origin <repo>` + `pass git push`. Como todo está encriptado, el repo PUEDE ser público (aunque típicamente se usa privado por costumbre).
+
 ---
 
 ## 🎨 Personalización rápida
@@ -476,13 +532,15 @@ dotfiles/
 │   └── firefox_pentest_module.sh  → icono launcher Firefox pentest
 ├── zsh/.zshrc           → ~/.zshrc
 ├── assets/              → preview.png + wallpaper.jpg default
-├── system/              → configs de /etc + hardening de Firefox
+├── system/              → configs de /etc + hardening Firefox + apt
 │   ├── README.md
-│   ├── setup.sh         → instalador idempotente (sudoers + ufw + Firefox user.js)
+│   ├── setup.sh         → instalador idempotente (sudoers + ufw + Firefox + apt)
 │   ├── sudoers.d/
 │   │   └── anon_toggle  → template con __USER__ placeholder
-│   └── firefox/
-│       └── pentest.user.js → hardening para profile Firefox "pentest"
+│   ├── firefox/
+│   │   └── pentest.user.js → hardening para profile Firefox "pentest"
+│   └── apt/
+│       └── 52parrot-hardening.conf → unattended-upgrades para parrot-security
 ├── install.sh           → instalador idempotente
 ├── CONTRIBUTING.md      → convenciones del proyecto (guía para PRs)
 ├── LICENSE              → MIT
