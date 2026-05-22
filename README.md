@@ -328,6 +328,7 @@ El profile `pentest` aplica un `user.js` (en `system/firefox/pentest.user.js`) c
 - No guarda passwords ni autofill.
 - HTTPS-Only mode.
 - Limpia cookies, cache e historial al cerrar Firefox.
+- **Timezone forzado a UTC** vía `TZ=UTC` en el launcher de sxhkd/polybar. JS reporta UTC en `new Date().getTimezoneOffset()` aunque tu sistema esté en hora local, evitando correlación geográfica por timezone. Firefox personal NO se toca (estás logueado con tu identidad real ahí, ocultar TZ rompería Gmail/Calendar sin agregar anonimato).
 
 `--no-remote` en los lanzadores permite que ambos profiles corran simultáneamente sin que Firefox abra nueva pestaña en la primera instancia.
 
