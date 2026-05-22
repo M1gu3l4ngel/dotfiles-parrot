@@ -9,13 +9,17 @@ symlinks de `~/.config/` no aplica aquí.
 - `sudoers.d/anon_toggle` — regla NOPASSWD para que
   `~/.config/scripts/toggle_anonymity.sh` ejecute `anonsurf`,
   `ip6tables` y `iptables` sin pedir password.
-- `setup.sh` — script idempotente que instala lo de esta carpeta más
+- `firefox/pentest.user.js` — hardening del profile pentest de Firefox
+  (WebRTC off, telemetry off, clear cookies on close, HTTPS-only).
+- `apt/52parrot-hardening.conf` — override de unattended-upgrades que
+  solo auto-actualiza `parrot-security` y blacklista herramientas de pentest.
+- `setup.sh` — script idempotente que instala todo lo de esta carpeta más
   el baseline de ufw (default deny incoming + allow on lo/tun+).
 
 ## Cómo usar
 
-Después del `install.sh` principal y de haber instalado `ufw` y
-`anonsurf` vía `apt`:
+Después del `install.sh` principal y de haber instalado `ufw`, `anonsurf`
+y `unattended-upgrades` vía `apt`:
 
 ```bash
 sudo ./system/setup.sh
@@ -23,11 +27,13 @@ sudo ./system/setup.sh
 
 El script:
 
-1. Copia `sudoers.d/anon_toggle` a `/etc/sudoers.d/` con permisos `0440`
-   y lo valida con `visudo -c`.
+1. Copia `sudoers.d/anon_toggle` a `/etc/sudoers.d/` con permisos `0440`,
+   sustituye `__USER__` por `$SUDO_USER`, y valida con `visudo -c`.
 2. Aplica las 4 reglas baseline de ufw.
 3. Verifica que `IPV6=yes` esté en `/etc/default/ufw` (lo fuerza si no).
 4. Activa ufw (start on boot incluido).
+5. Copia `firefox/pentest.user.js` al profile `*.pentest` si existe.
+6. Copia `apt/52parrot-hardening.conf` a `/etc/apt/apt.conf.d/`.
 
 Es **idempotente** — se puede correr varias veces sin efectos
 colaterales.
