@@ -13,11 +13,11 @@ Thumbs.db
 desktop.ini
 
 # === Asistentes de IA / agentes ===
-# CLAUDE.md SÍ se versiona (lo leen Claude Code, Cursor, etc. para entender
-# las convenciones del proyecto al abrirlo). Lo que sí se ignora son los
-# directorios .claude/, .cursor/, etc. que contienen preferencias personales
-# del usuario sobre el agente y no aportan nada compartirlas.
-.claude/
+# Se versionan las instrucciones del proyecto para Claude Code: CLAUDE.md y
+# .claude/rules/. Se ignoran solo las partes personales de cada usuario, como
+# indica la documentación oficial de Claude Code.
+CLAUDE.local.md
+.claude/settings.local.json
 .cursor/
 .aider*
 .windsurfrules
@@ -52,5 +52,4 @@ secrets/
 
 # === Logs generados por scripts ===
 *.tmp
-*.swp
 
