@@ -12,6 +12,13 @@
 # sola vez por arranque de la VM y la cachea para los siguientes shells.
 [ -f "$HOME/.ssh/id_ed25519" ] && eval $(keychain --eval --quiet id_ed25519)
 
+# ----- GPG: TERMINAL PARA PEDIR LA PASSPHRASE -----
+# pinentry-curses (ver ~/.gnupg/gpg-agent.conf) pide la passphrase dentro de
+# la terminal, y para saber en cuál necesita GPG_TTY. Sin ella, firmar un
+# commit falla con "gpg failed to sign the data". $TTY es la variable propia
+# de zsh con la terminal actual (más barata que ejecutar `tty`).
+export GPG_TTY=$TTY
+
 # ----- PROMPT: OH-MY-POSH -----
 # Prompt unificado con dotfiles-windows usando el tema capr4n.omp.json del
 # mismo repo. Se usa $HOME/.local/bin/oh-my-posh (path absoluto) porque el

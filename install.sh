@@ -101,6 +101,12 @@ create_symlink "$DOTFILES_DIR/polybar/.config/polybar"      "$HOME/.config/polyb
 create_symlink "$DOTFILES_DIR/rofi/.config/rofi"            "$HOME/.config/rofi"
 create_symlink "$DOTFILES_DIR/dunst/.config/dunst"          "$HOME/.config/dunst"
 create_symlink "$DOTFILES_DIR/xkb/.config/xkb"              "$HOME/.config/xkb"
+# Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
+# privadas y debe ser real, con permisos 700 y fuera de cualquier repo.
+# Se crea antes que el enlace porque create_symlink usaría los permisos por
+# defecto (755) y gpg avisa de "unsafe permissions" con un homedir abierto.
+mkdir -p "$HOME/.gnupg" && chmod 700 "$HOME/.gnupg"
+create_symlink "$DOTFILES_DIR/gnupg/.gnupg/gpg-agent.conf"   "$HOME/.gnupg/gpg-agent.conf"
 create_symlink "$DOTFILES_DIR/nvim/.config/nvim"            "$HOME/.config/nvim"
 create_symlink "$DOTFILES_DIR/scripts/.config/scripts"      "$HOME/.config/scripts"
 create_symlink "$DOTFILES_DIR/zsh/.zshrc"                   "$HOME/.zshrc"
