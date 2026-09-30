@@ -81,8 +81,9 @@ APT_PACKAGES=(
   # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
   ufw anonsurf unattended-upgrades gnupg pinentry-curses pass keychain
   # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
-  # muestra la barra de VPN de polybar.
-  openvpn
+  # muestra la barra de VPN de polybar, y dig para las pruebas de fugas de
+  # DNS del anonimato (docs/anonimato.md).
+  openvpn bind9-dnsutils
   # Base para fuentes y descargas HTTPS.
   fontconfig ca-certificates
   firefox-esr
