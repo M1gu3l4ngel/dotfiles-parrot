@@ -6,13 +6,18 @@
 
 local options = {
   -- ----- FORMATEADORES POR FILETYPE -----
-  -- Para añadir un lenguaje: instalar el formatter en el sistema y mapearlo aquí.
-  -- conform.nvim lo invocará automáticamente al hacer :Format o, si se activa,
-  -- al guardar el buffer.
+  -- Para añadir un lenguaje: mapearlo aquí y ejecutar `:MasonInstallAll`
+  -- (NvChad instala vía Mason los formatters listados en esta tabla).
   formatters_by_ft = {
     lua = { "stylua" },
-    -- css = { "prettier" },
-    -- html = { "prettier" },
+    sh = { "shfmt" },
+    bash = { "shfmt" },
+  },
+
+  -- ----- OPCIONES POR FORMATTER -----
+  -- shfmt: 2 espacios (convención del repo para shell) y `case` indentado.
+  formatters = {
+    shfmt = { prepend_args = { "-i", "2", "-ci" } },
   },
 
   -- ----- FORMATEO AL GUARDAR (DESACTIVADO) -----

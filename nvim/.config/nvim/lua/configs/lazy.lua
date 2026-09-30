@@ -12,6 +12,11 @@ return {
   -- Colorscheme usado si NvChad no carga su tema a tiempo (fallback).
   install = { colorscheme = { "nvchad" } },
 
+  -- Soporte de luarocks desactivado: ningún plugin de este setup depende de
+  -- paquetes rocks, y con él activo :checkhealth reporta error por no tener
+  -- luarocks/Lua 5.1 instalados (dependencias que no aportarían nada).
+  rocks = { enabled = false },
+
   -- ----- ICONOS DEL UI DE LAZY -----
   -- Iconos Nerd Font usados en el panel :Lazy (lista de plugins).
   ui = {
