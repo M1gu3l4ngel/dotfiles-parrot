@@ -5,10 +5,16 @@
 # Para recargar en caliente: Super+Alt+R (definido en sxhkdrc).
 
 # ----- DAEMONS Y TECLADO -----
+# bspwmrc se vuelve a ejecutar entero en cada Super+Alt+R. run_once lanza un
+# daemon solo si no está corriendo ya; sin esto cada recarga intentaría abrir
+# una segunda instancia (que falla con error o, peor, queda duplicada).
+run_once() {
+  pgrep -x "$1" > /dev/null || "$@" &
+}
+
 # sxhkd es el daemon que escucha atajos de teclado; sin él no funciona ningún
-# binding (Super+Enter, Super+D, etc). Lo lanzamos solo si no está corriendo
-# ya, para que un reload de bspwm no abra una segunda instancia.
-pgrep -x sxhkd > /dev/null || sxhkd &
+# binding (Super+Enter, Super+D, etc).
+run_once sxhkd
 # Keymap de la sesión (~/.config/xkb/keymap.xkb): layouts us + latam
 # intercambiables con Alt+Shift, y Caps Lock corregido para que se apague al
 # pulsar y no al soltar (con el comportamiento estándar de X11, escribir rápido
@@ -57,19 +63,24 @@ bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 
 # ----- AUTOSTART -----
-# Integración con VMware (solo aplica si estamos en VM; no hace nada en host real).
-vmware-user &
+# Integración con VMware (portapapeles, resolución automática). Solo si
+# open-vm-tools está instalado: en un host real el comando no existe. No
+# necesita run_once: el propio vmware-user no abre una segunda instancia.
+command -v vmware-user >/dev/null && vmware-user &
 # Wallpaper de fondo. install.sh enlaza ~/.config/wallpaper.jpg al wallpaper
 # por defecto del repo (assets/wallpaper.jpg) la primera vez. Para usar tu
 # propio fondo: sobrescribe ese archivo o cambia esta ruta.
 # El `|| true` evita que un wallpaper faltante rompa el inicio de bspwm.
 /bin/feh --bg-fill ~/.config/wallpaper.jpg 2>/dev/null || true
-# Notificaciones de escritorio.
-dunst &
-# Barra de estado (polybar).
+# Notificaciones de escritorio. Sus cambios de config se aplican con
+# `dunstctl reload`, no reiniciándolo.
+run_once dunst
+# Barra de estado (polybar). Sin run_once a propósito: launch.sh ya mata las
+# barras viejas y las relanza, así Super+Alt+R también recarga polybar.
 ~/.config/polybar/launch.sh &
-# Compositor: sombras, transparencias y blur. Sin él las ventanas se ven planas.
-picom &
+# Compositor: sombras, transparencias y blur. Sin él las ventanas se ven
+# planas. Relee picom.conf solo al guardarlo, no hace falta reiniciarlo.
+run_once picom
 
 # ----- FIN: OCULTAR BORDE -----
 # Después de que todo esté inicializado, ponemos el borde a 0 para que no

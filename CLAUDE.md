@@ -82,6 +82,8 @@ Usar los atajos ya configurados; no hacer kill/killall/pkill:
 - **polybar:** ejecutar `~/.config/polybar/launch.sh` (mata las instancias
   y las relanza), o `Super+Alt+R` (reinicia bspwm, que relanza polybar).
 - **picom:** se recarga solo al guardar `picom.conf` (vigila el archivo).
+- **dunst:** `dunstctl reload`. Probar el aspecto con
+  `notify-send -u low|normal|critical "Título" "Texto"`.
 - **kitty:** `Ctrl+Shift+F5` desde dentro de kitty.
 - **zsh:** `exec zsh` (reemplaza el proceso con uno nuevo).
 - **nvim:** cerrar y reabrir, o `:source %` para recargar el archivo abierto.

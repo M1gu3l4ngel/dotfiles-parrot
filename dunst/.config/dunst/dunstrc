@@ -1,22 +1,25 @@
 # ~/.config/dunst/dunstrc
-# Configuración de dunst con paleta Monokai Soda alineada con kitty/polybar
-# (fondo #1A1A1A, texto crema, acentos amber/azul/rojo).
+# Notificaciones de escritorio (toasts) con la paleta Monokai Soda de
+# kitty/polybar: fondo #1A1A1A, texto crema, borde gris sutil y rojo solo
+# para las críticas.
+# bspwmrc lanza dunst al iniciar sesión.
+# Para recargar tras editar: `dunstctl reload` (no hace falta reiniciarlo).
+# Para probar el aspecto: notify-send -u low|normal|critical "Título" "Texto"
 #
-# Cambios vs default del sistema:
-#   - frame_width: 2 (en vez de 3) para borde subtle pero curvas suaves
-#   - corner_radius: 4 (esquinas redondeadas)
-#   - default_icon vacío (no usamos iconos image, los embeddemos en el title)
-#   - timeout corto en critical (era 0 = infinito)
-#   - background consistente en todas las urgencias (varía el frame_color)
-#   - paleta Monokai Soda en lugar de rojos/azules genéricos
+# Decisiones de diseño:
+#   - Abajo a la derecha: polybar ocupa todo el borde superior; abajo los
+#     toasts no tapan ninguna barra.
+#   - Mismo fondo en todas las urgencias; solo cambia el borde. El rojo queda
+#     reservado para errores (critical) y así destaca por ser la excepción.
+#   - Sin iconos de imagen: los scripts ponen un glifo Nerd Font en el título.
 
 [global]
     monitor = 0
     follow = none
     width = 320
     height = (0, 300)
-    origin = top-right
-    offset = (15, 80)
+    origin = bottom-right
+    offset = (15, 15)
     scale = 0
     notification_limit = 5
 
@@ -81,22 +84,30 @@
 [experimental]
     per_monitor_dpi = false
 
+# ----- URGENCIAS -----
+# highlight = color de la barra de progreso (ámbar, acento de polybar).
+
 [urgency_low]
     background = "#1A1A1A"
     foreground = "#888888"
-    frame_color = "#2a2a2a"
+    frame_color = "#2A2A2A"
+    highlight = "#FEC006"
     timeout = 4
 
 [urgency_normal]
     background = "#1A1A1A"
     foreground = "#C4C5B5"
-    frame_color = "#2495E7"
+    frame_color = "#3A3A3A"
+    highlight = "#FEC006"
     timeout = 5
     override_pause_level = 30
 
+# Críticas: borde rojo Monokai y más tiempo en pantalla para que un error no
+# pase desapercibido (0 sería infinito y obligaría a cerrarlas a mano).
 [urgency_critical]
     background = "#1A1A1A"
     foreground = "#C4C5B5"
     frame_color = "#F4005F"
-    timeout = 6
+    highlight = "#F4005F"
+    timeout = 8
     override_pause_level = 60
