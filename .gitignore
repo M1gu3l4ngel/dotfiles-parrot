@@ -40,8 +40,11 @@ desktop.ini
 secrets/
 .config/bin/target
 
-# === Fuentes pesadas (opcional, comentar si quieres incluirlas) ===
-# polybar/.config/polybar/fonts/
+# === Fuentes ===
+# No se versionan binarios de fuentes: bootstrap.sh las descarga en versión
+# fijada y verificada por SHA-256 (evita inflar el repo y problemas de licencia).
+*.ttf
+*.otf
 
 # === Lock files que crean ruido (excepto los importantes) ===
 # Nvim: SÍ versionamos lazy-lock.json (versiones reproducibles)

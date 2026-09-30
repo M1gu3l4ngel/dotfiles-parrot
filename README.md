@@ -112,7 +112,7 @@ sudo unzip -o /tmp/CascadiaCode.zip -d /usr/local/share/fonts/
 sudo fc-cache -fv
 ```
 
-Las fuentes de polybar (Iosevka, Hurmit, Helvetica, Montserrat) ya están incluidas en `polybar/.config/polybar/fonts/`.
+`bootstrap.sh` instala automáticamente las tres fuentes que usa el setup (Iosevka, Hack Mono y CaskaydiaCove Nerd Font), en una versión fijada y verificada por SHA-256. El repo no incluye binarios de fuentes.
 
 ### 5. (Opcional) i3lock-fancy
 
@@ -519,8 +519,7 @@ dotfiles/
 │   ├── current.ini      → barras de estado (logo, ethernet, VPN, launchers, target, anonimato)
 │   ├── workspace.ini    → barra central de workspaces
 │   ├── colors.ini       → paleta activa (Monokai Soda — sobrescribir con colors_dark/light si quieres)
-│   ├── launch.sh        → mata y relanza todas las barras
-│   └── fonts/           → Iosevka, Hurmit, Helvetica, etc.
+│   └── launch.sh        → mata y relanza todas las barras
 ├── picom/               → ~/.config/picom/
 ├── rofi/                → ~/.config/rofi/  (config.rasi + themes/)
 ├── kitty/               → ~/.config/kitty/  (kitty.conf + color.ini)

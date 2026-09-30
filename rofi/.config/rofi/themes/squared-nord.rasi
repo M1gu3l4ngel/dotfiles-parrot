@@ -2,7 +2,11 @@
 /* Author: Newman Sanchez (https://github.com/newmanls) */
 
 * {
-    font:   "FiraCode Nerd Font Medium 12";
+    /* Tema activo del setup. Fuente cambiada del original (FiraCode Nerd
+     * Font) a CaskaydiaCove, la misma de kitty y dunst: el bootstrap solo
+     * instala las fuentes que se usan, y con FiraCode ausente rofi caía en
+     * Noto Sans sin iconos. */
+    font:   "CaskaydiaCove Nerd Font 12";
 
     bg0:     #2E3440;
     bg1:     #3B4252;
