@@ -44,8 +44,25 @@ El script:
    instalado (ese grupo equivale a root). Si Docker sí está, solo avisa.
 6. Copia `firefox/pentest.user.js` al perfil `*.pentest` si existe.
 7. Instala `apt/52parrot-hardening.conf` y crea `20auto-upgrades` si falta.
+8. **Solo en VMware:** monta la carpeta compartida `VMShare` del host en
+   `/mnt/vmshare` (acceso directo `~/VMShare`), accesible solo para tu
+   usuario. Si no hay carpeta compartida configurada, lo indica y sigue.
 
 Es **idempotente**: se puede ejecutar varias veces sin efectos colaterales.
+
+## Carpeta compartida Windows ↔ Linux (VMware)
+
+Para pasar archivos entre el host y la VM en ambos sentidos:
+
+1. En el host, crea una carpeta **dedicada** (p. ej. `C:\VMShare`). Nunca
+   compartas el disco entero: si la VM se compromete, solo alcanza esa carpeta.
+2. En VMware: **VM → Settings → Options → Shared Folders → Always enabled →
+   Add…**, con esa carpeta y el nombre `VMShare`.
+3. En la VM: `sudo ./system/setup.sh` (paso 8).
+
+Todo lo que dejes en `C:\VMShare` aparece en `~/VMShare` y viceversa. Para
+secretos (claves, backups), bórralos de la carpeta en ambos lados en cuanto
+los hayas movido a su destino.
 
 ## Verificación
 
