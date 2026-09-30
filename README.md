@@ -420,7 +420,9 @@ curl -H "Authorization: Bearer $(pass api/github-pat)" ...   # nunca aparece
 
 El `$(pass ...)` se evalúa al runtime: el token se descifra, se pasa al comando, y el `HISTORY_IGNORE` del zshrc (matchea `Authorization`) lo bloquea del `~/.zsh__history`.
 
-**Sync opcional con otra máquina:** `pass git remote add origin <repo>` + `pass git push`. Como todo está encriptado, el repo PUEDE ser público (aunque típicamente se usa privado por costumbre).
+**Sync opcional con otra máquina:** `pass git remote add origin <repo>` + `pass git push`. El repo debe ser **siempre privado**: `pass` cifra el *contenido* de cada secreto, pero los *nombres de archivo* quedan en texto plano. Un repo público con `clients/empresa-x/vpn` revelaría a quién auditas y qué servicios usas (en pentesting, posible violación de NDA).
+
+**Backup:** los secretos solo se pueden descifrar con tu clave GPG. Sin un backup de la clave privada (y su passphrase) en un lugar seguro, perder la máquina significa perder todos los secretos.
 
 ---
 
