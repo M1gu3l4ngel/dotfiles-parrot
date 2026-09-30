@@ -181,9 +181,7 @@ Para contribuir o modificar el repo: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Créditos y licencia
 
-La configuración de bspwm, sxhkd, polybar y picom parte del curso de
-personalización de Linux de [S4vitar](https://github.com/s4vitar). El prompt y
-la paleta de colores son compartidos con
+El prompt y la paleta de colores son compartidos con
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows).
 
 Licencia [MIT](LICENSE).
