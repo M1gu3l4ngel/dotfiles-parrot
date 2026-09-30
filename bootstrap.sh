@@ -80,6 +80,9 @@ APT_PACKAGES=(
   git shellcheck curl wget unzip xz-utils tar
   # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
   ufw anonsurf unattended-upgrades gnupg pinentry-curses pass keychain
+  # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
+  # muestra la barra de VPN de polybar.
+  openvpn
   # Base para fuentes y descargas HTTPS.
   fontconfig ca-certificates
   firefox-esr
