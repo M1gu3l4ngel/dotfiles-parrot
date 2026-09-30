@@ -272,7 +272,7 @@ settarget 10.10.11.42 Cerberus
 cleartarget
 ```
 
-`settarget` escribe la IP + nombre en `~/.config/bin/target`. El script `victim_to_hack.sh` (corriendo cada 2s vía polybar) lee ese archivo y muestra la info en la barra superior derecha:
+`settarget` valida que reciba una IPv4 correcta y un nombre (si no, muestra el uso y no escribe nada) y guarda ambos en `~/.config/bin/target`. El script `victim_to_hack.sh` (corriendo cada 1 s vía polybar) lee ese archivo y muestra la info en la barra superior derecha:
 
 ```
 🎯 10.10.11.42 - Cerberus

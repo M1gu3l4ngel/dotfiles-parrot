@@ -150,12 +150,24 @@ path+=(/usr/local/sbin /usr/sbin /sbin)
 # (módulo target_module → bar target_to_hack).
 
 settarget() {
-  ip_address=$1
-  machine_name=$2
+  # Uso: settarget <IPv4> <nombre_maquina>
+  # Se valida ANTES de escribir: un target mal tecleado en la barra puede
+  # acabar en un escaneo contra la IP equivocada (fuera de alcance).
+  local ip_address=$1 machine_name=$2 octet
+  if (( $# != 2 )) || [[ ! $ip_address =~ '^([0-9]{1,3}\.){3}[0-9]{1,3}$' ]]; then
+    print -u2 "Uso: settarget <IPv4> <nombre_maquina>   (ej: settarget 10.10.11.42 Lame)"
+    return 1
+  fi
+  for octet in ${(s:.:)ip_address}; do
+    if (( octet > 255 )); then
+      print -u2 "settarget: '$ip_address' no es una IPv4 válida (octeto > 255)"
+      return 1
+    fi
+  done
   # mkdir -p garantiza que el directorio exista la primera vez que se usa
   # (install.sh también lo crea, pero esto cubre el caso de instalación manual).
   mkdir -p "$HOME/.config/bin"
-  echo "$ip_address $machine_name" > "$HOME/.config/bin/target"
+  print -r -- "$ip_address $machine_name" > "$HOME/.config/bin/target"
   # Feedback vía dunst (mismo estilo que toggle_anonymity.sh). Visible
   # también si se invoca desde script no-interactivo. Icono bullseye
   # Font Awesome ( = \xef\x85\x80).
@@ -166,7 +178,9 @@ settarget() {
 
 cleartarget() {
   mkdir -p "$HOME/.config/bin"
-  echo '' > "$HOME/.config/bin/target"
+  # `: >` deja el archivo con 0 bytes (no una línea vacía), que es el estado
+  # "sin target" que espera victim_to_hack.sh.
+  : > "$HOME/.config/bin/target"
   # Icono eraser Font Awesome ( = \xef\x84\xad).
   notify-send -u low -t 3000 \
     $'\xef\x84\xad  Target limpiado' \

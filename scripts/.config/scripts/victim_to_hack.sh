@@ -4,43 +4,34 @@
 # polybar (bar/target_to_hack).
 #
 # El target se gestiona desde zsh con las funciones definidas en .zshrc:
-#   settarget 10.10.11.42 nombre_maquina   -> escribe en TARGET_FILE
-#   cleartarget                             -> vacía el archivo
+#   settarget 10.10.11.42 nombre_maquina   -> escribe "IP nombre" en TARGET_FILE
+#   cleartarget                             -> deja el archivo vacío (0 bytes)
 #
-# Polybar invoca este script cada `interval` segundos (ver current.ini →
-# [module/target_module]).
+# Polybar invoca este script cada segundo (ver current.ini →
+# [module/target_module]), así que se evita lanzar procesos externos: la
+# lectura se hace con el builtin `read` de bash, sin cat ni awk.
 
 # Archivo que sirve de "estado compartido" entre el shell y la barra.
 # Si cambias esta ruta, ajusta también settarget/cleartarget en .zshrc.
 TARGET_FILE="$HOME/.config/bin/target"
 
-# ----- TARGET NO DEFINIDO -----
-# Si el archivo no existe o está vacío, mostrar icono rojo + "No target".
-# El test `-s` cubre ambos casos (no existe o tiene 0 bytes).
-if [ ! -s "$TARGET_FILE" ]; then
-  echo "%{F#e51d0b}󰓾 %{u-}%{F#ffffff} No target"
-  exit 0
-fi
+# Icono nf-md-target (U+F04FE) como escape UTF-8: los glifos de uso privado
+# (PUA) escritos literalmente los eliminan las herramientas de edición.
+ICON=$'\xf3\xb0\x93\xbe'
+RED='%{F#e51d0b}'
+WHITE='%{F#ffffff}'
 
-# ----- LECTURA DEL ARCHIVO -----
-# Ruta absoluta a /bin/cat por seguridad (evita aliases o cosas raras del PATH).
-content=$(/bin/cat "$TARGET_FILE")
+# ----- LECTURA -----
+# `read` falla si el archivo no existe, y deja las variables vacías si está
+# vacío: ambos casos caen en "No target" más abajo.
+# `2>/dev/null` va ANTES de `<`: las redirecciones se aplican en orden, y si
+# fuera después, el error de "archivo no existe" ya se habría impreso.
+ip_address="" machine_name=""
+read -r ip_address machine_name _ 2>/dev/null < "$TARGET_FILE"
 
-# Si el contenido es literalmente "No target", tratarlo igual que vacío.
-# Permite escribir "No target" en el archivo a mano sin romper el formato.
-if [ "$content" = "No target" ]; then
-  echo "%{F#e51d0b}󰓾 %{u-}%{F#ffffff} No target"
-  exit 0
-fi
-
-# ----- PARSEAR Y MOSTRAR -----
-# Esperamos "IP nombre" separados por espacio (formato que escribe settarget).
-ip_address=$(echo "$content" | awk '{print $1}')
-machine_name=$(echo "$content" | awk '{print $2}')
-
+# ----- SALIDA -----
 if [ -n "$ip_address" ] && [ -n "$machine_name" ]; then
-  echo "%{F#e51d0b}󰓾 %{F#ffffff}$ip_address%{u-} - $machine_name"
+  echo "${RED}${ICON} ${WHITE}${ip_address}%{u-} - ${machine_name}"
 else
-  # Salvavidas: archivo con un solo campo o formato raro.
-  echo "%{F#e51d0b}󰓾 %{u-}%{F#ffffff} No target"
+  echo "${RED}${ICON} %{u-}${WHITE} No target"
 fi
