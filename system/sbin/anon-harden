@@ -1,0 +1,54 @@
+#!/bin/sh
+# /usr/local/sbin/anon-harden  (fuente: dotfiles/system/sbin/anon-harden)
+# Kill switch de las capas que anonsurf no cubre. Lo invoca
+# ~/.config/scripts/toggle_anonymity.sh vía `sudo -n` al activar/desactivar
+# el anonimato (Super+A o click en polybar).
+#
+# Por qué existe este script en vez de dar sudo a iptables directamente:
+# iptables acepta `--modprobe=<programa>`, que ejecuta ese programa como root.
+# Una regla NOPASSWD sobre iptables con argumentos libres equivale a root sin
+# contraseña para cualquier proceso del usuario. Este script solo acepta
+# `up` o `down` y ejecuta reglas fijas, así la regla sudoers puede limitarse
+# a esos dos comandos exactos.
+#
+# Lo instala system/setup.sh como root:root 0755 (el usuario no puede
+# modificarlo; si pudiera, la restricción no serviría de nada).
+#
+# Uso: anon-harden up|down
+
+set -eu
+
+# Rutas absolutas: sudo limpia el entorno, pero así no depende de él.
+IPTABLES=/usr/sbin/iptables
+IP6TABLES=/usr/sbin/ip6tables
+# Etiqueta de la regla ICMP propia, para quitarla sin tocar reglas ajenas.
+TAG=anon_toggle_icmp
+
+case "${1:-}" in
+  up)
+    # IPv6 todo a DROP: anonsurf solo redirige IPv4 a Tor; sin esto, en una
+    # red con IPv6 ese tráfico saldría directo, con la IP real.
+    "$IP6TABLES" -P OUTPUT DROP
+    "$IP6TABLES" -P INPUT DROP
+    "$IP6TABLES" -P FORWARD DROP
+    # ICMP saliente a DROP: Tor solo transporta TCP, así que un ping o un
+    # traceroute saldrían por fuera revelando la IP real. -C evita duplicar la
+    # regla si se llama dos veces.
+    if ! "$IPTABLES" -C OUTPUT -p icmp -m comment --comment "$TAG" -j DROP 2>/dev/null; then
+      "$IPTABLES" -A OUTPUT -p icmp -m comment --comment "$TAG" -j DROP
+    fi
+    ;;
+  down)
+    "$IP6TABLES" -P OUTPUT ACCEPT
+    "$IP6TABLES" -P INPUT ACCEPT
+    "$IP6TABLES" -P FORWARD ACCEPT
+    # Quita todas las copias de la regla etiquetada (idempotente).
+    while "$IPTABLES" -C OUTPUT -p icmp -m comment --comment "$TAG" -j DROP 2>/dev/null; do
+      "$IPTABLES" -D OUTPUT -p icmp -m comment --comment "$TAG" -j DROP
+    done
+    ;;
+  *)
+    echo "Uso: $0 up|down" >&2
+    exit 2
+    ;;
+esac

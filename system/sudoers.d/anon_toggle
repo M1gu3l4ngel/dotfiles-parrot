@@ -1,1 +1,13 @@
-__USER__ ALL=(root) NOPASSWD: /usr/bin/anonsurf, /usr/sbin/ip6tables, /usr/sbin/iptables
+# /etc/sudoers.d/anon_toggle  (fuente: dotfiles/system/sudoers.d/anon_toggle)
+# Permite al toggle de anonimato (Super+A) ejecutar SOLO estos comandos
+# exactos como root sin pedir contraseña. Al listar los argumentos, sudo
+# rechaza cualquier otra variante (p. ej. `anonsurf changeid` o
+# `anon-harden --lo-que-sea` piden contraseña o fallan).
+#
+# Nunca dar NOPASSWD a iptables/ip6tables directamente: `--modprobe=<prog>`
+# ejecuta cualquier programa como root. Por eso las reglas del kill switch
+# viven en /usr/local/sbin/anon-harden, que solo acepta up|down.
+#
+# __USER__ es un placeholder: system/setup.sh lo sustituye por $SUDO_USER al
+# instalar, para no publicar el nombre de usuario en el repo.
+__USER__ ALL=(root) NOPASSWD: /usr/bin/anonsurf start, /usr/bin/anonsurf stop, /usr/local/sbin/anon-harden up, /usr/local/sbin/anon-harden down

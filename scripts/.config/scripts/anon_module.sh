@@ -8,7 +8,7 @@
 #   - ON  (anónimo):  fa-user-secret (Font Awesome) \xef\x88\x9b
 #
 # Invocado por el módulo [module/anon_status] en polybar/current.ini cada
-# 2s. El click-left del módulo dispara toggle_anonymity.sh.
+# segundo. El click-left del módulo dispara toggle_anonymity.sh.
 
 STATE_FILE="$HOME/.config/bin/anon_state"
 state=$(cat "$STATE_FILE" 2>/dev/null || echo "off")

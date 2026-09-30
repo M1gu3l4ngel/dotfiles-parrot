@@ -1,0 +1,8 @@
+// /etc/apt/apt.conf.d/20auto-upgrades  (fuente: dotfiles/system/apt/20auto-upgrades)
+// Activa la ejecución diaria de unattended-upgrades (vía los timers
+// apt-daily.timer y apt-daily-upgrade.timer de systemd). Sin este archivo,
+// la config de 52parrot-hardening.conf existe pero nunca se ejecuta.
+// Normalmente lo genera `dpkg-reconfigure unattended-upgrades`; setup.sh lo
+// instala solo si falta, para no depender de ese paso manual.
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
