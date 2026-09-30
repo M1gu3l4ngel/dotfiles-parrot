@@ -10,9 +10,9 @@ Este repo es mi setup personal de dotfiles para Parrot Security
 - Formato: `type(scope): descripción en español` — una sola línea, type en
   inglés (feat, fix, docs, style, refactor, chore), descripción en ESPAÑOL.
   Ejemplo: `docs(bspwm): mejorar comentarios del archivo bspwmrc`.
-- En sesiones largas de refactor, sugerir un commit al terminar cada archivo
-  para que el usuario lo vaya commiteando archivo por archivo, en vez de
-  acumular todo al final.
+- Proponer UN solo commit por bloque de trabajo, aunque se hayan tocado varios
+  archivos o hecho varias cosas: un único `git add` con los archivos
+  implicados y un único mensaje de una línea que resuma el conjunto.
 
 ## Estilo
 
@@ -73,7 +73,8 @@ Usar los atajos ya configurados; no hacer kill/killall/pkill:
 - **bspwm:** `Super+Alt+R` (recarga bspwmrc en caliente).
 - **sxhkd:** `Super+Escape` (relee sxhkdrc).
 - **polybar:** ejecutar `~/.config/polybar/launch.sh` (mata las instancias
-  y las relanza). Si está bindeado, `Super+Shift+R`.
+  y las relanza), o `Super+Alt+R` (reinicia bspwm, que relanza polybar).
+- **picom:** se recarga solo al guardar `picom.conf` (vigila el archivo).
 - **kitty:** `Ctrl+Shift+F5` desde dentro de kitty.
 - **zsh:** `exec zsh` (reemplaza el proceso con uno nuevo).
 - **nvim:** cerrar y reabrir, o `:source %` para recargar el archivo abierto.

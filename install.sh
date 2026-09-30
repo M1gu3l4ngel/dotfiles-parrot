@@ -99,6 +99,7 @@ create_symlink "$DOTFILES_DIR/kitty/.config/kitty"          "$HOME/.config/kitty
 create_symlink "$DOTFILES_DIR/picom/.config/picom"          "$HOME/.config/picom"
 create_symlink "$DOTFILES_DIR/polybar/.config/polybar"      "$HOME/.config/polybar"
 create_symlink "$DOTFILES_DIR/rofi/.config/rofi"            "$HOME/.config/rofi"
+create_symlink "$DOTFILES_DIR/dunst/.config/dunst"          "$HOME/.config/dunst"
 create_symlink "$DOTFILES_DIR/nvim/.config/nvim"            "$HOME/.config/nvim"
 create_symlink "$DOTFILES_DIR/scripts/.config/scripts"      "$HOME/.config/scripts"
 create_symlink "$DOTFILES_DIR/zsh/.zshrc"                   "$HOME/.zshrc"

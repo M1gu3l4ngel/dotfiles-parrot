@@ -10,10 +10,12 @@
 # Acciones que no dependen de bspwm: lanzar terminal, lanzar menús, etc.
 
 # ----- TERMINAL -----
-# Abre kitty (terminal por defecto). Usamos la ruta absoluta a /opt para
-# asegurarnos de ejecutar la versión instalada manualmente, no la del paquete.
+# Abre kitty (terminal por defecto). Se usa el paquete de apt en vez de una
+# instalación manual en /opt: así recibe parches de seguridad junto con el
+# resto del sistema vía unattended-upgrades, sin mantenimiento a mano. La ruta
+# absoluta evita que un binario homónimo antes en el $PATH se ejecute en su lugar.
 super + Return
-	/opt/kitty/bin/kitty
+	/usr/bin/kitty
 
 # ----- LANZADOR DE PROGRAMAS -----
 # Abre rofi en modo "run": permite escribir el nombre de cualquier ejecutable
@@ -33,9 +35,11 @@ super + Escape
 # Controlan el window manager directamente vía el cliente `bspc`.
 
 # ----- SALIR / REINICIAR BSPWM -----
-# Super+Shift+Q cierra bspwm (cierra la sesión X);
-# Super+Shift+R reinicia bspwm en caliente (recarga bspwmrc sin perder ventanas).
-super + shift + {q,r}
+# Super+Alt+Q cierra bspwm (cierra la sesión X);
+# Super+Alt+R reinicia bspwm en caliente (recarga bspwmrc sin perder ventanas).
+# Van con Alt y no con Shift porque Super+Shift+Q ya mata la ventana enfocada:
+# compartir la combinación hacía ambiguo si se cerraba una ventana o la sesión.
+super + alt + {q,r}
 	bspc {quit,wm -r}
 
 # ----- CERRAR / MATAR VENTANA -----
@@ -161,7 +165,9 @@ super + ctrl + shift + space
 
 # ----- MOVER VENTANA FLOTANTE -----
 # Solo aplica a ventanas en estado floating. El desplazamiento es de 20px.
-super + shift + {Left,Down,Up,Right}
+# Va con Ctrl porque Super+Shift+flechas ya intercambia ventanas tiled: con la
+# misma combinación en dos bindings, sxhkd solo ejecutaba uno de los dos.
+super + ctrl + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 
 # ----- REDIMENSIONAR (script personalizado) -----

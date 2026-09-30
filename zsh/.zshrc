@@ -127,10 +127,16 @@ LS_COLORS="rs=0:di=34:ln=36:mh=00:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:o
 # =============================================================================
 
 # ----- PATH PRINCIPAL -----
-# /opt/kitty/bin     -> kitty instalado manualmente desde el binario oficial
-# /opt/nvim-linux... -> Neovim instalado fuera del repo de apt (versión reciente)
-# El resto son los paths estándar de Debian/Parrot.
-export PATH="/opt/kitty/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/sbin/:/opt/nvim-linux-x86_64/bin"
+# Se AÑADE al PATH heredado en vez de sobrescribirlo con una lista fija: así no
+# se pierden rutas que agregan el sistema u otras herramientas, y no quedan
+# rutas muertas hardcodeadas cuando algo se desinstala.
+# `typeset -U path` elimina duplicados (cada `exec zsh` volvería a añadirlas).
+# Los sbin se incluyen porque muchas herramientas de red/pentest viven ahí
+# (tcpdump, iptables, ip) y Debian no los pone en el PATH de usuarios normales.
+# Neovim no necesita entrada propia: su binario en /opt está enlazado desde
+# /usr/local/bin/nvim, que ya forma parte del PATH estándar.
+typeset -U path
+path+=(/usr/local/sbin /usr/sbin /sbin)
 
 # =============================================================================
 # PENTEST: GESTIÓN DEL TARGET
@@ -176,4 +182,6 @@ export NVM_DIR="$HOME/.nvm"
 # ----- PATH FINAL: BINARIOS LOCALES DEL USUARIO -----
 # Se añade al inicio del PATH para que `~/.local/bin/<algo>` tenga precedencia
 # sobre la versión del sistema. Aquí también vive oh-my-posh (instalado vía curl).
-export PATH="$HOME/.local/bin:$PATH"
+# Se usa el array `path` (no `export PATH=...`) para que `typeset -U` descarte
+# el duplicado en cada `exec zsh`.
+path=("$HOME/.local/bin" $path)

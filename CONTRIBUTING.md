@@ -98,7 +98,7 @@ zsh/                    .zshrc + .p10k.zsh
 |---|---|
 | bspwm | `Super+Alt+R` (recarga bspwmrc en caliente) |
 | sxhkd | `Super+Escape` |
-| polybar | `~/.config/polybar/launch.sh` (mata y relanza); o `Super+Shift+R` si está bindeado |
+| polybar | `~/.config/polybar/launch.sh` (mata y relanza); o `Super+Alt+R` (reinicia bspwm, que relanza polybar) |
 | kitty | `Ctrl+Shift+F5` desde dentro de kitty |
 | zsh | `exec zsh` |
 | nvim | cerrar y reabrir, o `:source %` para el archivo abierto |

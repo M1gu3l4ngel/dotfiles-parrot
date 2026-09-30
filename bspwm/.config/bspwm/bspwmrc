@@ -15,6 +15,10 @@ pgrep -x sxhkd > /dev/null || sxhkd &
 # todas las opciones; sin esta línea, Caps Lock queda sin handler y aparece
 # un delay perceptible al soltar la tecla.
 setxkbmap -layout us,latam -option 'grp:alt_shift_toggle' -option 'caps:capslock' &
+# Desactiva el timbre de X11. Herramientas antiguas lo disparan sin que sea un
+# error real (p. ej. `import` de ImageMagick, que i3lock-fancy usa para la
+# captura del lock), y en una VM el beep suena como un fallo del sistema.
+xset b off
 
 # ----- WORKSPACES -----
 # Diez escritorios virtuales numerados en romanos (I..X), uno por monitor

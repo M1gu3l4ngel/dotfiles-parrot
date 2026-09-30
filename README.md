@@ -199,7 +199,7 @@ Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
 
 - **Super + Enter** → abrir kitty
 - **Super + D** → lanzador de apps (rofi)
-- **Super + Shift + R** → reiniciar bspwm
+- **Super + Alt + R** → reiniciar bspwm
 - **Super + Escape** → recargar sxhkd (después de editar atajos)
 
 ---
@@ -219,8 +219,8 @@ Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
 | `Super + Shift + P` | Firefox pentest (profile aislado + user.js hardening) |
 | `Super + Shift + X` | Bloquear pantalla (i3lock-fancy) |
 | `Super + Escape` | Recargar sxhkd |
-| `Super + Shift + R` | Reiniciar bspwm |
-| `Super + Shift + Q` | Salir de bspwm (cierra sesión) |
+| `Super + Alt + R` | Reiniciar bspwm (relanza también polybar) |
+| `Super + Alt + Q` | Salir de bspwm (cierra sesión) |
 
 ### Manejo de ventanas
 
@@ -229,7 +229,8 @@ Cierra sesión gráfica, elige **bspwm** en el login manager, y vuelve a entrar.
 | `Super + Q` | Cerrar ventana (amable) |
 | `Super + Shift + Q` | Matar ventana (forzado) |
 | `Super + ←/↓/↑/→` | Mover foco |
-| `Super + Shift + ←/↓/↑/→` | Mover ventana flotante |
+| `Super + Shift + ←/↓/↑/→` | Intercambiar ventana con la vecina |
+| `Super + Ctrl + ←/↓/↑/→` | Mover ventana flotante |
 | `Super + Alt + ←/↓/↑/→` | Redimensionar ventana |
 | `Super + T` | Modo tiled |
 | `Super + S` | Modo floating |

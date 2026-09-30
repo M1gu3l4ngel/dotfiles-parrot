@@ -6,7 +6,8 @@
 # Lo invoca bspwmrc al iniciar la sesión, pero también se puede ejecutar
 # manualmente para recargar todas las barras:
 #   ~/.config/polybar/launch.sh
-# Atajo equivalente: Super+Shift+R (si está bindeado en sxhkdrc).
+# Atajo equivalente: Super+Alt+R (reinicia bspwm, y bspwmrc vuelve a lanzar
+# este script).
 
 # ----- LIMPIAR INSTANCIAS PREVIAS -----
 # killall -q: silenciar el error si no había ninguna corriendo (idempotente).
