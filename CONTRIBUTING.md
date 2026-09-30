@@ -30,6 +30,23 @@ chore: actualizar README con sección de troubleshooting
 Si el cambio amerita más contexto, añade un cuerpo después de una línea
 en blanco (formato GitHub estándar).
 
+### Privacidad y firma
+
+Este repo es público: cada commit publica el email del autor.
+
+- Usa el email **noreply** de GitHub (Settings → Emails → *Keep my email
+  addresses private*) en vez del personal:
+  `git config --global user.email "<id>+<usuario>@users.noreply.github.com"`.
+  Activa también *Block command line pushes that expose my email*.
+- Firma los commits con GPG (`commit.gpgsign true`). La clave debe incluir la
+  identidad noreply para que GitHub los marque como **Verified**. Al subir la
+  clave pública a GitHub, expórtala solo con esa identidad para no publicar
+  tu email personal:
+  `gpg --armor --export --export-filter keep-uid='mbox = <tu-noreply>' <fingerprint>`.
+- Nunca incluyas en el repo nombres de usuario locales, IPs reales,
+  fingerprints ni nombres de clientes o targets: usa placeholders
+  (`__USER__`, `$HOME`, `<tu-fingerprint>`).
+
 ## Estilo de código
 
 ### Idioma de los comentarios
