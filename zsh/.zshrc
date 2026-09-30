@@ -16,10 +16,11 @@
 [ -f "$HOME/.ssh/id_ed25519" ] && eval "$(keychain --eval --quiet --quick id_ed25519)"
 
 # ----- GPG: TERMINAL PARA PEDIR LA PASSPHRASE -----
-# pinentry-curses (ver ~/.gnupg/gpg-agent.conf) pide la passphrase dentro de
-# la terminal, y para saber en cuál necesita GPG_TTY. Sin ella, firmar un
-# commit falla con "gpg failed to sign the data". $TTY es la variable propia
-# de zsh con la terminal actual (más barata que ejecutar `tty`).
+# pinentry-gnome3 (ver ~/.gnupg/gpg-agent.conf) pide la passphrase en un
+# diálogo gráfico; sin sesión gráfica (p. ej. por SSH) la pide en la terminal,
+# y para saber en cuál necesita GPG_TTY. Sin ella, firmar un commit por SSH
+# falla con "gpg failed to sign the data". $TTY es la variable propia de zsh
+# con la terminal actual (más barata que ejecutar `tty`).
 export GPG_TTY=$TTY
 
 # ----- PROMPT: OH-MY-POSH -----

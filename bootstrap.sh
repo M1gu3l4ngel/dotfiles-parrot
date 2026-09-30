@@ -73,7 +73,7 @@ APT_PACKAGES=(
   # para descargar LSPs y formateadores.
   git shellcheck shfmt curl wget unzip xz-utils tar
   # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
-  ufw anonsurf unattended-upgrades gnupg pinentry-curses pass keychain
+  ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
   # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
   # muestra la barra de VPN de polybar, y dig para las pruebas de fugas de
   # DNS del anonimato (docs/anonimato.md).

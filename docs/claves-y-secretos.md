@@ -69,11 +69,12 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
 ## GPG
 
 `gnupg/.gnupg/gpg-agent.conf` (enlazado por `install.sh`) configura el agente
-para pedir la passphrase dentro de la terminal y recordarla 1 hora desde el
-último uso, 8 horas como máximo.
+para pedir la passphrase en un diálogo gráfico (en la terminal si no hay sesión
+gráfica, p. ej. por SSH) y recordarla 10 minutos desde el último uso, 2 horas
+como máximo: los mismos valores que en Windows.
 
 1. Crear la clave (ed25519 para firmar y cv25519 para cifrar, caduca en 2
-   años). Pedirá la passphrase en un recuadro de la terminal:
+   años). Pedirá la passphrase en un diálogo:
 
     ```bash
     gpg --quick-generate-key "<nombre> <tu-noreply>" default default 2y
