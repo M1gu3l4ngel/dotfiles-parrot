@@ -80,6 +80,10 @@ bindkey "\e\e" sudo-command-line
 # =============================================================================
 
 # ----- bat (cat con syntax highlighting) -----
+# En Debian/Parrot el binario se llama `batcat` (evita un choque de nombres
+# con otro paquete); en el resto de distros se llama `bat`. Se crea el alias
+# solo si hace falta, para que todo lo de abajo funcione en ambos casos.
+(( $+commands[bat] )) || alias bat='batcat'
 alias cat='bat'
 # Sin línea de números ni separadores; útil para pipes y scripts.
 alias catn='bat --style=plain'
@@ -170,8 +174,13 @@ cleartarget() {
 }
 
 # ----- FZF -----
-# Fuzzy finder. Activa Ctrl+R (búsqueda en historial) y Ctrl+T (archivos).
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Fuzzy finder. Activa Ctrl+R (búsqueda en historial), Ctrl+T (archivos) y
+# Alt+C (cambiar de directorio).
+# Se usa el fzf de apt (paquetes firmados y parcheados por unattended-upgrades),
+# no una instalación manual en ~/.fzf. `fzf --zsh` genera la integración de la
+# propia versión instalada (fzf >= 0.48), así que no hace falta ningún archivo
+# extra en $HOME.
+(( $+commands[fzf] )) && source <(fzf --zsh)
 
 # ----- NVM (Node Version Manager) -----
 # Permite tener múltiples versiones de Node y cambiar entre ellas con `nvm use`.
