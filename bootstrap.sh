@@ -84,8 +84,9 @@ APT_PACKAGES=(
   # muestra la barra de VPN de polybar, y dig para las pruebas de fugas de
   # DNS del anonimato (docs/anonimato.md).
   openvpn bind9-dnsutils
-  # Base para fuentes y descargas HTTPS.
-  fontconfig ca-certificates
+  # Base para fuentes y descargas HTTPS, y glxinfo (mesa-utils) para
+  # comprobar la aceleración gráfica (docs/vmware.md).
+  fontconfig ca-certificates mesa-utils
   firefox-esr
 )
 
