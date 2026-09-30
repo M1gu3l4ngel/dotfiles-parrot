@@ -180,18 +180,17 @@ super + alt + {Left,Down,Up,Right}
 # APLICACIONES DIRECTAS
 # =============================================================================
 
-# ----- FIREFOX (profiles separados) -----
-# Personal (Gmail, GitHub personal): default-esr profile, intacto.
-# Pentest (engagements, targets, lab): pentest profile + user.js endurecido
+# ----- FIREFOX (perfiles separados) -----
+# Personal (Gmail, GitHub personal): perfil default-esr, sin cambios propios.
+# Pentest (engagements, targets, lab): perfil pentest + user.js endurecido
 # (sin fugas de targets a terceros, sin precargas, WebRTC off, todo se borra
-# al cerrar; ver system/firefox/pentest.user.js).
-# Pentest se lanza con TZ=UTC para que JS reporte timezone UTC en vez de
-# tu hora local — cuarta capa de defensa contra fingerprinting/correlación
-# (Firefox personal NO se toca porque ahí estás logueado con tu identidad
-# real, ocultar TZ no aporta y rompe Gmail/Calendar/etc.).
-# --no-remote permite que ambos profiles corran simultáneamente; sin el flag
-# Firefox abre nueva pestaña en la instancia existente en vez de levantar
-# la segunda con el otro profile.
+# al cerrar; ver system/firefox/pentest.user.js y docs/firefox.md).
+# TZ=UTC en el perfil pentest es un respaldo: hoy la zona horaria ya la oculta
+# privacy.resistFingerprinting, que Parrot activa para todo el sistema; si esa
+# protección se desactivara, TZ=UTC seguiría evitando revelar la hora local.
+# --no-remote permite tener ambos perfiles abiertos a la vez; sin el flag
+# Firefox abriría una pestaña en la instancia ya existente en vez de lanzar
+# la segunda con el otro perfil.
 super + shift + f
 	/usr/bin/firefox -P default-esr --no-remote
 
