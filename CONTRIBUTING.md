@@ -1,192 +1,72 @@
 # Contribuir
 
-¡Gracias por interesarte en contribuir! Este documento describe las
-convenciones del repo: cómo hacer commits, cómo nombrar cosas, qué
-archivos no tocar y cómo añadir features comunes (keybinds, módulos de
-polybar, temas, etc.).
+## Flujo
 
-## Convenciones de commits
+1. Crea una rama desde `main`.
+2. Haz los cambios siguiendo las convenciones de abajo.
+3. Ejecuta las comprobaciones desde la raíz del repo. Deben pasar todas:
 
-Formato:
+    ```bash
+    ./tools/check.sh
+    ```
+
+4. Haz commit siguiendo el formato de commits.
+5. Abre un pull request. El CI ejecuta las mismas comprobaciones y marca el
+   resultado en GitHub.
+
+Si el cambio es visible para el usuario, añádelo a `CHANGELOG.md` en la
+sección "Sin publicar".
+
+## Commits
+
+Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)
+en una sola línea de 72 caracteres como máximo:
 
 ```
 type(scope): descripción en español
 ```
 
-- **Type** (en inglés): `feat`, `fix`, `docs`, `style`, `refactor`, `chore`.
-- **Scope** (opcional): componente afectado, p. ej. `bspwm`, `polybar`,
-  `zsh`, `nvim`, `scripts`.
-- **Descripción** en español, una sola línea, ≤ 72 caracteres.
+- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `scope` opcional: el componente afectado (`polybar`, `zsh`, `system`...).
+- Un commit por cambio lógico, aunque toque varios archivos.
 
-Ejemplos:
+Ejemplo:
 
 ```
-docs(bspwm): mejorar comentarios del archivo bspwmrc
-feat(polybar): añadir módulo de temperatura
-fix(scripts): corregir interfaz hardcodeada en vpn_status.sh
-chore: actualizar README con sección de troubleshooting
+fix(polybar): esperar a que se cierren las barras antes de relanzarlas
 ```
 
-Si el cambio amerita más contexto, añade un cuerpo después de una línea
-en blanco (formato GitHub estándar).
+El repo es público y cada commit publica el email del autor: usa el email
+noreply de GitHub y firma los commits con GPG. Cómo configurarlo:
+[docs/claves-y-secretos.md](docs/claves-y-secretos.md).
 
-### Privacidad y firma
+## Convenciones
 
-Este repo es público: cada commit publica el email del autor.
+Están en `.claude/rules/`. Son Markdown normal: sirven igual para personas y
+para Claude Code, que las carga automáticamente.
 
-- Usa el email **noreply** de GitHub (Settings → Emails → *Keep my email
-  addresses private*) en vez del personal:
-  `git config --global user.email "<id>+<usuario>@users.noreply.github.com"`.
-  Activa también *Block command line pushes that expose my email*.
-- Firma los commits con GPG (`commit.gpgsign true`). La clave debe incluir la
-  identidad noreply para que GitHub los marque como **Verified**. Al subir la
-  clave pública a GitHub, expórtala solo con esa identidad para no publicar
-  tu email personal:
-  `gpg --armor --export --export-filter keep-uid='mbox = <tu-noreply>' <fingerprint>`.
-- Nunca incluyas en el repo nombres de usuario locales, IPs reales,
-  fingerprints ni nombres de clientes o targets: usa placeholders
-  (`__USER__`, `$HOME`, `<tu-fingerprint>`).
-
-## Estilo de código
-
-### Idioma de los comentarios
-
-- **Español.** Coincide con el README y con el resto de los comentarios.
-
-### Indentación (varía según el lenguaje)
-
-| Tipo de archivo | Indentación |
+| Archivo | Qué define |
 |---|---|
-| Markdown | 4 espacios |
-| Shell (`.sh`, `bspwmrc`, `install.sh`, `launch.sh`, `scripts/*`) | 2 espacios |
-| Lua (Neovim) | 2 espacios (lo fuerza `nvim/.config/nvim/.stylua.toml`) |
-| sxhkd (`sxhkdrc`) | tabs (convención de sxhkd) |
-| picom (`picom.conf`), rofi (`*.rasi`), polybar (`*.ini`) | 2 espacios |
+| [security.md](.claude/rules/security.md) | Datos personales y secretos, descargas verificadas, mínimo privilegio |
+| [style.md](.claude/rules/style.md) | Comentarios en español que explican el porqué, indentación por formato |
+| [shell.md](.claude/rules/shell.md) | Scripts de shell y zsh |
+| [documentation.md](.claude/rules/documentation.md) | Estilo de la documentación |
+| [file-edits.md](.claude/rules/file-edits.md) | Iconos Nerd Font y archivos protegidos |
+| [environment.md](.claude/rules/environment.md) | Particularidades del entorno (X11, VMware, polybar, fuentes) |
 
-El `.editorconfig` de la raíz aplica estas reglas automáticamente en
-cualquier editor moderno (VS Code, Neovim, JetBrains, Sublime).
+Lo más importante:
 
-### Estructura de los archivos de config
+- Nunca incluyas datos personales ni secretos: usuario local, emails, IPs,
+  fingerprints, nombres de clientes.
+- Todo lo que no venga de apt se descarga en versión fijada y se verifica con
+  SHA-256 (ver `bootstrap.sh`). Nunca `curl ... | bash`.
+- Los iconos Nerd Font se escriben como escapes (`$'\xef\x8c\xa9'`), nunca como
+  caracteres literales.
 
-- **Header explicativo** al inicio: qué hace el archivo, dónde lo carga
-  el sistema, cómo recargarlo si aplica.
-- **Secciones agrupadas** con comentarios de tipo:
-    - `# ----- SECCIÓN -----` en shell.
-    - `;; ----- SECCIÓN -----` en archivos `.ini`.
-    - `-- ----- SECCIÓN -----` en Lua.
-- Para bloques grandes, usar separadores `# ====...====` con título.
-- **Comentarios pedagógicos:** explicar el **porqué**, no el **qué**.
-    - Mal: `# Set border width`
-    - Bien: `# Ancho del borde de ventana en píxeles. Mientras más alto,
-      mayor el feedback visual al hacer focus`
-- Máximo **1 línea en blanco** consecutiva.
+## Reportar problemas
 
-## Archivos protegidos (no tocar en PRs)
+Abre un issue con:
 
-- `LICENSE`
-- `README.md` (solo PRs explícitamente de documentación)
-- `assets/` (excepto añadir wallpapers nuevos)
-- `zsh/.p10k.zsh` — auto-generado por Powerlevel10k.
-- `nvim/.config/nvim/lazy-lock.json` — lock file de lazy.nvim.
-- `nvim/.config/nvim/LICENSE` y `nvim/.config/nvim/README.md` — heredados
-  del template de NvChad.
-- Cualquier cosa dentro de `.git/`.
-
-## Estructura del repo
-
-Cada componente sigue el patrón `<componente>/.config/<componente>/<archivo>`
-para que `install.sh` cree los symlinks directos a `~/.config/`.
-
-```
-bspwm/.config/bspwm/    bspwmrc + scripts/bspwm_resize
-sxhkd/.config/sxhkd/    sxhkdrc
-picom/.config/picom/    picom.conf
-polybar/.config/polybar/  current.ini, workspace.ini, colors*.ini, launch.sh, scripts/
-rofi/.config/rofi/      config.rasi + themes/
-kitty/.config/kitty/    kitty.conf + color.ini
-nvim/.config/nvim/      NvChad como base
-scripts/.config/scripts/  ethernet_status, vpn_status, victim_to_hack
-zsh/                    .zshrc + .p10k.zsh
-```
-
-## Reload de configs (sin reiniciar sesión)
-
-| Componente | Cómo recargar |
-|---|---|
-| bspwm | `Super+Alt+R` (recarga bspwmrc en caliente) |
-| sxhkd | `Super+Escape` |
-| polybar | `~/.config/polybar/launch.sh` (mata y relanza); o `Super+Alt+R` (reinicia bspwm, que relanza polybar) |
-| kitty | `Ctrl+Shift+F5` desde dentro de kitty |
-| zsh | `exec zsh` |
-| nvim | cerrar y reabrir, o `:source %` para el archivo abierto |
-
-Evita `kill/killall/pkill` directos — usa los reload nativos.
-
-## Validar antes de enviar un PR
-
-Ejecuta desde la raíz del repo:
-
-```bash
-./tools/check.sh
-```
-
-Revisa sintaxis y shellcheck de todos los scripts, zsh, Lua, JSON, la regla
-sudoers, el keymap XKB, la higiene del repo público (sin fuentes ni rutas
-`/home/<usuario>`) y secretos en todo el historial con gitleaks. El CI
-(`.github/workflows/ci.yml`) ejecuta lo mismo en cada push y pull request, y
-marca el commit con ✓ o ✗ en GitHub.
-
-Para lo que el script no cubre porque necesita la sesión gráfica:
-
-| Archivo | Comando |
-|---|---|
-| Shell scripts | `bash -n <archivo>` o `sh -n <archivo>` |
-| zsh | `zsh -n <archivo>` |
-| picom | `picom --config <archivo> --diagnostics` |
-| polybar | `polybar --config=<archivo> --dump=<key> <bar>` |
-| rofi | `rofi -dump-config -config <archivo>` |
-| kitty | `kitty +runpy 'import kitty.config; ...'` |
-| Lua (nvim) | `nvim --headless -c "lua loadfile('<archivo>')" -c "qa!"` |
-
-## Tareas comunes
-
-### Añadir un keybind nuevo
-
-Editar `sxhkd/.config/sxhkd/sxhkdrc` siguiendo el formato:
-
-```
-super + shift + n
-	notify-send "hola"
-```
-
-Recargar con `Super+Escape`.
-
-### Añadir un módulo a polybar
-
-1. Definirlo en `current.ini` o `workspace.ini` con `[module/<nombre>]`.
-2. Añadirlo a `modules-center` (o `modules-left`/`modules-right`) del bar
-   que quieras.
-3. Recargar con `~/.config/polybar/launch.sh`.
-
-### Cambiar tema de rofi
-
-Editar `rofi/.config/rofi/config.rasi`, comentar el `@theme` actual y
-descomentar el nuevo. Los temas viven en `rofi/.config/rofi/themes/`.
-
-### Cambiar tema de polybar (dark / light)
-
-Copiar el contenido de `colors_dark.ini` o `colors_light.ini` sobre
-`colors.ini` y recargar polybar.
-
-### Cambiar tema de Neovim
-
-Editar `nvim/.config/nvim/lua/chadrc.lua`, cambiar `M.base46.theme`.
-Para listar temas disponibles desde nvim: `<leader>th`.
-
-## Reportar bugs / sugerir features
-
-- Abrir un issue en GitHub con un título corto y descriptivo.
-- Incluir tu versión de Parrot/Debian/Ubuntu y de polybar/bspwm si aplica.
-- Para bugs visuales: una captura de pantalla ayuda mucho.
-
-¡Gracias!
+- Qué esperabas y qué pasó.
+- Versión de Parrot (`cat /etc/os-release`) y si es una VM.
+- Los pasos para reproducirlo y, si es visual, una captura.
