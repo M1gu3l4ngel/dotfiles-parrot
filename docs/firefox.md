@@ -28,7 +28,7 @@ Una sola vez tras la instalación, como usuario normal:
     sudo ./system/setup.sh
     ```
 
-    En el paso `[6/8]` debe aparecer `Copiado al perfil pentest`.
+    En el paso `[6/9]` debe aparecer `Copiado al perfil pentest`.
 
 3. Abrirlo con `Super+Shift+P`.
 

@@ -7,6 +7,9 @@ y Neovim, con hardening del sistema e instalación en un comando.
 
 ## Reproducir en un comando
 
+¿Empiezas desde cero, sin VM? Sigue [docs/primeros-pasos.md](docs/primeros-pasos.md):
+crear la VM, instalar Parrot, el entorno, comprobarlo y la snapshot.
+
 En un Parrot OS 7 recién instalado, como usuario normal (pedirá la contraseña
 de sudo una vez):
 

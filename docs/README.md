@@ -5,6 +5,7 @@ principal.
 
 | Guía | Contenido |
 |---|---|
+| [primeros-pasos.md](primeros-pasos.md) | Instalación completa desde cero, de la VM vacía a la snapshot final |
 | [pentesting.md](pentesting.md) | VPN de los labs, target activo y qué IP usar como LHOST |
 | [anonimato.md](anonimato.md) | Anonimato con Tor (`Super+A`), comprobación de fugas y auditoría externa |
 | [firefox.md](firefox.md) | Perfiles personal y pentest, y qué protege cada uno |

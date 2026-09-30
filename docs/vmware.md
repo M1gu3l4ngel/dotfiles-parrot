@@ -52,7 +52,7 @@ Para pasar archivos entre Windows y Linux en ambos sentidos.
     sudo ./system/setup.sh
     ```
 
-    El paso `[8/8]` la monta en `/mnt/vmshare`, crea el acceso directo
+    El paso `[8/9]` la monta en `/mnt/vmshare`, crea el acceso directo
     `~/VMShare` y la añade a `/etc/fstab`. Solo tu usuario puede leerla, y si
     la desactivas en VMware el sistema arranca igual.
 
