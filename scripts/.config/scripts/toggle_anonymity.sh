@@ -27,8 +27,8 @@
 STATE_FILE="$HOME/.config/bin/anon_state"
 mkdir -p "$(dirname "$STATE_FILE")"
 
-ICON_OFF=$'\xef\x80\x91'  #  power-off
-ICON_ON=$'\xef\x88\x9b'   #  user-secret
+ICON_OFF=$'\xef\x80\x91' #  power-off
+ICON_ON=$'\xef\x88\x9b'  #  user-secret
 
 # ----- HARDENING: IPv6 + ICMP -----
 # Capas que anonsurf no cubre (IPv6 a DROP, ICMP saliente a DROP). Las reglas
@@ -57,7 +57,7 @@ verify_tor() {
 }
 
 # Estado actual: ¿el proceso tor está corriendo?
-if pgrep -x tor > /dev/null; then
+if pgrep -x tor >/dev/null; then
   current="on"
 else
   current="off"
@@ -70,15 +70,15 @@ if [ "$current" = "on" ]; then
     "Cerrando Tor y restaurando conexión directa"
   harden_down
   # `yes y |` auto-confirma el prompt "kill dangerous apps? [Y/n]"
-  yes y | sudo -n "$ANONSURF" stop > /dev/null 2>&1
+  yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
   sleep 2
 
-  if pgrep -x tor > /dev/null; then
+  if pgrep -x tor >/dev/null; then
     notify-send -u critical -t 5000 \
       "$ICON_ON  Error al desactivar" \
       "Tor sigue corriendo. Intenta manualmente: sudo anonsurf stop"
   else
-    echo "off" > "$STATE_FILE"
+    echo "off" >"$STATE_FILE"
     notify-send -u low -t 4000 \
       "$ICON_OFF  Anonimato OFF" \
       "Conexión directa restaurada · tráfico sin enmascarar"
@@ -90,10 +90,10 @@ else
     "Conectando a la red Tor (puede tardar 10-15s)"
   # anonsurf start también pregunta "kill dangerous apps? [Y/n]"; sin un
   # 'y' en stdin aborta con EOFError y tor nunca arranca.
-  yes y | sudo -n "$ANONSURF" start > /dev/null 2>&1
+  yes y | sudo -n "$ANONSURF" start >/dev/null 2>&1
   sleep 5
 
-  if ! pgrep -x tor > /dev/null; then
+  if ! pgrep -x tor >/dev/null; then
     notify-send -u critical -t 5000 \
       "$ICON_OFF  Error al activar" \
       "Tor no arrancó. Intenta manualmente: sudo anonsurf start"
@@ -105,15 +105,15 @@ else
 
   # Validación real contra check.torproject.org. Si falla, ROLLBACK completo.
   if verify_tor; then
-    echo "on" > "$STATE_FILE"
+    echo "on" >"$STATE_FILE"
     notify-send -u critical -t 5000 \
       "$ICON_ON  Anonimato ON · verificado" \
       "Todo el tráfico via Tor (IPv6 bloqueado, ICMP bloqueado, IsTor:true)"
   else
     # Bootstrap incompleto o leak detectado: revertir TODO
     harden_down
-    yes y | sudo -n "$ANONSURF" stop > /dev/null 2>&1
-    echo "off" > "$STATE_FILE"
+    yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
+    echo "off" >"$STATE_FILE"
     notify-send -u critical -t 7000 \
       "$ICON_OFF  Error: no se confirmó salida por Tor" \
       "check.torproject.org no devolvió IsTor:true. Rollback aplicado."

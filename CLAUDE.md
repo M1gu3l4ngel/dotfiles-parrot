@@ -22,7 +22,7 @@ Las reglas detalladas están en `.claude/rules/` y se cargan solas:
 
 | Tarea | Comando |
 |---|---|
-| Instalación completa | `./bootstrap.sh` (`--with-docker` opcional) |
+| Instalación completa | `./bootstrap.sh` |
 | Solo symlinks | `./install.sh` |
 | Hardening del sistema | `sudo ./system/setup.sh` |
 | Comprobaciones (igual que el CI) | `./tools/check.sh` |

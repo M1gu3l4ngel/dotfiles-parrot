@@ -41,7 +41,7 @@ TARGET_USER="$SUDO_USER"
 TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
 
 for bin in ufw anonsurf visudo install; do
-  if ! command -v "$bin" > /dev/null; then
+  if ! command -v "$bin" >/dev/null; then
     echo "ERROR: '$bin' no está instalado. Instálalo primero (apt install $bin)."
     exit 1
   fi
@@ -64,7 +64,7 @@ install -m 0755 -o root -g root "$REPO_DIR/sbin/anon-harden" /usr/local/sbin/ano
 # sudoers con errores de sintaxis en /etc/sudoers.d/ puede dejar sudo
 # inutilizable. 0440 es obligatorio (sudo ignora el archivo con otro modo).
 echo "[2/8] Instalando /etc/sudoers.d/anon_toggle (usuario: $TARGET_USER)"
-sed "s/__USER__/$TARGET_USER/g" "$REPO_DIR/sudoers.d/anon_toggle" > "$TMP_SUDOERS"
+sed "s/__USER__/$TARGET_USER/g" "$REPO_DIR/sudoers.d/anon_toggle" >"$TMP_SUDOERS"
 if ! visudo -c -q -f "$TMP_SUDOERS"; then
   echo "ERROR: la regla sudoers no es válida; no se ha instalado nada."
   exit 1
@@ -82,17 +82,21 @@ install -m 0440 -o root -g root "$TMP_SUDOERS" /etc/sudoers.d/anon_toggle
 #                         conectado.
 # IPV6=yes             -> sin esto ufw solo filtra IPv4.
 # Cada `ufw allow` es idempotente: si la regla existe no la duplica.
+# Su salida normal se descarta: ufw repite avisos como "be sure to update your
+# rules accordingly" en cada ejecución aunque no cambie nada. Los errores van
+# a stderr, se siguen viendo, y `set -e` detiene el script.
 echo "[3/8] Aplicando reglas baseline de ufw"
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow in on lo
-ufw allow in on tun+ from any
+ufw default deny incoming >/dev/null
+ufw default allow outgoing >/dev/null
+ufw allow in on lo >/dev/null
+ufw allow in on tun+ from any >/dev/null
 if ! grep -q "^IPV6=yes" /etc/default/ufw; then
   echo "      IPV6 no estaba en yes, lo aplico"
   sed -i 's/^IPV6=.*/IPV6=yes/' /etc/default/ufw
 fi
 # --force evita el prompt "may disrupt ssh sessions [y|n]".
-ufw --force enable
+ufw --force enable >/dev/null
+echo "      Activo: entrada bloqueada salvo loopback y VPN (tun+), IPv4 e IPv6"
 
 # ----- 4. PATH DE /etc/profile -----
 # Una entrada vacía en PATH (`::`) equivale al directorio actual: ejecutar
@@ -115,11 +119,11 @@ fi
 # se avisa, para no romper un flujo de trabajo que lo use.
 echo "[5/8] Revisando pertenencia al grupo docker"
 if id -nG "$TARGET_USER" | tr ' ' '\n' | grep -qx docker; then
-  if command -v dockerd > /dev/null; then
+  if command -v dockerd >/dev/null; then
     echo "      AVISO: $TARGET_USER está en el grupo docker (equivale a root)."
     echo "      Considera usar 'sudo docker' o podman rootless en su lugar."
   else
-    gpasswd -d "$TARGET_USER" docker > /dev/null
+    gpasswd -d "$TARGET_USER" docker >/dev/null
     echo "      Quitado del grupo docker (daemon no instalado). Efectivo al"
     echo "      volver a iniciar sesión."
   fi
@@ -136,7 +140,10 @@ USERJS_SRC="$REPO_DIR/firefox/pentest.user.js"
 # Glob en vez de parsear `ls`: soporta rutas con espacios o caracteres raros.
 PENTEST_PROFILE=""
 for dir in "$TARGET_HOME"/.mozilla/firefox/*.pentest; do
-  [ -d "$dir" ] && { PENTEST_PROFILE="$dir"; break; }
+  [ -d "$dir" ] && {
+    PENTEST_PROFILE="$dir"
+    break
+  }
 done
 if [ -z "$PENTEST_PROFILE" ]; then
   echo "      INFO: no existe el perfil *.pentest todavía."
@@ -145,7 +152,7 @@ if [ -z "$PENTEST_PROFILE" ]; then
 else
   install -m 0644 -o "$TARGET_USER" -g "$TARGET_USER" \
     "$USERJS_SRC" "$PENTEST_PROFILE/user.js"
-  echo "      Copiado a $PENTEST_PROFILE/user.js"
+  echo "      Copiado al perfil pentest"
 fi
 
 # ----- 7. UNATTENDED-UPGRADES -----
@@ -153,7 +160,7 @@ fi
 # 20auto-upgrades: activa la ejecución diaria. Solo se crea si falta, para
 # respetar un valor que el usuario haya cambiado a propósito.
 echo "[7/8] Configurando unattended-upgrades"
-if ! command -v unattended-upgrade > /dev/null; then
+if ! command -v unattended-upgrade >/dev/null; then
   echo "      INFO: 'unattended-upgrades' no está instalado."
   echo "      Instálalo con: sudo apt install unattended-upgrades"
   echo "      Y vuelve a ejecutar: sudo ./system/setup.sh"
@@ -165,6 +172,7 @@ else
       /etc/apt/apt.conf.d/20auto-upgrades
     echo "      Creado /etc/apt/apt.conf.d/20auto-upgrades"
   fi
+  echo "      Activo: parches de seguridad diarios (kernel y Tor incluidos)"
 fi
 
 # ----- 8. CARPETA COMPARTIDA CON EL HOST (SOLO VMWARE) -----
@@ -184,7 +192,7 @@ SHARE_MNT="/mnt/vmshare"
 echo "[8/8] Carpeta compartida de VMware"
 if [ "$(systemd-detect-virt 2>/dev/null || true)" != "vmware" ]; then
   echo "      No es una VM de VMware; se omite"
-elif ! command -v vmhgfs-fuse > /dev/null; then
+elif ! command -v vmhgfs-fuse >/dev/null; then
   echo "      INFO: falta vmhgfs-fuse. Instálalo con: sudo apt install open-vm-tools-desktop"
 elif ! vmware-hgfsclient 2>/dev/null | grep -qx "$SHARE_NAME"; then
   echo "      INFO: VMware no comparte ninguna carpeta llamada '$SHARE_NAME'."
@@ -195,7 +203,7 @@ else
   mkdir -p "$SHARE_MNT"
   if ! grep -q "^\.host:/$SHARE_NAME " /etc/fstab; then
     cp -p /etc/fstab "/etc/fstab.bak-$(date +%Y%m%d%H%M%S)"
-    echo ".host:/$SHARE_NAME $SHARE_MNT fuse.vmhgfs-fuse nofail,x-systemd.automount,allow_other,uid=$TARGET_UID,gid=$TARGET_GID,umask=077 0 0" >> /etc/fstab
+    echo ".host:/$SHARE_NAME $SHARE_MNT fuse.vmhgfs-fuse nofail,x-systemd.automount,allow_other,uid=$TARGET_UID,gid=$TARGET_GID,umask=077 0 0" >>/etc/fstab
     echo "      Añadido a /etc/fstab (copia de la versión previa en /etc/fstab.bak-*)"
   fi
   systemctl daemon-reload

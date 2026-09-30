@@ -27,7 +27,7 @@ WHITE='%{F#ffffff}'
 # `2>/dev/null` va ANTES de `<`: las redirecciones se aplican en orden, y si
 # fuera después, el error de "archivo no existe" ya se habría impreso.
 ip_address="" machine_name=""
-read -r ip_address machine_name _ 2>/dev/null < "$TARGET_FILE"
+read -r ip_address machine_name _ 2>/dev/null <"$TARGET_FILE"
 
 # ----- SALIDA -----
 if [ -n "$ip_address" ] && [ -n "$machine_name" ]; then

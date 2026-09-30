@@ -8,5 +8,5 @@
 # Usamos escape \xef\x89\xa9 en bash (no el char literal) para evitar que
 # Write/Edit lo reemplace por lookalikes CJK sin glifo.
 
-ICON=$'\xef\x89\xa9'  #  firefox
+ICON=$'\xef\x89\xa9' #  firefox
 echo "%{F#FF7B72}  $ICON  %{F-}"

@@ -7,7 +7,7 @@
 #
 # Orden: paquetes de apt -> fuentes -> Neovim -> oh-my-posh -> nvm + Node +
 # pnpm + Claude Code -> symlinks (install.sh) -> hardening (system/setup.sh)
-# -> zsh como shell -> [Docker rootless, opcional] -> guía de GPG/SSH/pass.
+# -> zsh como shell -> guía de GPG/SSH/pass.
 #
 # Idempotente: cada paso comprueba si ya está hecho (y en qué versión) y solo
 # aplica lo que falta. Se puede volver a ejecutar tras un fallo o para
@@ -17,9 +17,8 @@
 # que tocan el sistema (apt, /opt, /etc).
 #
 # Uso:
-#   ./bootstrap.sh                 instalación completa
-#   ./bootstrap.sh --with-docker   además, Docker Engine en modo rootless
-#   ./bootstrap.sh --help
+#   ./bootstrap.sh          instalación completa
+#   ./bootstrap.sh --help   esta ayuda
 
 set -euo pipefail
 
@@ -77,7 +76,7 @@ APT_PACKAGES=(
   i3lock-fancy imagemagick
   # Desarrollo: git, análisis de shell scripts y lo que necesita Mason (nvim)
   # para descargar LSPs y formateadores.
-  git shellcheck curl wget unzip xz-utils tar
+  git shellcheck shfmt curl wget unzip xz-utils tar
   # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
   ufw anonsurf unattended-upgrades gnupg pinentry-curses pass keychain
   # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
@@ -100,9 +99,12 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 step() { echo -e "\n${BOLD}==> $1${NC}"; }
-ok()   { echo -e "    ${GREEN}✓${NC} $1"; }
+ok() { echo -e "    ${GREEN}✓${NC} $1"; }
 warn() { echo -e "    ${YELLOW}!${NC} $1"; }
-die()  { echo -e "    ${RED}✗ $1${NC}" >&2; exit 1; }
+die() {
+  echo -e "    ${RED}✗ $1${NC}" >&2
+  exit 1
+}
 
 # Carpeta temporal para descargas; se borra al salir, pase lo que pase.
 TMP_DIR=$(mktemp -d)
@@ -144,7 +146,11 @@ check_prerequisites() {
   # Pedir la contraseña una sola vez y mantener sudo vivo mientras dure el
   # script, para no volver a pedirla a mitad de un paso largo.
   sudo -v
-  while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
+  while true; do
+    sudo -n true
+    sleep 50
+    kill -0 "$$" 2>/dev/null || exit
+  done 2>/dev/null &
   ok "Usuario $USER, sudo disponible"
 }
 
@@ -155,14 +161,31 @@ install_apt_packages() {
   if [ "$(systemd-detect-virt 2>/dev/null || true)" = "vmware" ]; then
     packages+=(open-vm-tools-desktop)
   fi
+  # Solo se instala lo que falta. Si ya está todo, se evita `apt-get update`,
+  # que descarga los índices de todos los repositorios y es lo más lento de
+  # una re-ejecución. Una sola consulta a dpkg para todos los paquetes.
+  local -A installed=()
+  local pkg status missing=()
+  while read -r pkg status; do
+    [ "$status" = "ii" ] && installed[$pkg]=1
+  done < <(dpkg-query -W -f='${Package} ${db:Status-Abbrev}\n' "${packages[@]}" 2>/dev/null || true)
+  for pkg in "${packages[@]}"; do
+    [ -n "${installed[$pkg]:-}" ] || missing+=("$pkg")
+  done
+  if [ "${#missing[@]}" -eq 0 ]; then
+    ok "Los ${#packages[@]} paquetes ya están instalados"
+    return
+  fi
+  echo "    Instalando ${#missing[@]} paquetes: ${missing[*]}"
   sudo apt-get update -qq
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${packages[@]}"
-  ok "${#packages[@]} paquetes instalados o ya presentes"
+  # Una sola transacción de apt para todos: resuelve dependencias una vez.
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${missing[@]}"
+  ok "${#missing[@]} paquetes instalados"
 }
 
 install_fonts() {
   step "Fuentes Nerd Fonts $NERD_FONTS_VERSION"
-  local base="$HOME/.local/share/fonts/NerdFonts" name dest archive
+  local base="$HOME/.local/share/fonts/NerdFonts" name dest archive changed=false
   for name in "${!FONT_SHA256[@]}"; do
     dest="$base/$name"
     # Un archivo .version por familia permite saltar lo ya instalado y
@@ -178,10 +201,14 @@ install_fonts() {
     rm -rf "$dest" && mkdir -p "$dest"
     # Solo la familia usada + la licencia (OFL/MIT exigen acompañar la fuente).
     tar -xJf "$archive" -C "$dest" --wildcards "${FONT_FILES[$name]}" 'LICENSE*'
-    echo "$NERD_FONTS_VERSION" > "$dest/.version"
+    echo "$NERD_FONTS_VERSION" >"$dest/.version"
     ok "$name instalada ($(find "$dest" -name '*.ttf' | wc -l) archivos)"
+    changed=true
   done
-  fc-cache -f "$base" > /dev/null
+  # Regenerar la caché de fuentes solo si se instaló alguna.
+  if [ "$changed" = true ]; then
+    fc-cache -f "$base" >/dev/null
+  fi
 }
 
 install_neovim() {
@@ -230,13 +257,16 @@ install_node_toolchain() {
   set +u
   # shellcheck source=/dev/null
   . "$NVM_DIR/nvm.sh"
-  nvm install "$NODE_MAJOR" > /dev/null
-  nvm alias default "$NODE_MAJOR" > /dev/null
+  # nvm escribe su progreso en inglés en stderr; se descarta y, si falla, se
+  # muestra un error propio con el comando para reintentarlo a mano.
+  nvm install "$NODE_MAJOR" >/dev/null 2>&1 ||
+    die "No se pudo instalar Node $NODE_MAJOR. Prueba a mano: nvm install $NODE_MAJOR"
+  nvm alias default "$NODE_MAJOR" >/dev/null
   set -u
   ok "Node $(node --version)"
   # Globales de npm dentro del Node de nvm: no necesitan sudo.
-  command -v pnpm > /dev/null || npm install -g --silent pnpm
-  command -v claude > /dev/null || npm install -g --silent @anthropic-ai/claude-code
+  command -v pnpm >/dev/null || npm install -g --silent pnpm
+  command -v claude >/dev/null || npm install -g --silent @anthropic-ai/claude-code
   ok "pnpm $(pnpm --version), Claude Code $(claude --version 2>/dev/null | cut -d' ' -f1)"
 }
 
@@ -260,56 +290,6 @@ set_default_shell() {
     sudo chsh -s "$zsh_path" "$USER"
     ok "zsh configurada (efectivo al volver a iniciar sesión)"
   fi
-}
-
-# Docker Engine oficial en modo rootless: el daemon corre como el usuario, sin
-# root y sin grupo `docker` (pertenecer a ese grupo equivale a ser root).
-install_docker_rootless() {
-  step "Docker Engine (rootless)"
-  local debian_major codename
-  debian_major=$(cut -d. -f1 /etc/debian_version)
-  case "$debian_major" in
-    13) codename=trixie ;;
-    12) codename=bookworm ;;
-    *) die "Versión de Debian base no soportada: $(cat /etc/debian_version)" ;;
-  esac
-  # Clave de firma del repo de Docker: se comprueba su huella antes de
-  # confiar en ella (la publicada en docs.docker.com).
-  local key=/etc/apt/keyrings/docker.asc
-  local docker_fpr="9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-  curl -fsSL https://download.docker.com/linux/debian/gpg -o "$TMP_DIR/docker.asc"
-  if ! gpg --show-keys --with-colons "$TMP_DIR/docker.asc" | grep -q "^fpr:.*:$docker_fpr:$"; then
-    die "La clave de Docker no tiene la huella esperada ($docker_fpr)"
-  fi
-  sudo install -D -m 0644 "$TMP_DIR/docker.asc" "$key"
-  sudo tee /etc/apt/sources.list.d/docker.sources > /dev/null <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/debian
-Suites: $codename
-Components: stable
-Signed-By: $key
-EOF
-  # podman-docker instala su propio /usr/bin/docker: se retira para que el
-  # comando `docker` sea inequívoco.
-  if dpkg-query -W -f='${Status}' podman-docker 2>/dev/null | grep -q "ok installed"; then
-    sudo apt-get remove -y -qq podman-docker
-  fi
-  sudo apt-get update -qq
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    docker-ce docker-ce-cli containerd.io docker-buildx-plugin \
-    docker-compose-plugin docker-ce-rootless-extras \
-    uidmap dbus-user-session slirp4netns
-  # El daemon de sistema (root) no se usa: solo el del usuario.
-  sudo systemctl disable --now docker.service docker.socket > /dev/null 2>&1 || true
-  if ! systemctl --user is-active --quiet docker; then
-    dockerd-rootless-setuptool.sh install > /dev/null
-  fi
-  systemctl --user enable --now docker > /dev/null 2>&1
-  # linger: el daemon del usuario arranca con el sistema, sin esperar al login.
-  sudo loginctl enable-linger "$USER"
-  # El setuptool crea el contexto `rootless`; usarlo evita exportar DOCKER_HOST.
-  docker context use rootless > /dev/null
-  ok "$(docker --version)"
 }
 
 print_next_steps() {
@@ -341,11 +321,9 @@ EOF
 # =============================================================================
 # EJECUCIÓN
 # =============================================================================
-WITH_DOCKER=false
 for arg in "$@"; do
   case "$arg" in
-    --with-docker) WITH_DOCKER=true ;;
-    -h|--help) usage ;;
+    -h | --help) usage ;;
     *) die "Opción desconocida: $arg (ver --help)" ;;
   esac
 done
@@ -359,7 +337,4 @@ install_node_toolchain
 link_dotfiles
 harden_system
 set_default_shell
-if [ "$WITH_DOCKER" = true ]; then
-  install_docker_rootless
-fi
 print_next_steps

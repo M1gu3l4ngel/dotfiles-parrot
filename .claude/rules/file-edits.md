@@ -26,7 +26,6 @@ No modificar sin permiso explícito del usuario:
 
 - `LICENSE`
 - `assets/`
-- `zsh/.p10k.zsh`: generado por Powerlevel10k.
 - `nvim/.config/nvim/lazy-lock.json`: lock file de lazy.nvim.
 - `nvim/.config/nvim/LICENSE` y `nvim/.config/nvim/README.md`: heredados de
   la plantilla de NvChad.

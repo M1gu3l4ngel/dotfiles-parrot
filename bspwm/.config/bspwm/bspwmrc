@@ -9,7 +9,7 @@
 # daemon solo si no está corriendo ya; sin esto cada recarga intentaría abrir
 # una segunda instancia (que falla con error o, peor, queda duplicada).
 run_once() {
-  pgrep -x "$1" > /dev/null || "$@" &
+  pgrep -x "$1" >/dev/null || "$@" &
 }
 
 # sxhkd es el daemon que escucha atajos de teclado; sin él no funciona ningún
@@ -40,18 +40,18 @@ bspc monitor -d I II III IV V VI VII VIII IX X
 # ----- BORDES Y GAPS -----
 # Borde inicial de 2px: bspwm lo necesita > 0 para calcular ciertos layouts.
 # Al final del archivo lo bajamos a 0 para que no se vea en pantalla.
-bspc config border_width         2
+bspc config border_width 2
 # Separación entre ventanas en píxeles. Mientras más alto, más "aire" entre
 # las ventanas (estética tipo rice).
-bspc config window_gap          12
+bspc config window_gap 12
 
 # ----- LAYOUT -----
 # Proporción inicial al hacer split: 52% para la ventana principal.
-bspc config split_ratio          0.52
+bspc config split_ratio 0.52
 # En modo monocle (una sola ventana visible) no se dibujan bordes ni gaps,
 # para aprovechar toda la pantalla.
-bspc config borderless_monocle   true
-bspc config gapless_monocle      true
+bspc config borderless_monocle true
+bspc config gapless_monocle true
 
 # ----- REGLAS DE VENTANAS -----
 # Cada regla dice "cuando aparezca una ventana de esta app, hazle esto".

@@ -1,21 +1,37 @@
 #!/bin/sh
 # ~/.config/scripts/vpn_status.sh
-# Indica si hay una VPN activa (tun0) y, si la hay, muestra la IP asignada.
-# Usado por el módulo `vpn_status` de polybar (bar/vpn_bar).
+# Muestra la IPv4 de la VPN en el módulo `vpn_status` de polybar
+# (bar/vpn_bar), o "Disconnected" si no hay ninguna. polybar lo ejecuta cada
+# segundo.
 #
-# Convención: las VPNs de OpenVPN (HTB, THM) crean siempre la interfaz tun0.
-# Si usas WireGuard o varios túneles, ajusta el nombre.
+# Detecta cualquier túnel: tun* (OpenVPN, la VPN de HTB/THM) y wg* (WireGuard).
+# Si hay varios, muestra el primero. Es la IP que se usa como LHOST en los labs.
+#
+# Una sola llamada a `ip`; el resto con builtins de sh. Sin `set -e` a
+# propósito: la barra debe mostrar un texto aunque algo falle.
 
-# ----- DETECTAR INTERFAZ tun0 -----
-# Buscamos "tun0" en la salida de ifconfig y nos quedamos solo con el nombre
-# (sin los dos puntos finales que añade ifconfig).
-IFACE=$(/usr/sbin/ifconfig | grep tun0 | awk '{print $1}' | tr -d ':')
+set -u
 
-# ----- OUTPUT FORMATEADO PARA POLYBAR -----
-# Icono Nerd Font verde + IP en blanco si está conectada;
-# icono verde + "Disconnected" si no hay tun0.
-if [ "$IFACE" = "tun0" ]; then
-  echo "%{F#1bbf3e}󰆧 %{F#ffffff}$(/usr/sbin/ifconfig tun0 | grep "inet " | awk '{print $2}')%{u-}"
+# Icono nf-md-cube_outline (U+F01A7) como escape: los glifos de uso privado
+# (PUA) escritos literalmente los eliminan las herramientas de edición.
+ICON=$(printf '\363\260\206\247')
+
+ip_address=""
+# Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
+while read -r iface _ addr _; do
+  case "$iface" in
+    tun* | wg*)
+      ip_address=${addr%%/*}
+      break
+      ;;
+    *) ;;
+  esac
+done <<EOF
+$(ip -4 -br addr show 2>/dev/null)
+EOF
+
+if [ -n "$ip_address" ]; then
+  echo "%{F#1bbf3e}${ICON} %{F#ffffff}${ip_address}%{u-}"
 else
-  echo "%{F#1bbf3e}󰆧 %{u-} Disconnected"
+  echo "%{F#1bbf3e}${ICON} %{u-} Disconnected"
 fi

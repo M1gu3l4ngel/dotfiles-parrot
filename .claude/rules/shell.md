@@ -15,6 +15,8 @@ paths:
 # Scripts de shell
 
 - Scripts nuevos en bash con `set -euo pipefail`; en `sh` (POSIX), `set -eu`.
+  Excepción: los scripts de estado de polybar usan solo `set -u`. Deben
+  imprimir un texto aunque falle un comando; con `-e` la barra quedaría vacía.
 - shellcheck sin avisos (`./tools/check.sh`). Formato con shfmt: `-i 2 -ci`.
 - En `#!/bin/sh` nada de bashismos: `sh` es dash. Ejemplo real: `$UID` no
   existe en dash (usar `id -u`), y rompía la espera de `polybar/launch.sh`.

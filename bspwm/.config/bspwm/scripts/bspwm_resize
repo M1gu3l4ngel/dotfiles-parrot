@@ -1,16 +1,40 @@
-#!/usr/bin/env dash
+#!/bin/sh
+# ~/.config/bspwm/scripts/bspwm_resize
+# Redimensiona la ventana enfocada hacia una dirección. Lo invoca sxhkd con
+# Super+Alt+Flechas (bspwm_resize west|east|north|south).
+#
+# Con una sola tecla por dirección, la ventana crece o encoge según dónde esté:
+# primero intenta mover el borde derecho (o superior); si esa ventana no tiene
+# borde movible en ese lado, mueve el opuesto. Así no hace falta pensar en
+# "expandir" o "contraer".
 
-if bspc query -N -n focused.floating > /dev/null; then
-	step=20
+set -eu
+
+# Paso en píxeles: fino en ventanas flotantes, grande en mosaico, donde se
+# redimensiona respecto a las vecinas.
+if bspc query -N -n focused.floating >/dev/null; then
+  step=20
 else
-	step=100
+  step=100
 fi
 
-case "$1" in
-	west) dir=right; falldir=left; x="-$step"; y=0;;
-	east) dir=right; falldir=left; x="$step"; y=0;;
-	north) dir=top; falldir=bottom; x=0; y="-$step";;
-	south) dir=top; falldir=bottom; x=0; y="$step";;
+case "${1:-}" in
+  west)
+    dir=right falldir=left x="-$step" y=0
+    ;;
+  east)
+    dir=right falldir=left x="$step" y=0
+    ;;
+  north)
+    dir=top falldir=bottom x=0 y="-$step"
+    ;;
+  south)
+    dir=top falldir=bottom x=0 y="$step"
+    ;;
+  *)
+    echo "Uso: $0 west|east|north|south" >&2
+    exit 2
+    ;;
 esac
 
 bspc node -z "$dir" "$x" "$y" || bspc node -z "$falldir" "$x" "$y"

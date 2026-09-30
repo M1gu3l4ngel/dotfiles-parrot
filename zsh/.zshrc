@@ -10,7 +10,10 @@
 # ----- SSH AGENT (keychain) -----
 # Mantiene el ssh-agent vivo entre sesiones de zsh. Pide la passphrase una
 # sola vez por arranque de la VM y la cachea para los siguientes shells.
-[ -f "$HOME/.ssh/id_ed25519" ] && eval $(keychain --eval --quiet id_ed25519)
+# --quick: si el agente ya corre, lo reutiliza sin volver a comprobar sus
+# claves (45 ms -> 19 ms por terminal). Tras un reinicio sigue pidiendo la
+# passphrase una vez.
+[ -f "$HOME/.ssh/id_ed25519" ] && eval "$(keychain --eval --quiet --quick id_ed25519)"
 
 # ----- GPG: TERMINAL PARA PEDIR LA PASSPHRASE -----
 # pinentry-curses (ver ~/.gnupg/gpg-agent.conf) pide la passphrase dentro de
@@ -25,7 +28,12 @@ export GPG_TTY=$TTY
 # PATH con ~/.local/bin se exporta al final de este archivo; de lo contrario
 # el comando no se encontraría aquí. Para cambiar de tema, edita el .omp.json
 # o sustituye por otro de ~/.cache/oh-my-posh/themes/ (built-ins).
-[ -x "$HOME/.local/bin/oh-my-posh" ] && eval "$($HOME/.local/bin/oh-my-posh init zsh --config $HOME/dotfiles/oh-my-posh/capr4n.omp.json)"
+# La ruta del repo se deduce del propio .zshrc, que es un enlace a
+# <repo>/zsh/.zshrc: `%x` es este archivo, `:A` resuelve el enlace y `:h:h`
+# sube dos niveles. Así el prompt funciona aunque el repo no esté en ~/dotfiles.
+_dotfiles_dir=${${(%):-%x}:A:h:h}
+[ -x "$HOME/.local/bin/oh-my-posh" ] && eval "$("$HOME/.local/bin/oh-my-posh" init zsh --config "$_dotfiles_dir/oh-my-posh/capr4n.omp.json")"
+unset _dotfiles_dir
 
 # ----- HISTORIAL -----
 # Doble underscore en HISTFILE para no chocar con el ~/.zsh_history default;
@@ -265,9 +273,25 @@ cleartarget() {
 
 # ----- NVM (Node Version Manager) -----
 # Permite tener múltiples versiones de Node y cambiar entre ellas con `nvm use`.
+# Carga perezosa: cargar nvm.sh costaba ~250 ms en CADA terminal nueva (la
+# mayor parte del retraso al abrir kitty). En su lugar:
+#   1. El bin/ del Node por defecto (`nvm alias default`) entra directo al
+#      PATH: node, npm, pnpm y claude funcionan al instante sin cargar nvm.
+#   2. El comando `nvm` se carga la primera vez que se escribe.
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+if [ -s "$NVM_DIR/alias/default" ]; then
+  # Versiones instaladas que coinciden con el alias (p. ej. "24" -> v24.*);
+  # (n) ordena numéricamente y (On) de mayor a menor: se usa la más reciente.
+  _nvm_default=( "$NVM_DIR"/versions/node/v"$(<"$NVM_DIR/alias/default")"*(Nn/On) )
+  (( ${#_nvm_default} )) && path=("${_nvm_default[1]}/bin" $path)
+  unset _nvm_default
+fi
+nvm() {
+  unfunction nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  nvm "$@"
+}
 
 # ----- PATH FINAL: BINARIOS LOCALES DEL USUARIO -----
 # Se añade al inicio del PATH para que `~/.local/bin/<algo>` tenga precedencia

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ~/dotfiles/install.sh
+# install.sh (en la raíz del repo)
 # Instalador idempotente de los dotfiles.
 #
 # Crea symlinks desde este repositorio hacia las rutas reales en $HOME
@@ -19,25 +19,34 @@
 set -euo pipefail
 
 # ----- CONFIGURACIÓN -----
-# Directorio donde vive este repo. Todos los archivos fuente se buscan aquí.
-DOTFILES_DIR="${HOME}/dotfiles"
+# Directorio donde vive este repo: el del propio script, sin suponer que se
+# clonó en ~/dotfiles. Con una ruta fija, un clon en otra carpeta crearía
+# enlaces hacia un directorio inexistente y rompería todo el escritorio.
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Sufijo que se añade a los archivos respaldados para distinguirlos del original.
 BACKUP_SUFFIX=".pre-dotfiles.bak"
 
-# ----- COLORES PARA LOGS -----
-# Códigos ANSI para imprimir mensajes con color y leer el output más rápido.
+# ----- MENSAJES -----
+# Mismo estilo que bootstrap.sh. Solo se informa de lo que cambia; lo que ya
+# estaba bien se resume en una línea al final, para que un error o un backup
+# no se pierdan entre mensajes de "ya enlazado".
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+YELLOW='\033[0;33m'
 RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m'  # No Color: resetea el color al default de la terminal
+NC='\033[0m'
 
-# ----- HELPERS DE LOGGING -----
-# Cada nivel tiene su color para que el output sea escaneable de un vistazo.
-log_info()  { echo -e "${BLUE}[INFO]${NC}  $1"; }
-log_ok()    { echo -e "${GREEN}[OK]${NC}    $1"; }
-log_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+ok() { echo -e "    ${GREEN}✓${NC} $1"; }
+warn() { echo -e "    ${YELLOW}!${NC} $1"; }
+die() {
+  echo -e "    ${RED}✗ $1${NC}" >&2
+  exit 1
+}
+# Rutas con ~ en vez del home completo: más cortas y sin el nombre de usuario.
+short() { echo "${1/#"$HOME"/\~}"; }
+
+# Contadores para el resumen final.
+LINKED=0
+ALREADY=0
 
 # ----- LÓGICA DE BACKUP -----
 # Decide qué hacer con el archivo que está en la ruta destino antes de
@@ -51,16 +60,22 @@ backup_if_exists() {
     link_target=$(readlink "$target")
     if [[ "$link_target" == "$DOTFILES_DIR"* ]]; then
       # Apunta a nuestro repo, todo correcto. No tocamos nada.
-      log_info "Already linked: $target"
+      ALREADY=$((ALREADY + 1))
       return 1
     fi
     # Symlink apunta a otro lado (instalación vieja, otro repo): lo eliminamos.
-    log_warn "Removing wrong symlink: $target"
+    warn "Enlace antiguo reemplazado: $(short "$target") (apuntaba a $link_target)"
     rm "$target"
   elif [ -e "$target" ]; then
     # Existe un archivo real (no symlink): lo movemos a .bak para no perderlo.
-    log_warn "Backing up: $target -> ${target}${BACKUP_SUFFIX}"
-    mv "$target" "${target}${BACKUP_SUFFIX}"
+    # Si ya hay un .bak de una ejecución anterior, se añade la fecha en vez de
+    # sobrescribirlo: esa copia puede ser la única de la config original.
+    local backup="${target}${BACKUP_SUFFIX}"
+    if [ -e "$backup" ]; then
+      backup="${backup}.$(date +%Y%m%d%H%M%S)"
+    fi
+    warn "Copia de seguridad: $(short "$target") -> $(short "$backup")"
+    mv "$target" "$backup"
   fi
   return 0
 }
@@ -74,43 +89,39 @@ create_symlink() {
   if backup_if_exists "$target"; then
     mkdir -p "$(dirname "$target")"
     ln -s "$source" "$target"
-    log_ok "Linked: $target"
+    ok "Enlazado: $(short "$target")"
+    LINKED=$((LINKED + 1))
   fi
 }
 
 # ----- VALIDACIÓN PREVIA -----
-# Si alguien ejecuta el script desde un sistema sin el repo clonado en ~/dotfiles
-# preferimos fallar temprano con un mensaje claro en vez de generar enlaces rotos.
-if [ ! -d "$DOTFILES_DIR" ]; then
-  log_error "Dotfiles directory not found: $DOTFILES_DIR"
-  exit 1
+# Si el script se copió fuera del repo, los archivos fuente no existen: mejor
+# fallar temprano con un mensaje claro que generar enlaces rotos.
+if [ ! -f "$DOTFILES_DIR/zsh/.zshrc" ]; then
+  die "install.sh debe ejecutarse dentro del repo (no existe $DOTFILES_DIR/zsh/.zshrc)"
 fi
-
-log_info "Starting dotfiles installation..."
-log_info "Source: $DOTFILES_DIR"
 
 # ----- SYMLINKS: source -> target -----
 # Cada línea define un archivo o carpeta del repo y dónde debe vivir en $HOME.
 # Si quieres añadir una config nueva, basta con sumar otra línea aquí.
-create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/bspwmrc"  "$HOME/.config/bspwm/bspwmrc"
-create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/scripts"  "$HOME/.config/bspwm/scripts"
-create_symlink "$DOTFILES_DIR/sxhkd/.config/sxhkd/sxhkdrc"  "$HOME/.config/sxhkd/sxhkdrc"
-create_symlink "$DOTFILES_DIR/kitty/.config/kitty"          "$HOME/.config/kitty"
-create_symlink "$DOTFILES_DIR/picom/.config/picom"          "$HOME/.config/picom"
-create_symlink "$DOTFILES_DIR/polybar/.config/polybar"      "$HOME/.config/polybar"
-create_symlink "$DOTFILES_DIR/rofi/.config/rofi"            "$HOME/.config/rofi"
-create_symlink "$DOTFILES_DIR/dunst/.config/dunst"          "$HOME/.config/dunst"
-create_symlink "$DOTFILES_DIR/xkb/.config/xkb"              "$HOME/.config/xkb"
+create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/bspwmrc" "$HOME/.config/bspwm/bspwmrc"
+create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/scripts" "$HOME/.config/bspwm/scripts"
+create_symlink "$DOTFILES_DIR/sxhkd/.config/sxhkd/sxhkdrc" "$HOME/.config/sxhkd/sxhkdrc"
+create_symlink "$DOTFILES_DIR/kitty/.config/kitty" "$HOME/.config/kitty"
+create_symlink "$DOTFILES_DIR/picom/.config/picom" "$HOME/.config/picom"
+create_symlink "$DOTFILES_DIR/polybar/.config/polybar" "$HOME/.config/polybar"
+create_symlink "$DOTFILES_DIR/rofi/.config/rofi" "$HOME/.config/rofi"
+create_symlink "$DOTFILES_DIR/dunst/.config/dunst" "$HOME/.config/dunst"
+create_symlink "$DOTFILES_DIR/xkb/.config/xkb" "$HOME/.config/xkb"
 # Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
 # privadas y debe ser real, con permisos 700 y fuera de cualquier repo.
 # Se crea antes que el enlace porque create_symlink usaría los permisos por
 # defecto (755) y gpg avisa de "unsafe permissions" con un homedir abierto.
 mkdir -p "$HOME/.gnupg" && chmod 700 "$HOME/.gnupg"
-create_symlink "$DOTFILES_DIR/gnupg/.gnupg/gpg-agent.conf"   "$HOME/.gnupg/gpg-agent.conf"
-create_symlink "$DOTFILES_DIR/nvim/.config/nvim"            "$HOME/.config/nvim"
-create_symlink "$DOTFILES_DIR/scripts/.config/scripts"      "$HOME/.config/scripts"
-create_symlink "$DOTFILES_DIR/zsh/.zshrc"                   "$HOME/.zshrc"
-create_symlink "$DOTFILES_DIR/zsh/.p10k.zsh"                "$HOME/.p10k.zsh"
+create_symlink "$DOTFILES_DIR/gnupg/.gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+create_symlink "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
+create_symlink "$DOTFILES_DIR/scripts/.config/scripts" "$HOME/.config/scripts"
+create_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 
 # ----- WALLPAPER (NO SOBRESCRIBE SI YA EXISTE UNO) -----
 # bspwmrc carga ~/.config/wallpaper.jpg al iniciar. Aquí lo enlazamos al
@@ -119,9 +130,8 @@ create_symlink "$DOTFILES_DIR/zsh/.p10k.zsh"                "$HOME/.p10k.zsh"
 if [ ! -e "$HOME/.config/wallpaper.jpg" ]; then
   mkdir -p "$HOME/.config"
   ln -s "$DOTFILES_DIR/assets/wallpaper.jpg" "$HOME/.config/wallpaper.jpg"
-  log_ok "Linked default wallpaper: $HOME/.config/wallpaper.jpg"
-else
-  log_info "Keeping existing wallpaper: $HOME/.config/wallpaper.jpg"
+  ok "Fondo de pantalla por defecto: ~/.config/wallpaper.jpg"
+  LINKED=$((LINKED + 1))
 fi
 
 # ----- ARCHIVOS DE ESTADO INICIALES -----
@@ -131,11 +141,13 @@ fi
 # polybar antes de que el usuario haya corrido `settarget` nunca.
 mkdir -p "$HOME/.config/bin"
 if [ ! -f "$HOME/.config/bin/target" ]; then
-  : > "$HOME/.config/bin/target"
-  log_ok "Created empty target file: $HOME/.config/bin/target"
+  : >"$HOME/.config/bin/target"
 fi
 
-# ----- FINAL -----
-log_ok "Installation complete!"
-log_info "Reload your shell:  exec zsh"
-log_info "Reload bspwm:       Super+Alt+R"
+# ----- RESUMEN -----
+if [ "$LINKED" -eq 0 ]; then
+  ok "Las $ALREADY configuraciones ya estaban enlazadas"
+else
+  ok "$LINKED enlaces nuevos, $ALREADY ya estaban bien"
+  echo "    Para aplicarlos: exec zsh en cada terminal y Super+Alt+R"
+fi
