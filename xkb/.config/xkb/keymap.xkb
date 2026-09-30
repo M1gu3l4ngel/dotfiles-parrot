@@ -1,0 +1,19 @@
+// ~/.config/xkb/keymap.xkb
+// Keymap completo de la sesión: layouts us + latam, cambio con Alt+Shift y
+// Caps Lock corregido (ver symbols/capsfix). Sustituye a `setxkbmap` porque
+// setxkbmap solo acepta opciones del sistema y no puede incluir el símbolo
+// propio capsfix.
+// Lo carga bspwmrc con: xkbcomp -I"$HOME/.config/xkb" keymap.xkb "$DISPLAY"
+// Para recargar: Super+Alt+R.
+//
+// Para añadir un layout, agrégalo en xkb_symbols con su número de grupo
+// (p. ej. `+es:3`). `pc105` es el modelo de teclado físico estándar con la
+// tecla extra junto a Shift izquierdo (ISO).
+
+xkb_keymap {
+  xkb_keycodes { include "evdev+aliases(qwerty)" };
+  xkb_types    { include "complete" };
+  xkb_compat   { include "complete" };
+  xkb_symbols  { include "pc+us+latam:2+inet(evdev)+group(alt_shift_toggle)+capsfix(press)" };
+  xkb_geometry { include "pc(pc105)" };
+};

@@ -522,6 +522,8 @@ dotfiles/
 ├── picom/               → ~/.config/picom/
 ├── rofi/                → ~/.config/rofi/  (config.rasi + themes/)
 ├── kitty/               → ~/.config/kitty/  (kitty.conf + color.ini)
+├── dunst/               → ~/.config/dunst/  (notificaciones, paleta Monokai Soda)
+├── xkb/                 → ~/.config/xkb/  (keymap us+latam + corrección de Caps Lock)
 ├── nvim/                → ~/.config/nvim/  (NvChad como base)
 ├── oh-my-posh/          → ~/dotfiles/oh-my-posh/  (capr4n.omp.json, sincronizado con dotfiles-windows)
 ├── scripts/             → ~/.config/scripts/

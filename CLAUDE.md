@@ -61,6 +61,10 @@ para que `install.sh` pueda crear los symlinks directamente a `~/.config/`.
   (`scripts/launcher`, `scripts/powermenu`, `scripts/powermenu_alt`).
 - `rofi/.config/rofi/` — menú de aplicaciones (config + temas).
 - `kitty/.config/kitty/` — terminal (`kitty.conf` + `color.ini`).
+- `dunst/.config/dunst/` — notificaciones de escritorio (`dunstrc`).
+- `xkb/.config/xkb/` — keymap de la sesión (`keymap.xkb`) y símbolos propios
+  (`symbols/capsfix`: Caps Lock que se apaga al pulsar). Lo carga bspwmrc
+  con xkbcomp; validar con `xkbcomp -w 0 -I<dir> keymap.xkb <salida.xkm>`.
 - `zsh/.zshrc` — shell interactiva.
 - `scripts/.config/scripts/` — scripts custom invocados por polybar
   (estado VPN, Ethernet, target de pentest).

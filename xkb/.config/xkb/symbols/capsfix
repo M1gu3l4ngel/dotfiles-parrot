@@ -1,0 +1,29 @@
+// ~/.config/xkb/symbols/capsfix
+// Corrige el comportamiento de Caps Lock en X11 para que se apague AL PULSAR,
+// como en Windows/macOS. Lo incluye keymap.xkb como `capsfix(press)` y bspwmrc
+// lo carga con xkbcomp al iniciar sesión.
+// Para recargar: Super+Alt+R (reinicia bspwm, que vuelve a cargar el keymap).
+//
+// ----- EL PROBLEMA -----
+// El Caps Lock estándar de XKB usa LockMods, que desbloquea la mayúscula al
+// SOLTAR la tecla. Escribiendo rápido (Caps, S, Caps, i) la "i" se pulsa antes
+// de soltar Caps y sale "SI" en lugar de "Si".
+//
+// ----- LA SOLUCIÓN -----
+// La tecla pasa a tener dos niveles (tipo ALPHABETIC): con Caps inactivo se usa
+// el nivel 1 (bloqueo normal); con Caps activo se usa el nivel 2, cuya acción
+// aplica Shift+Lock al pulsar. Shift + Lock anula la mayúscula en las letras
+// de inmediato, y `affect=unlock` hace que solo desbloquee, nunca bloquee.
+// `repeat = No` evita que mantener la tecla la haga alternar sin control.
+
+default partial modifier_keys
+xkb_symbols "press" {
+  replace key <CAPS> {
+    repeat = No,
+    type[Group1] = "ALPHABETIC",
+    symbols[Group1] = [ Caps_Lock, Caps_Lock ],
+    actions[Group1] = [ LockMods(modifiers = Lock),
+                        LockMods(modifiers = Shift + Lock, affect = unlock) ]
+  };
+  modifier_map Lock { <CAPS> };
+};

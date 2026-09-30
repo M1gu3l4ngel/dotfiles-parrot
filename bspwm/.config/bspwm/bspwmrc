@@ -9,12 +9,18 @@
 # binding (Super+Enter, Super+D, etc). Lo lanzamos solo si no está corriendo
 # ya, para que un reload de bspwm no abra una segunda instancia.
 pgrep -x sxhkd > /dev/null || sxhkd &
-# Layouts de teclado disponibles: inglés (US) y latino, intercambiables en
-# caliente con Alt+Shift. El default al iniciar la sesión es el primero (US).
-# `caps:capslock` se añade explícito porque `setxkbmap -option` REEMPLAZA
-# todas las opciones; sin esta línea, Caps Lock queda sin handler y aparece
-# un delay perceptible al soltar la tecla.
-setxkbmap -layout us,latam -option 'grp:alt_shift_toggle' -option 'caps:capslock' &
+# Keymap de la sesión (~/.config/xkb/keymap.xkb): layouts us + latam
+# intercambiables con Alt+Shift, y Caps Lock corregido para que se apague al
+# pulsar y no al soltar (con el comportamiento estándar de X11, escribir rápido
+# "Caps S Caps i" produce "SI"). Se usa xkbcomp y no setxkbmap porque
+# setxkbmap no puede incluir símbolos propios como capsfix.
+# Se ejecuta en primer plano (sin &) para que el keymap esté listo antes que
+# el resto de la sesión.
+xkbcomp -w 0 -I"$HOME/.config/xkb" "$HOME/.config/xkb/keymap.xkb" "$DISPLAY"
+# Autorepetición al mantener una tecla: empieza a los 300 ms y repite 40 veces
+# por segundo. El default de X11 (660 ms / 25 por segundo) hace que mantener
+# Backspace o las flechas se sienta lento.
+xset r rate 300 40
 # Desactiva el timbre de X11. Herramientas antiguas lo disparan sin que sea un
 # error real (p. ej. `import` de ImageMagick, que i3lock-fancy usa para la
 # captura del lock), y en una VM el beep suena como un fallo del sistema.
