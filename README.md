@@ -21,7 +21,7 @@
 | **sxhkd** | Daemon de atajos de teclado |
 | **polybar** | Barra de estado modular (múltiples mini-barras flotantes) |
 | **picom** | Compositor (sombras, transparencia, esquinas redondeadas) |
-| **rofi** | Lanzador de aplicaciones y menús (powermenu, drun) |
+| **rofi** | Lanzador de aplicaciones (Super + D) |
 | **kitty** | Emulador de terminal con soporte GPU |
 | **zsh + oh-my-posh (capr4n)** | Shell interactiva + prompt cross-platform con git, exit status, etc. |
 | **Neovim + NvChad** | Editor con LSP, autocompletado y formateadores |
@@ -513,11 +513,10 @@ dotfiles/
 ├── bspwm/               → ~/.config/bspwm/  (bspwmrc + scripts/)
 ├── sxhkd/               → ~/.config/sxhkd/  (sxhkdrc)
 ├── polybar/             → ~/.config/polybar/
-│   ├── current.ini      → bars activos (log, vpn, ethernet, target, launchers, primary)
-│   ├── workspace.ini    → bar central de workspaces
+│   ├── current.ini      → barras de estado (logo, ethernet, VPN, launchers, target, anonimato)
+│   ├── workspace.ini    → barra central de workspaces
 │   ├── colors.ini       → paleta activa (Monokai Soda — sobrescribir con colors_dark/light si quieres)
 │   ├── launch.sh        → mata y relanza todas las barras
-│   ├── scripts/         → launcher, powermenu (no scripts pentest)
 │   └── fonts/           → Iosevka, Hurmit, Helvetica, etc.
 ├── picom/               → ~/.config/picom/
 ├── rofi/                → ~/.config/rofi/  (config.rasi + themes/)
@@ -527,6 +526,7 @@ dotfiles/
 ├── nvim/                → ~/.config/nvim/  (NvChad como base)
 ├── oh-my-posh/          → ~/dotfiles/oh-my-posh/  (capr4n.omp.json, sincronizado con dotfiles-windows)
 ├── scripts/             → ~/.config/scripts/
+│   ├── parrot_module.sh           → logo de Parrot (polybar)
 │   ├── ethernet_status.sh         → IP Ethernet (polybar)
 │   ├── vpn_status.sh              → estado VPN (polybar)
 │   ├── victim_to_hack.sh          → lee target activo (polybar)

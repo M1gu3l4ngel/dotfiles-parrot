@@ -19,7 +19,7 @@ Este repo es mi setup personal de dotfiles para Parrot Security
 - Comentarios en **español**.
 - Indentación según convención del lenguaje:
     - **Markdown:** 4 espacios.
-    - **Shell scripts (.sh, bspwmrc, install.sh, launch.sh, polybar/scripts/\*):** 2 espacios.
+    - **Shell scripts (.sh, bspwmrc, install.sh, launch.sh, scripts/\*):** 2 espacios.
     - **Lua (nvim):** 2 espacios (forzado por `nvim/.config/nvim/.stylua.toml`).
     - **sxhkdrc:** tabs (convención de sxhkd).
     - **picom.conf / rofi.rasi / polybar .ini:** 2 espacios donde aplique.
@@ -57,8 +57,11 @@ para que `install.sh` pueda crear los symlinks directamente a `~/.config/`.
 - `sxhkd/.config/sxhkd/sxhkdrc` — atajos de teclado.
 - `picom/.config/picom/picom.conf` — compositor (sombras, blur, fades).
 - `polybar/.config/polybar/` — barras (`current.ini` + `workspace.ini`),
-  paleta (`colors.ini`), launcher (`launch.sh`) y scripts auxiliares
-  (`scripts/launcher`, `scripts/powermenu`, `scripts/powermenu_alt`).
+  paleta (`colors.ini`) y lanzador (`launch.sh`). Los módulos son scripts de
+  `scripts/.config/scripts/`.
+- Glifos de iconos (Nerd Font: rango PUA) NUNCA literales en ningún archivo:
+  las herramientas de edición los borran. Van en scripts como escapes `$'\x..'`
+  (ver `scripts/.config/scripts/*_module.sh`).
 - `rofi/.config/rofi/` — menú de aplicaciones (config + temas).
 - `kitty/.config/kitty/` — terminal (`kitty.conf` + `color.ini`).
 - `dunst/.config/dunst/` — notificaciones de escritorio (`dunstrc`).

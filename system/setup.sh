@@ -96,7 +96,11 @@ ufw --force enable
 # instrucción para crearlo y rerunear; no es error fatal.
 TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
 USERJS_SRC="$REPO_DIR/firefox/pentest.user.js"
-PENTEST_PROFILE=$(ls -d "$TARGET_HOME"/.mozilla/firefox/*.pentest 2>/dev/null | head -1)
+# Glob en vez de parsear `ls`: soporta rutas con espacios o caracteres raros.
+PENTEST_PROFILE=""
+for dir in "$TARGET_HOME"/.mozilla/firefox/*.pentest; do
+  [ -d "$dir" ] && { PENTEST_PROFILE="$dir"; break; }
+done
 
 echo "[5/6] Firefox pentest profile user.js"
 if [ -z "$PENTEST_PROFILE" ]; then

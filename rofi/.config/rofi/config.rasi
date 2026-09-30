@@ -6,9 +6,6 @@
  * Los temas viven en ~/.config/rofi/themes/ (más de 25 disponibles). Cambiar
  * de tema = comentar la línea activa y descomentar la del tema deseado.
  *
- * Algunos scripts (powermenu, powermenu_alt, launcher) pasan su propio tema
- * con `-theme <ruta>` y sobrescriben temporalmente este default.
- *
  * Para probar un tema sin tocar este archivo:
  *   rofi -show run -theme ~/.config/rofi/themes/<nombre>.rasi
  */

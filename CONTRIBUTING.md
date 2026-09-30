@@ -41,7 +41,7 @@ en blanco (formato GitHub estándar).
 | Tipo de archivo | Indentación |
 |---|---|
 | Markdown | 4 espacios |
-| Shell (`.sh`, `bspwmrc`, `install.sh`, `launch.sh`, `polybar/scripts/*`) | 2 espacios |
+| Shell (`.sh`, `bspwmrc`, `install.sh`, `launch.sh`, `scripts/*`) | 2 espacios |
 | Lua (Neovim) | 2 espacios (lo fuerza `nvim/.config/nvim/.stylua.toml`) |
 | sxhkd (`sxhkdrc`) | tabs (convención de sxhkd) |
 | picom (`picom.conf`), rofi (`*.rasi`), polybar (`*.ini`) | 2 espacios |
