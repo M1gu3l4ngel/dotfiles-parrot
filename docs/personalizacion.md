@@ -4,6 +4,33 @@ Cambios de aspecto habituales. Salvo que se indique otra cosa, se ejecutan
 como usuario normal desde `~/dotfiles`. Los archivos de `~/.config/` son
 enlaces al repo: editar uno es editar el repo.
 
+## Sistema de diseño
+
+Reglas que siguen todos los componentes. Al cambiar algo, respétalas para que
+el escritorio siga viéndose como un conjunto.
+
+| Elemento | Valor | Dónde |
+|---|---|---|
+| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi` |
+| Fuente | CaskaydiaCove Nerd Font en todo; Hack solo en el logo de Parrot | `kitty.conf`, `current.ini`, `workspace.ini`, `dunstrc`, `monokai-soda.rasi` |
+| Tamaño de texto | 12 pt (16 px) en barras y menú; 11 pt en kitty | |
+| Radios | Ventanas 10 px; barras, notificaciones y menú 8 px; elementos internos 4 px | `picom.conf`, `current.ini`, `dunstrc`, `monokai-soda.rasi` |
+| Bordes | 1 px `#555555` en la ventana con foco y en las barras | `bspwmrc`, `current.ini` |
+| Espaciado | 12 px entre barras, con los bordes de pantalla y entre ventanas | `current.ini`, `bspwmrc` (`window_gap`) |
+
+Significado de los colores en polybar:
+
+| Color | Uso |
+|---|---|
+| Gris (`#8F8B7A`) | Apagado, vacío, desconectado |
+| Verde (`#98E024`) | Conectado, activo (VPN, anonimato) |
+| Naranja (`#FA8419`) | Foco: workspace activo, opción seleccionada en rofi |
+| Rojo (`#F4005F`) | Target activo, algo que pide atención (solo iconos) |
+| Cian (`#58D1EB`) | Red local |
+
+Sin animaciones ni fades a propósito: cada animación retrasa la aparición de
+las ventanas y, con `vsync = false` en picom, produce tearing en VMware.
+
 ## Fondo de pantalla
 
 `~/.config/wallpaper.jpg` es un enlace al fondo por defecto del repo
@@ -16,6 +43,10 @@ ln -sfn /ruta/a/tu-fondo.jpg ~/.config/wallpaper.jpg
 ```
 
 Aplica el cambio con `Super+Alt+R`.
+
+La pantalla de login y de bloqueo (`Super+Shift+X`) usa una copia de
+`assets/wallpaper.jpg` instalada por `system/setup.sh` (paso 9), porque el
+login no puede leer tu home. El enlace de arriba solo cambia el escritorio.
 
 ## Prompt (oh-my-posh)
 
@@ -39,8 +70,14 @@ o usa uno de los temas incluidos en oh-my-posh.
 
 ## Colores de polybar
 
-`colors.ini` es la paleta activa; `colors_dark.ini` y `colors_light.ini` son
-alternativas. Para usar una, cópiala encima de la activa y recarga:
+Los colores están en dos archivos con los mismos valores:
+
+- `polybar/.config/polybar/colors.ini`: fondo, texto, bordes y workspaces.
+- `scripts/.config/scripts/palette.sh`: colores de estado de los módulos
+  (VPN, target, anonimato, lanzadores).
+
+`colors_dark.ini` y `colors_light.ini` son alternativas a `colors.ini`. Para
+usar una, cópiala encima de la activa y recarga:
 
 ```bash
 cp polybar/.config/polybar/colors_dark.ini polybar/.config/polybar/colors.ini
@@ -54,7 +91,8 @@ Para volver a la paleta original: `git checkout polybar/.config/polybar/colors.i
 
 ## Tema de rofi
 
-Hay 25 temas en `rofi/.config/rofi/themes/`. En `rofi/.config/rofi/config.rasi`,
+El tema activo es `monokai-soda`, con la paleta del resto del escritorio. Hay
+otros 25 en `rofi/.config/rofi/themes/`. En `rofi/.config/rofi/config.rasi`,
 comenta la línea `@theme` activa (con `//` delante) y descomenta o escribe la
 del tema que quieras:
 
@@ -64,6 +102,9 @@ del tema que quieras:
 
 El cambio se ve al abrir rofi (`Super+D`). Si el tema pide una fuente que no
 está instalada, rofi usará otra: ver la sección de fuentes.
+
+`Super+D` abre las aplicaciones con su icono; `Ctrl+Tab` cambia al modo de
+ejecutables del `$PATH`, para herramientas de terminal sin entrada de menú.
 
 ## Tema de Neovim
 
@@ -77,9 +118,10 @@ kitty usa `CaskaydiaCove Nerd Font`, tamaño 11 (`font_family` y `font_size`
 en `kitty/.config/kitty/kitty.conf`). Recarga con `Ctrl+Shift+F5` dentro de
 kitty.
 
-`bootstrap.sh` instala solo las fuentes que usa el setup (Iosevka, Hack y
-CaskaydiaCove). Para usar otra, añádela en `bootstrap.sh` con su versión y su
-SHA-256, igual que las existentes; no copies archivos de fuentes al repo.
+`bootstrap.sh` instala solo las fuentes que usa el setup: CaskaydiaCove para
+todo el texto y Hack para el logo de Parrot en polybar. Para usar otra,
+añádela en `bootstrap.sh` con su versión y su SHA-256, igual que las
+existentes; no copies archivos de fuentes al repo.
 
 ## Notificaciones
 

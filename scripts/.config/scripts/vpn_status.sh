@@ -30,8 +30,13 @@ done <<EOF
 $(ip -4 -br addr show 2>/dev/null)
 EOF
 
+# shellcheck source=palette.sh
+. "${0%/*}/palette.sh"
+
+# Conectada: icono verde (éxito) e IP destacada. Desconectada: todo en gris,
+# para que no parezca un estado correcto.
 if [ -n "$ip_address" ]; then
-  echo "%{F#1bbf3e}${ICON} %{F#ffffff}${ip_address}%{u-}"
+  echo "%{F${SUCCESS}}${ICON} %{F${STRONG}}${ip_address}%{F-}"
 else
-  echo "%{F#1bbf3e}${ICON} %{u-} Disconnected"
+  echo "%{F${MUTED}}${ICON} Disconnected%{F-}"
 fi

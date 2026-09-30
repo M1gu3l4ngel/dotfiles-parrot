@@ -10,9 +10,18 @@
  *   rofi -show run -theme ~/.config/rofi/themes/<nombre>.rasi
  */
 
+// ----- COMPORTAMIENTO -----
+// Iconos junto a cada aplicación, del mismo tema que usa el sistema (GTK):
+// se reconoce la app antes de terminar de leer su nombre.
+configuration {
+    show-icons:     true;
+    icon-theme:     "Flat-Remix-Green-Dark";
+}
+
+// ----- TEMA -----
 // Tema anterior (queda comentado por si se quiere volver a él rápido).
-//@theme "themes/nord"
+//@theme "themes/squared-nord"
 
 // Tema activo. Rutas relativas al directorio del config (~/.config/rofi/),
 // para que el repo sea portable entre máquinas con distinto $HOME.
-@theme "themes/squared-nord"
+@theme "themes/monokai-soda"

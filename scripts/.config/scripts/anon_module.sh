@@ -11,13 +11,24 @@
 # segundo. El click-left del módulo dispara toggle_anonymity.sh.
 
 STATE_FILE="$HOME/.config/bin/anon_state"
-state=$(cat "$STATE_FILE" 2>/dev/null || echo "off")
+# `read` (builtin) en vez de `cat`: polybar ejecuta esto cada segundo y así no
+# se lanza ningún proceso. Si el archivo no existe, el estado queda en "off".
+state="off"
+read -r state 2>/dev/null <"$STATE_FILE"
+
+# shellcheck source=palette.sh
+. "${0%/*}/palette.sh"
 
 ICON_OFF=$'\xef\x80\x91' #  power-off
 ICON_ON=$'\xef\x88\x9b'  #  user-secret (anónimo)
 
+# Encendido: icono verde (éxito). Apagado: gris, sin llamar la atención.
+# %{O4} (4 px de desplazamiento) centra el icono en el card: el glifo reserva
+# el ancho de una letra (9,4 px a 12 pt) pero se dibuja con ~13,8 px, así que
+# sin compensar se desborda a la derecha. 9,4 + 4 ≈ 13,8: el bloque mide lo
+# mismo que el dibujo. Un espacio entero (9,4 px) lo dejaba a la izquierda.
 if [ "$state" = "on" ]; then
-  echo "%{F#193549}%{B#98E024}  $ICON_ON  %{B-}%{F-}"
+  echo "%{F${SUCCESS}}${ICON_ON}%{O4}%{F-}"
 else
-  echo "%{F#888888}%{B#2a2a2a}  $ICON_OFF  %{B-}%{F-}"
+  echo "%{F${MUTED}}${ICON_OFF}%{O4}%{F-}"
 fi

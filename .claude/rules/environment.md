@@ -26,9 +26,9 @@ código y ya causaron problemas reales.
 
 ## Fuentes
 
-- Solo tres, instaladas por `bootstrap.sh` en `~/.local/share/fonts/NerdFonts/`
-  (Nerd Fonts v3.5.1, SHA-256 fijado): Iosevka (polybar), Hack Mono (logo de
-  Parrot en polybar) y CaskaydiaCove (kitty, dunst, rofi).
+- Solo dos, instaladas por `bootstrap.sh` en `~/.local/share/fonts/NerdFonts/`
+  (Nerd Fonts v3.5.1, SHA-256 fijado): CaskaydiaCove (todo el texto: polybar,
+  kitty, dunst y rofi) y Hack Mono (solo el logo de Parrot en polybar).
 - Para añadir una fuente: agregarla a `bootstrap.sh` con su hash, no al repo.
 
 ## Teclado

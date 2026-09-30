@@ -30,8 +30,12 @@ done <<EOF
 $(ip -4 -br addr show 2>/dev/null)
 EOF
 
+# shellcheck source=palette.sh
+. "${0%/*}/palette.sh"
+
+# Con IP: icono cian (red local) e IP destacada. Sin red: todo en gris.
 if [ -n "$ip_address" ]; then
-  echo "%{F#2495e7}${ICON} %{F#ffffff}${ip_address}%{u-}"
+  echo "%{F${INFO}}${ICON} %{F${STRONG}}${ip_address}%{F-}"
 else
-  echo "%{F#2495e7}${ICON} %{u-}%{F#ffffff} Disconnected"
+  echo "%{F${MUTED}}${ICON} Disconnected%{F-}"
 fi

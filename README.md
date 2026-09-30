@@ -40,12 +40,12 @@ sin efectos colaterales (por ejemplo, tras un fallo de red).
 | Paso | Qué instala o configura |
 |---|---|
 | 1 | Paquetes de apt: entorno gráfico, herramientas de terminal, seguridad, openvpn |
-| 2 | Fuentes Nerd Fonts (Iosevka, Hack, CaskaydiaCove) en `~/.local/share/fonts/` |
+| 2 | Fuentes Nerd Fonts (CaskaydiaCove y Hack) en `~/.local/share/fonts/` |
 | 3 | Neovim oficial en `/opt`, enlazado en `/usr/local/bin/nvim` |
 | 4 | oh-my-posh (prompt) en `~/.local/bin/` |
 | 5 | nvm, Node 24, pnpm y Claude Code |
 | 6 | Enlaces de las configuraciones en `~/.config/` (`install.sh`) |
-| 7 | Hardening del sistema (`system/setup.sh`): firewall, sudoers, parches automáticos |
+| 7 | Hardening del sistema (`system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
 | 8 | zsh como shell por defecto |
 | 9 | Muestra los pasos manuales pendientes |
 
@@ -162,7 +162,6 @@ Para el flujo de pentesting (VPN, target, qué IP usar) ver
 | Iconos como cuadrados | Faltan las fuentes Nerd Font | Volver a ejecutar `./bootstrap.sh` |
 | Un cambio en `.zshrc` no se aplica | Cada terminal conserva lo que cargó al abrirse | `exec zsh` en esa terminal |
 | keychain pide la passphrase en cada terminal | La clave SSH no se llama `id_ed25519` | Ajustar el nombre en la línea de keychain de `zsh/.zshrc` |
-| `Super+Shift+X` no bloquea la pantalla | `convert` es de GraphicsMagick, no de ImageMagick | `sudo apt install imagemagick` |
 | El anonimato falla con "Tor no arrancó" | Falta la regla sudoers | `sudo ./system/setup.sh` desde `~/dotfiles` |
 | Las notificaciones salen arriba y en azul | dunst arrancó antes de existir su configuración | `dunstctl reload` |
 | polybar consume mucha CPU | Un módulo con `interval = 0` | Usar un intervalo mayor que 0 |

@@ -28,8 +28,7 @@ xkbcomp -w 0 -I"$HOME/.config/xkb" "$HOME/.config/xkb/keymap.xkb" "$DISPLAY"
 # Backspace o las flechas se sienta lento.
 xset r rate 300 40
 # Desactiva el timbre de X11. Herramientas antiguas lo disparan sin que sea un
-# error real (p. ej. `import` de ImageMagick, que i3lock-fancy usa para la
-# captura del lock), y en una VM el beep suena como un fallo del sistema.
+# error real, y en una VM el beep suena como un fallo del sistema.
 xset b off
 
 # ----- WORKSPACES -----
@@ -38,9 +37,16 @@ xset b off
 bspc monitor -d I II III IV V VI VII VIII IX X
 
 # ----- BORDES Y GAPS -----
-# Borde inicial de 2px: bspwm lo necesita > 0 para calcular ciertos layouts.
-# Al final del archivo lo bajamos a 0 para que no se vea en pantalla.
-bspc config border_width 2
+# Borde de 1 px para saber qué ventana tiene el foco sin tener que escribir en
+# ella. Grises neutros: el foco se nota pero no compite con el contenido; el
+# naranja queda para acentos puntuales. Neutro y no el gris cálido de la
+# paleta: en un marco fino ese matiz se percibe amarillento.
+# focused: ventana con foco. normal/active: el resto, casi fundidas con el
+# fondo (active = la última con foco en otro monitor).
+bspc config border_width 1
+bspc config focused_border_color '#555555'
+bspc config normal_border_color '#242424'
+bspc config active_border_color '#242424'
 # Separación entre ventanas en píxeles. Mientras más alto, más "aire" entre
 # las ventanas (estética tipo rice).
 bspc config window_gap 12
@@ -81,11 +87,3 @@ run_once dunst
 # Compositor: sombras, transparencias y blur. Sin él las ventanas se ven
 # planas. Relee picom.conf solo al guardarlo, no hace falta reiniciarlo.
 run_once picom
-
-# ----- FIN: OCULTAR BORDE -----
-# Después de que todo esté inicializado, ponemos el borde a 0 para que no
-# se vea ninguna línea alrededor de las ventanas. Se hace al final (y no
-# desde el inicio) porque bspwm necesita un border_width > 0 al cargar las
-# reglas para calcular bien ciertos layouts; después se baja a 0 puramente
-# por estética.
-bspc config border_width 0

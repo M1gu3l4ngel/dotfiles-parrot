@@ -18,10 +18,11 @@ super + Return
 	/usr/bin/kitty
 
 # ----- LANZADOR DE PROGRAMAS -----
-# Abre rofi en modo "run": permite escribir el nombre de cualquier ejecutable
-# del $PATH y lanzarlo. Reemplaza al menú clásico de aplicaciones.
+# Abre rofi en modo "drun": aplicaciones instaladas con su nombre e icono.
+# Ctrl+Tab cambia al modo "run" (cualquier ejecutable del $PATH), para las
+# herramientas de terminal que no tienen entrada de menú.
 super + d
-	/usr/bin/rofi -show run
+	/usr/bin/rofi -show drun -modes drun,run
 
 # ----- RECARGAR SXHKD -----
 # Envía la señal USR1 al daemon, que lo obliga a releer este archivo.
@@ -198,9 +199,12 @@ super + shift + p
 	TZ=UTC /usr/bin/firefox -P pentest --no-remote
 
 # ----- BLOQUEAR PANTALLA -----
-# i3lock-fancy hace un screenshot, lo difumina y lo usa como fondo del lock.
+# Bloquea con la pantalla de login de LightDM (slick-greeter): el mismo diseño
+# que al arrancar, sin paquetes extra y al instante (sin capturas ni blur). La
+# contraseña la valida el gestor de sesión; al desbloquear vuelve la sesión
+# tal como estaba.
 super + shift + x
-	/usr/bin/i3lock-fancy
+	/usr/bin/dm-tool lock
 
 # ----- TOGGLE ANONIMATO (Tor + anonsurf) -----
 # Activa/desactiva el routing onion con notificación + indicador en polybar.

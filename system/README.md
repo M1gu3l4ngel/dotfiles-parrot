@@ -22,6 +22,8 @@ no se usan symlinks: son copias con dueño root (ver al final por qué).
   auto-instala `parrot-security` (kernel y Tor incluidos) y se excluyen las
   herramientas de pentest que no conviene actualizar a mitad de un engagement.
 - `apt/20auto-upgrades` — activa la ejecución diaria de unattended-upgrades.
+- `lightdm/slick-greeter.conf` — pantalla de login y de bloqueo con el mismo
+  fondo que el escritorio (`assets/wallpaper.jpg`), sin la rejilla de puntos.
 - `setup.sh` — instala todo lo anterior y aplica el baseline del sistema.
 
 ## Cómo usar
@@ -50,6 +52,9 @@ El script:
 8. **Solo en VMware:** monta la carpeta compartida `VMShare` del host en
    `/mnt/vmshare` (acceso directo `~/VMShare`), accesible solo para tu
    usuario. Si no hay carpeta compartida configurada, lo indica y sigue.
+9. Copia el fondo a `/usr/share/backgrounds/dotfiles-wallpaper.jpg` e instala
+   `lightdm/slick-greeter.conf`. La config original de Parrot se guarda una
+   vez en `/etc/lightdm/slick-greeter.conf.parrot`.
 
 Es **idempotente**: se puede ejecutar varias veces sin efectos colaterales.
 

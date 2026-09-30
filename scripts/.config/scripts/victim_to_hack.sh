@@ -18,8 +18,9 @@ TARGET_FILE="$HOME/.config/bin/target"
 # Icono nf-md-target (U+F04FE) como escape UTF-8: los glifos de uso privado
 # (PUA) escritos literalmente los eliminan las herramientas de edición.
 ICON=$'\xf3\xb0\x93\xbe'
-RED='%{F#e51d0b}'
-WHITE='%{F#ffffff}'
+
+# shellcheck source=palette.sh
+. "${0%/*}/palette.sh"
 
 # ----- LECTURA -----
 # `read` falla si el archivo no existe, y deja las variables vacías si está
@@ -30,8 +31,10 @@ ip_address="" machine_name=""
 read -r ip_address machine_name _ 2>/dev/null <"$TARGET_FILE"
 
 # ----- SALIDA -----
+# Con target: icono rojo (alerta: hay un objetivo activo), IP destacada y
+# nombre en texto normal. Sin target: todo en gris, sin rojo que alarme.
 if [ -n "$ip_address" ] && [ -n "$machine_name" ]; then
-  echo "${RED}${ICON} ${WHITE}${ip_address}%{u-} - ${machine_name}"
+  echo "%{F${ERROR}}${ICON} %{F${STRONG}}${ip_address} %{F${TEXT}}- ${machine_name}%{F-}"
 else
-  echo "${RED}${ICON} %{u-}${WHITE} No target"
+  echo "%{F${MUTED}}${ICON} No target%{F-}"
 fi

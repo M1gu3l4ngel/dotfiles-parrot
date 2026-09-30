@@ -35,14 +35,12 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Nerd Fonts: solo la familia que usa cada config (y su licencia).
 NERD_FONTS_VERSION="v3.5.1"
 declare -A FONT_SHA256=(
-  [Iosevka]="3b94ea1dc3955756762f977b7677bca671947dd56bc755a6f8465a8e83b5f257"
   [Hack]="cdd389472e10e2261520140ff1b382b4f8a226af5fd0b2735b975d31151d9c3c"
   [CascadiaCode]="ae598e9401e2846aa3ee364513715de0490b844a4b54f0768991f45f23aa8369"
 )
-# Iosevka -> polybar (texto e iconos); Hack Mono -> logo de Parrot en polybar;
-# CaskaydiaCove -> kitty, dunst y rofi.
+# CaskaydiaCove -> todo el texto (polybar, kitty, dunst y rofi);
+# Hack Mono -> solo el logo de Parrot en polybar.
 declare -A FONT_FILES=(
-  [Iosevka]="IosevkaNerdFont-*"
   [Hack]="HackNerdFontMono-*"
   [CascadiaCode]="CaskaydiaCoveNerdFont-*"
 )
@@ -71,9 +69,6 @@ APT_PACKAGES=(
   # Shell y herramientas de terminal.
   zsh zsh-autosuggestions zsh-syntax-highlighting
   bat lsd fzf tmux ripgrep jq xclip
-  # Bloqueo de pantalla. imagemagick es obligatorio: i3lock-fancy no funciona
-  # con el sustituto de GraphicsMagick que apt acepta en su lugar.
-  i3lock-fancy imagemagick
   # Desarrollo: git, análisis de shell scripts y lo que necesita Mason (nvim)
   # para descargar LSPs y formateadores.
   git shellcheck shfmt curl wget unzip xz-utils tar

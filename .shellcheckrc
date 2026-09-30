@@ -1,0 +1,6 @@
+# .shellcheckrc
+# Permite a shellcheck seguir los archivos que cargan los scripts con `.`
+# (p. ej. scripts/.config/scripts/palette.sh), buscándolos junto al script.
+# Sin esto, avisaría de variables "no definidas" que sí vienen del archivo cargado.
+source-path=SCRIPTDIR
+external-sources=true

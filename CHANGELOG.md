@@ -6,6 +6,31 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Cambiado
+
+- polybar: colores con significado (gris = apagado, color = activo) desde una
+  paleta única, `scripts/.config/scripts/palette.sh`.
+- polybar: texto en CaskaydiaCove SemiBold de 12 pt, la misma familia que
+  kitty, dunst y rofi.
+- polybar: barras con anchos ajustados al contenido y 12 px de separación
+  entre ellas y con los bordes, alineadas con el `window_gap` de bspwm.
+- polybar: workspaces con jerarquía clara (activo `●` naranja, con ventanas
+  en color de texto, vacíos atenuados).
+- Radios de esquina más discretos: ventanas 10 px (antes 20), barras,
+  notificaciones y rofi 8 px.
+- Borde de 1 px `#555555` en la ventana con foco y en las barras.
+- rofi: tema `monokai-soda` con la paleta del escritorio; `Super+D` abre las
+  aplicaciones con icono (`Ctrl+Tab` cambia al modo de ejecutables).
+- Bloqueo de pantalla (`Super+Shift+X`) con `dm-tool lock`: la pantalla de
+  login de LightDM, instantánea y sin paquetes extra.
+- Fondo de pantalla nuevo en 4K (casi negro, degradado suave), compartido por
+  el escritorio y la pantalla de login/bloqueo (`system/setup.sh`, paso 9).
+
+### Eliminado
+
+- Iosevka: ya no la usa ninguna configuración y `bootstrap.sh` no la descarga.
+- i3lock-fancy e imagemagick: sustituidos por `dm-tool lock`.
+
 ## [1.0.0] - 2026-09-30
 
 Primera versión publicada.
