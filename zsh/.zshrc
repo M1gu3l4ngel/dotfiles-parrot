@@ -49,11 +49,7 @@ if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
-# zsh-syntax-highlighting: colorea comandos válidos en verde, errores en rojo,
-# strings, etc. Debe cargarse DESPUÉS de cualquier override del prompt.
-if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+# zsh-syntax-highlighting se carga al FINAL del archivo (ver último bloque).
 
 # ----- SISTEMA DE COMPLETIONS -----
 # compinit activa el sistema moderno de autocompletado (con menús, fuzzy match, etc.).
@@ -74,6 +70,70 @@ sudo-command-line() {
 }
 zle -N sudo-command-line
 bindkey "\e\e" sudo-command-line
+
+# ----- SELECCIÓN CON SHIFT (ESTILO EDITOR) -----
+# zsh no trae selección con Shift+flechas; esto la añade como en Windows:
+#   Shift+←/→        selecciona carácter a carácter
+#   Ctrl+Shift+←/→   selecciona palabra a palabra
+#   Shift+Inicio/Fin selecciona hasta el principio/final de la línea
+#   Backspace/Supr   borra la selección; escribir encima la reemplaza
+# Mecánica: al empezar a seleccionar se cambia al keymap `shift-select`, donde
+# cualquier otra tecla primero cierra la selección y luego actúa con normalidad.
+# Ctrl+Shift+←/→ requiere que kitty no las use para cambiar de pestaña (ver
+# kitty.conf).
+shift-select::select-and-invoke() {
+  if (( ! REGION_ACTIVE )); then
+    zle set-mark-command -w
+    zle -K shift-select
+  fi
+  zle ${WIDGET#shift-select::} -w
+}
+
+# Tecla que no es de selección: cierra la selección y re-inyecta la tecla
+# ($KEYS) para que la procese el keymap normal.
+shift-select::deselect-and-input() {
+  zle deactivate-region -w
+  zle -K main
+  zle -U "$KEYS"
+}
+
+# Carácter imprimible con selección activa: la reemplaza, como en un editor.
+shift-select::replace-and-input() {
+  zle kill-region -w
+  zle -K main
+  zle -U "$KEYS"
+}
+
+shift-select::delete-region() {
+  zle kill-region -w
+  zle -K main
+}
+
+zle -N shift-select::deselect-and-input
+zle -N shift-select::replace-and-input
+zle -N shift-select::delete-region
+
+bindkey -N shift-select
+bindkey -M shift-select -R '^@'-'^?' shift-select::deselect-and-input
+bindkey -M shift-select -R ' '-'~' shift-select::replace-and-input
+bindkey -M shift-select '^?' shift-select::delete-region    # Backspace
+bindkey -M shift-select '^[[3~' shift-select::delete-region # Supr
+
+# Secuencias que kitty envía para cada combinación (formato xterm).
+() {
+  local seq widget
+  for seq widget in \
+    '^[[1;2D' backward-char \
+    '^[[1;2C' forward-char \
+    '^[[1;6D' backward-word \
+    '^[[1;6C' forward-word \
+    '^[[1;2H' beginning-of-line \
+    '^[[1;2F' end-of-line; do
+    zle -N shift-select::$widget shift-select::select-and-invoke
+    bindkey -M emacs $seq shift-select::$widget
+    bindkey -M shift-select $seq shift-select::$widget
+  done
+}
 
 # =============================================================================
 # ALIASES
@@ -208,3 +268,14 @@ export NVM_DIR="$HOME/.nvm"
 # Se usa el array `path` (no `export PATH=...`) para que `typeset -U` descarte
 # el duplicado en cada `exec zsh`.
 path=("$HOME/.local/bin" $path)
+
+# =============================================================================
+# SYNTAX HIGHLIGHTING (DEBE IR AL FINAL)
+# =============================================================================
+# zsh-syntax-highlighting colorea comandos válidos en verde, errores en rojo,
+# strings, etc. Su documentación exige cargarlo lo último: envuelve los
+# widgets de edición que existen en ese momento, y los definidos después
+# (sudo con doble Esc, selección con Shift) no refrescarían el color.
+if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
