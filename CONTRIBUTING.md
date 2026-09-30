@@ -124,6 +124,20 @@ Evita `kill/killall/pkill` directos — usa los reload nativos.
 
 ## Validar antes de enviar un PR
 
+Ejecuta desde la raíz del repo:
+
+```bash
+./tools/check.sh
+```
+
+Revisa sintaxis y shellcheck de todos los scripts, zsh, Lua, JSON, la regla
+sudoers, el keymap XKB, la higiene del repo público (sin fuentes ni rutas
+`/home/<usuario>`) y secretos en todo el historial con gitleaks. El CI
+(`.github/workflows/ci.yml`) ejecuta lo mismo en cada push y pull request, y
+marca el commit con ✓ o ✗ en GitHub.
+
+Para lo que el script no cubre porque necesita la sesión gráfica:
+
 | Archivo | Comando |
 |---|---|
 | Shell scripts | `bash -n <archivo>` o `sh -n <archivo>` |

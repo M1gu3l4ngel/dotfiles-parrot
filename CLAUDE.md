@@ -90,7 +90,10 @@ Usar los atajos ya configurados; no hacer kill/killall/pkill:
 
 ## Validación
 
-Antes de marcar un archivo como completado, validar sintaxis:
+Antes de proponer cada commit, ejecutar `./tools/check.sh` desde la raíz del
+repo (lo mismo que corre el CI en cada push) y no proponer el commit si falla.
+
+Para lo que el script no cubre (necesita la sesión gráfica o un archivo concreto):
 
 - Shell scripts: `bash -n <archivo>` o `sh -n <archivo>`.
 - zsh: `zsh -n <archivo>`.

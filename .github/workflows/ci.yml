@@ -1,0 +1,60 @@
+# .github/workflows/ci.yml
+# CI del repo: en cada push a main y en cada pull request ejecuta
+# tools/check.sh (sintaxis, shellcheck, Lua, JSON, sudoers, XKB, higiene del
+# repo público y gitleaks sobre todo el historial). El resultado aparece como
+# ✓ / ✗ junto a cada commit en GitHub.
+# Para ejecutar lo mismo en local: ./tools/check.sh
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Mínimo privilegio: el workflow solo necesita leer el código.
+permissions:
+  contents: read
+
+# Un push nuevo cancela la ejecución anterior de la misma rama.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Comprobaciones
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Acciones fijadas por SHA de commit y no por etiqueta: una etiqueta
+      # (v7) puede moverse a otro código; un SHA no.
+      - name: Descargar el repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Historial completo: gitleaks revisa todos los commits, no solo el último.
+          fetch-depth: 0
+          # No dejar el token de GitHub guardado en .git/config del runner.
+          persist-credentials: false
+
+      - name: Instalar herramientas
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck zsh lua5.1 x11-xkb-utils
+
+      # gitleaks no está en apt: se descarga el binario oficial en una versión
+      # fijada y se verifica su SHA-256 antes de usarlo.
+      - name: Instalar gitleaks
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl -fsSL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+
+      - name: Ejecutar tools/check.sh
+        run: ./tools/check.sh
