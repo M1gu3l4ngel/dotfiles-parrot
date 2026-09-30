@@ -322,13 +322,14 @@ Para evitar correlación entre tu identidad personal (Gmail, GitHub personal) y 
 | `default-esr` | `Super + Shift + F` |  zorro rojo | Personal (mail, GitHub, banking, daily) |
 | `pentest` | `Super + Shift + P` |  bug verde | Targets, OSINT, links sospechosos, lab |
 
-El profile `pentest` aplica un `user.js` (en `system/firefox/pentest.user.js`) con hardening light:
+El profile `pentest` aplica un `user.js` (en `system/firefox/pentest.user.js`, validado en Firefox ESR 140):
 
+- **Sin fugas de targets a terceros:** sin sugerencias de búsqueda (cada tecla de la barra iría al buscador, hostnames del cliente incluidos), sin Safe Browsing (consulta a Google las URLs y descargas) y sin telemetría. Evita problemas de NDA.
+- **Sin tráfico no solicitado:** sin precargas de enlaces, DNS anticipado ni conexiones especulativas, que contra un target serían peticiones que no lanzaste tú (y quizá fuera de alcance).
 - WebRTC deshabilitado (previene leak de IP vía JS aún con VPN).
-- Telemetría de Mozilla off.
 - No guarda passwords ni autofill.
-- HTTPS-Only mode.
-- Limpia cookies, cache e historial al cerrar Firefox.
+- **HTTPS-Only desactivado a propósito:** en labs casi todo es HTTP sobre vhosts (`http://box.htb`) y reescribir a HTTPS alteraría la petición que quieres probar.
+- Borra cookies, almacenamiento, caché, historial, descargas y formularios al cerrar Firefox.
 - **Timezone forzado a UTC** vía `TZ=UTC` en el launcher de sxhkd/polybar. JS reporta UTC en `new Date().getTimezoneOffset()` aunque tu sistema esté en hora local, evitando correlación geográfica por timezone. Firefox personal NO se toca (estás logueado con tu identidad real ahí, ocultar TZ rompería Gmail/Calendar sin agregar anonimato).
 
 `--no-remote` en los lanzadores permite que ambos profiles corran simultáneamente sin que Firefox abra nueva pestaña en la primera instancia.
@@ -337,7 +338,7 @@ El profile `pentest` aplica un `user.js` (en `system/firefox/pentest.user.js`) c
 
 ```bash
 firefox -CreateProfile pentest          # crea el profile vacío
-sudo ./system/setup.sh                  # paso 5 copia el user.js al profile
+sudo ./system/setup.sh                  # paso 6 copia el user.js al profile
 ```
 
 Los 2 íconos en la barra `launchers` de polybar (a la izquierda del target) también disparan los profiles vía click.

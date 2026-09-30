@@ -13,8 +13,11 @@ no se usan symlinks: son copias con dueño root (ver al final por qué).
   `~/.config/scripts/toggle_anonymity.sh` ejecute **solo** estos comandos
   exactos: `anonsurf start`, `anonsurf stop`, `anon-harden up` y
   `anon-harden down`.
-- `firefox/pentest.user.js` — hardening del perfil pentest de Firefox
-  (WebRTC off, telemetría off, borrar cookies al cerrar, HTTPS-only).
+- `firefox/pentest.user.js` — hardening del perfil pentest de Firefox: sin
+  fugas de targets a terceros (sugerencias de búsqueda, Safe Browsing,
+  telemetría), sin tráfico no solicitado (precargas, conexiones
+  especulativas), WebRTC off y todo borrado al cerrar. HTTPS-Only desactivado
+  a propósito: el pentester controla el esquema de cada petición.
 - `apt/52parrot-hardening.conf` — override de unattended-upgrades: solo se
   auto-instala `parrot-security` (kernel y Tor incluidos) y se excluyen las
   herramientas de pentest que no conviene actualizar a mitad de un engagement.

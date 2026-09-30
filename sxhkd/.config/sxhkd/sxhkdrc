@@ -182,8 +182,9 @@ super + alt + {Left,Down,Up,Right}
 
 # ----- FIREFOX (profiles separados) -----
 # Personal (Gmail, GitHub personal): default-esr profile, intacto.
-# Pentest (engagements, targets, lab): pentest profile + user.js hardening
-# (no WebRTC, no telemetry, clear cookies on close, HTTPS-only).
+# Pentest (engagements, targets, lab): pentest profile + user.js endurecido
+# (sin fugas de targets a terceros, sin precargas, WebRTC off, todo se borra
+# al cerrar; ver system/firefox/pentest.user.js).
 # Pentest se lanza con TZ=UTC para que JS reporte timezone UTC en vez de
 # tu hora local — cuarta capa de defensa contra fingerprinting/correlación
 # (Firefox personal NO se toca porque ahí estás logueado con tu identidad
