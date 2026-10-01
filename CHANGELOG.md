@@ -8,6 +8,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- `uninstall.sh`: quita los enlaces del repo y restaura las copias
+  `.pre-dotfiles.bak`; `--dry-run` muestra qué haría sin tocar nada. La lista
+  de enlaces pasa a `lib/links.sh`, compartida con `install.sh`.
 - Gestor de archivos Nautilus con la paleta Monokai Soda (`gtk/`): se abre
   con `Super+E` o con click en el logo de Parrot. Indexador de archivos
   desactivado, sin animaciones y con `VMShare` en la barra lateral.

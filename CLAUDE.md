@@ -23,7 +23,8 @@ Las reglas detalladas están en `.claude/rules/` y se cargan solas:
 | Tarea | Comando |
 |---|---|
 | Instalación completa | `./bootstrap.sh` |
-| Solo symlinks | `./install.sh` |
+| Solo symlinks (lista en `lib/links.sh`) | `./install.sh` |
+| Quitar los symlinks y restaurar originales | `./uninstall.sh` (`--dry-run` para simular) |
 | Hardening del sistema | `sudo ./system/setup.sh` |
 | Comprobaciones (igual que el CI) | `./tools/check.sh` |
 

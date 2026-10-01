@@ -3,9 +3,10 @@
 # Instalador idempotente de los dotfiles.
 #
 # Crea symlinks desde este repositorio hacia las rutas reales en $HOME
-# (~/.config/bspwm/bspwmrc, ~/.zshrc, etc.). Antes de crear cada enlace
-# hace backup de cualquier archivo existente con el sufijo .pre-dotfiles.bak
-# para no perder configuración previa.
+# (~/.config/bspwm/bspwmrc, ~/.zshrc, etc.), según la lista de lib/links.sh.
+# Antes de crear cada enlace hace backup de cualquier archivo existente con el
+# sufijo .pre-dotfiles.bak para no perder configuración previa.
+# Para revertirlo: ./uninstall.sh (con --dry-run para ver antes qué haría).
 #
 # Es idempotente: si ya existe el symlink correcto no hace nada, así que
 # se puede ejecutar varias veces sin romper el sistema.
@@ -54,27 +55,24 @@ ALREADY=0
 # o 1 si ya estaba enlazada al lugar correcto y no hay nada que hacer.
 backup_if_exists() {
   local target="$1"
-  if [ -L "$target" ]; then
-    # Ya hay un symlink: revisamos si apunta a este repo o a otro lugar.
-    local link_target
-    link_target=$(readlink "$target")
-    if [[ "$link_target" == "$DOTFILES_DIR"* ]]; then
-      # Apunta a nuestro repo, todo correcto. No tocamos nada.
-      ALREADY=$((ALREADY + 1))
-      return 1
-    fi
-    # Symlink apunta a otro lado (instalación vieja, otro repo): lo eliminamos.
-    warn "Enlace antiguo reemplazado: $(short "$target") (apuntaba a $link_target)"
-    rm "$target"
-  elif [ -e "$target" ]; then
-    # Existe un archivo real (no symlink): lo movemos a .bak para no perderlo.
+  # Symlink a este repo: ya está instalado, no hay nada que hacer.
+  if [ -L "$target" ] && [[ "$(readlink "$target")" == "$DOTFILES_DIR"* ]]; then
+    ALREADY=$((ALREADY + 1))
+    return 1
+  fi
+  # Cualquier otra cosa (archivo, carpeta o un enlace propio a otro sitio) se
+  # mueve a .bak para no perderla: uninstall.sh la devuelve a su sitio. -L
+  # cubre también los enlaces rotos, que -e no detecta.
+  if [ -e "$target" ] || [ -L "$target" ]; then
     # Si ya hay un .bak de una ejecución anterior, se añade la fecha en vez de
     # sobrescribirlo: esa copia puede ser la única de la config original.
     local backup="${target}${BACKUP_SUFFIX}"
-    if [ -e "$backup" ]; then
+    if [ -e "$backup" ] || [ -L "$backup" ]; then
       backup="${backup}.$(date +%Y%m%d%H%M%S)"
     fi
-    warn "Copia de seguridad: $(short "$target") -> $(short "$backup")"
+    local detail=""
+    [ -L "$target" ] && detail=" (enlace a $(readlink "$target"))"
+    warn "Copia de seguridad: $(short "$target")$detail -> $(short "$backup")"
     mv "$target" "$backup"
   fi
   return 0
@@ -97,37 +95,24 @@ create_symlink() {
 # ----- VALIDACIÓN PREVIA -----
 # Si el script se copió fuera del repo, los archivos fuente no existen: mejor
 # fallar temprano con un mensaje claro que generar enlaces rotos.
-if [ ! -f "$DOTFILES_DIR/zsh/.zshrc" ]; then
-  die "install.sh debe ejecutarse dentro del repo (no existe $DOTFILES_DIR/zsh/.zshrc)"
+if [ ! -f "$DOTFILES_DIR/zsh/.zshrc" ] || [ ! -f "$DOTFILES_DIR/lib/links.sh" ]; then
+  die "install.sh debe ejecutarse dentro del repo (no existe $DOTFILES_DIR/lib/links.sh)"
 fi
 
-# ----- SYMLINKS: source -> target -----
-# Cada línea define un archivo o carpeta del repo y dónde debe vivir en $HOME.
-# Si quieres añadir una config nueva, basta con sumar otra línea aquí.
-create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/bspwmrc" "$HOME/.config/bspwm/bspwmrc"
-create_symlink "$DOTFILES_DIR/bspwm/.config/bspwm/scripts" "$HOME/.config/bspwm/scripts"
-create_symlink "$DOTFILES_DIR/sxhkd/.config/sxhkd/sxhkdrc" "$HOME/.config/sxhkd/sxhkdrc"
-create_symlink "$DOTFILES_DIR/kitty/.config/kitty" "$HOME/.config/kitty"
-create_symlink "$DOTFILES_DIR/picom/.config/picom" "$HOME/.config/picom"
-create_symlink "$DOTFILES_DIR/polybar/.config/polybar" "$HOME/.config/polybar"
-create_symlink "$DOTFILES_DIR/rofi/.config/rofi" "$HOME/.config/rofi"
-create_symlink "$DOTFILES_DIR/dunst/.config/dunst" "$HOME/.config/dunst"
-create_symlink "$DOTFILES_DIR/xkb/.config/xkb" "$HOME/.config/xkb"
-# Archivo a archivo, no ~/.config/gtk-4.0 entero: ahí guardan su estado otras
-# apps.
-create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
-create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
-# VSCodium de Parrot lee sus ajustes de "Visual Studio Code", no de VSCodium.
-create_symlink "$DOTFILES_DIR/vscodium/settings.json" "$HOME/.config/Visual Studio Code/User/settings.json"
-# Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
-# privadas y debe ser real, con permisos 700 y fuera de cualquier repo.
-# Se crea antes que el enlace porque create_symlink usaría los permisos por
-# defecto (755) y gpg avisa de "unsafe permissions" con un homedir abierto.
+# ----- SYMLINKS: origen -> destino -----
+# La lista está en lib/links.sh, compartida con uninstall.sh. Para añadir una
+# config nueva, se suma una línea allí, no aquí.
+# shellcheck source=lib/links.sh
+. "$DOTFILES_DIR/lib/links.sh"
+
+# ~/.gnupg se crea antes que su enlace (gpg-agent.conf) porque create_symlink
+# lo crearía con los permisos por defecto (755), y gpg avisa de "unsafe
+# permissions" con un homedir abierto.
 mkdir -p "$HOME/.gnupg" && chmod 700 "$HOME/.gnupg"
-create_symlink "$DOTFILES_DIR/gnupg/.gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
-create_symlink "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
-create_symlink "$DOTFILES_DIR/scripts/.config/scripts" "$HOME/.config/scripts"
-create_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
+
+for link in "${LINKS[@]}"; do
+  create_symlink "${link%%|*}" "${link#*|}"
+done
 
 # ----- WALLPAPER (NO SOBRESCRIBE SI YA EXISTE UNO) -----
 # bspwmrc carga ~/.config/wallpaper.jpg al iniciar. Aquí lo enlazamos al

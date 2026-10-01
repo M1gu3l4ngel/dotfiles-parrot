@@ -72,9 +72,38 @@ Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
 ./install.sh
 ```
 
-Antes de crear cada enlace, `install.sh` renombra tu archivo existente con el
-sufijo `.pre-dotfiles.bak`. Para volver atrás, borra el enlace y quita ese
-sufijo al archivo original.
+Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
+(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`. Para volver atrás, ver [Desinstalar](#desinstalar).
+
+## Desinstalar
+
+`uninstall.sh` revierte `install.sh`: quita los enlaces que apuntan a este
+repo y devuelve a su sitio las copias `.pre-dotfiles.bak` de tus archivos
+originales. Como usuario normal, desde `~/dotfiles`:
+
+1. Ver qué haría, sin tocar nada:
+
+    ```bash
+    ./uninstall.sh --dry-run
+    ```
+
+2. Aplicarlo:
+
+    ```bash
+    ./uninstall.sh
+    ```
+
+3. Cerrar sesión y volver a entrar para usar la configuración original.
+
+Solo quita enlaces de este repo: si en un destino hay un archivo tuyo, lo deja
+y avisa. No desinstala paquetes ni revierte el hardening de `system/setup.sh`,
+ni los ajustes que `install.sh` aplica sin enlaces (modo oscuro de GTK4,
+Nautilus como gestor de carpetas e indexador desactivado). Las copias con
+fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
+script las lista para que elijas a mano.
+
+La lista de enlaces vive en `lib/links.sh` y la comparten los dos scripts:
+para añadir una configuración nueva basta con sumar una línea allí.
 
 ## Estructura del repo
 
@@ -98,6 +127,7 @@ sufijo al archivo original.
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
 | `docs/` | Guías detalladas | No se instala |
+| `lib/` | Lista de enlaces compartida por `install.sh` y `uninstall.sh` | No se instala |
 | `tools/` | Comprobaciones del repo (`check.sh`) | No se instala |
 
 ## Atajos
@@ -172,8 +202,8 @@ Para el flujo de pentesting (VPN, target, qué IP usar) ver
 | Las notificaciones salen arriba y en azul | dunst arrancó antes de existir su configuración | `dunstctl reload` |
 | polybar consume mucha CPU | Un módulo con `interval = 0` | Usar un intervalo mayor que 0 |
 
-Para restaurar una configuración anterior, busca los archivos con sufijo
-`.pre-dotfiles.bak` en `~/.config/` y en `~`.
+Para restaurar la configuración anterior a los dotfiles, ver
+[Desinstalar](#desinstalar).
 
 ## Documentación
 
