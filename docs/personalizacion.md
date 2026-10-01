@@ -11,7 +11,7 @@ el escritorio siga viéndose como un conjunto.
 
 | Elemento | Valor | Dónde |
 |---|---|---|
-| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css` |
+| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css`, `vscodium/settings.json` |
 | Fuente | CaskaydiaCove Nerd Font en todo; Hack solo en el logo de Parrot | `kitty.conf`, `current.ini`, `workspace.ini`, `dunstrc`, `monokai-soda.rasi` |
 | Tamaño de texto | 12 pt (16 px) en barras y menú; 11 pt en kitty | |
 | Radios | Ventanas 10 px; barras, notificaciones y menú 8 px; elementos internos 4 px | `picom.conf`, `current.ini`, `dunstrc`, `monokai-soda.rasi` |
@@ -111,6 +111,21 @@ ejecutables del `$PATH`, para herramientas de terminal sin entrada de menú.
 - Probar temas: dentro de Neovim, `Espacio` + `t` + `h`.
 - Dejarlo fijo: en `nvim/.config/nvim/lua/chadrc.lua`, cambia el valor de
   `theme` (por defecto `"monekai"`).
+
+## Editor (VSCodium)
+
+Los ajustes están en `vscodium/settings.json`, enlazado por `install.sh`. El
+código usa el tema Monokai; la interfaz, la paleta del sistema, definida en
+`workbench.colorCustomizations` bajo `"[Monokai]"`. Los cambios se aplican al
+guardar el archivo.
+
+- Cambiar un color de la interfaz: edita su valor en ese bloque.
+- Usar otro tema: cambia `workbench.colorTheme`. El bloque `"[Monokai]"` solo
+  afecta a Monokai, así que el tema nuevo se verá con sus colores originales.
+
+La confianza del espacio de trabajo queda activa: al abrir material de labs o
+repos descargados, VSCodium los abre en modo restringido (sin tareas ni
+extensiones que ejecuten código) hasta que lo confirmes.
 
 ## Fuente de la terminal
 

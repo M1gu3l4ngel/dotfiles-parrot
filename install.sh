@@ -117,6 +117,8 @@ create_symlink "$DOTFILES_DIR/xkb/.config/xkb" "$HOME/.config/xkb"
 # apps.
 create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
 create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
+# VSCodium de Parrot lee sus ajustes de "Visual Studio Code", no de VSCodium.
+create_symlink "$DOTFILES_DIR/vscodium/settings.json" "$HOME/.config/Visual Studio Code/User/settings.json"
 # Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
 # privadas y debe ser real, con permisos 700 y fuera de cualquier repo.
 # Se crea antes que el enlace porque create_symlink usaría los permisos por

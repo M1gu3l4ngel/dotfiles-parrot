@@ -88,6 +88,7 @@ sufijo al archivo original.
 | `kitty/` | Terminal | `~/.config/kitty/` |
 | `dunst/` | Notificaciones | `~/.config/dunst/` |
 | `gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
+| `vscodium/` | Ajustes del editor VSCodium | `~/.config/Visual Studio Code/User/` |
 | `xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
 | `zsh/` | Shell | `~/.zshrc` |
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |

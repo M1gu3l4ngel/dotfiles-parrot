@@ -1,0 +1,170 @@
+// ~/.config/Visual Studio Code/User/settings.json
+// Ajustes de VSCodium (la compilación de Parrot los lee de esa carpeta).
+// Base: la configuración de VS Code en Windows, adaptada a Linux (zsh,
+// CaskaydiaCove) y sin lo propio de Windows (PowerShell, rutas C:\).
+// El código se lee con el tema Monokai; la interfaz usa la paleta del
+// escritorio (Monokai Soda) para que encaje con polybar, rofi y Nautilus.
+// install.sh enlaza este archivo. Los cambios se aplican al guardar.
+{
+  // ----- INTERFAZ -----
+  "workbench.colorTheme": "Monokai",
+  "workbench.iconTheme": "symbols",
+  "workbench.productIconTheme": "fluent-icons",
+  "workbench.startupEditor": "none",
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "workbench.editor.tabSizing": "fixed",
+  "workbench.editor.tabSizingFixedMaxWidth": 150,
+
+  // Solo la interfaz (fondos, bordes, foco) con la paleta del sistema;
+  // los colores del código siguen siendo los de Monokai. Limitado a ese tema
+  // con "[Monokai]" para que otro tema no herede estos fondos.
+  "workbench.colorCustomizations": {
+    "[Monokai]": {
+      // Superficies: el mismo fondo que las barras y Nautilus.
+      "editor.background": "#1A1A1A",
+      "editorGutter.background": "#1A1A1A",
+      "sideBar.background": "#1A1A1A",
+      "sideBarSectionHeader.background": "#1A1A1A",
+      "activityBar.background": "#1A1A1A",
+      "titleBar.activeBackground": "#1A1A1A",
+      "titleBar.inactiveBackground": "#1A1A1A",
+      "statusBar.background": "#1A1A1A",
+      "statusBar.noFolderBackground": "#1A1A1A",
+      "statusBar.debuggingBackground": "#1A1A1A",
+      "editorGroupHeader.tabsBackground": "#1A1A1A",
+      "tab.activeBackground": "#1A1A1A",
+      "tab.inactiveBackground": "#1A1A1A",
+      "panel.background": "#1A1A1A",
+      "terminal.background": "#1A1A1A",
+      "breadcrumb.background": "#1A1A1A",
+      // Elementos flotantes y entradas, un tono más claro.
+      "editorWidget.background": "#242424",
+      "quickInput.background": "#242424",
+      "input.background": "#242424",
+      "dropdown.background": "#242424",
+      "menu.background": "#242424",
+      "notifications.background": "#242424",
+      "editorHoverWidget.background": "#242424",
+      "editorSuggestWidget.background": "#242424",
+      // Línea actual y selección en listas: sutiles, sin competir con el código.
+      "editor.lineHighlightBackground": "#242424",
+      "editor.lineHighlightBorder": "#00000000",
+      "list.activeSelectionBackground": "#242424",
+      "list.inactiveSelectionBackground": "#242424",
+      "list.hoverBackground": "#242424",
+      // Bordes: el mismo gris neutro que las ventanas y las barras.
+      "sideBar.border": "#343434",
+      "activityBar.border": "#343434",
+      "titleBar.border": "#343434",
+      "statusBar.border": "#343434",
+      "panel.border": "#343434",
+      "editorGroup.border": "#343434",
+      "tab.border": "#1A1A1A",
+      // Texto de la interfaz: gris cálido; apagado en lo inactivo.
+      "foreground": "#C4C5B5",
+      "sideBar.foreground": "#C4C5B5",
+      "statusBar.foreground": "#C4C5B5",
+      "titleBar.activeForeground": "#C4C5B5",
+      "titleBar.inactiveForeground": "#8F8B7A",
+      "activityBar.foreground": "#C4C5B5",
+      "activityBar.inactiveForeground": "#8F8B7A",
+      "tab.activeForeground": "#C4C5B5",
+      "tab.inactiveForeground": "#8F8B7A",
+      "editorLineNumber.foreground": "#625E4C",
+      "editorLineNumber.activeForeground": "#C4C5B5",
+      // Foco y elementos activos: el gris neutro del borde de la ventana con
+      // foco en bspwm. Se nota sin distraer; los colores fuertes quedan para
+      // el código. Texto claro (#F6F6EF) donde va encima del gris.
+      "focusBorder": "#555555",
+      "tab.activeBorderTop": "#555555",
+      "tab.activeBorder": "#1A1A1A",
+      "activityBar.activeBorder": "#555555",
+      "activityBarBadge.background": "#555555",
+      "activityBarBadge.foreground": "#F6F6EF",
+      "badge.background": "#555555",
+      "badge.foreground": "#F6F6EF",
+      "button.background": "#555555",
+      "button.foreground": "#F6F6EF",
+      "button.hoverBackground": "#625E4C",
+      "progressBar.background": "#555555"
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    "comments": "#9a9c9a"
+  },
+
+  // ----- EDITOR -----
+  "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
+  "editor.fontLigatures": true,
+  "editor.wordWrap": "off",
+  "editor.codeLens": true,
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.linkedEditing": true,
+  "editor.cursorBlinking": "expand",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.scrollbar.verticalScrollbarSize": 8,
+  "editor.scrollbar.horizontalScrollbarSize": 5,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": false,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "editor.largeFileOptimizations": false,
+
+  // ----- FORMATO -----
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "html.format.wrapLineLength": 130,
+  "css.enabledLanguages": ["html"],
+  "prettier.arrowParens": "always",
+  "prettier.bracketSameLine": false,
+  "prettier.bracketSpacing": true,
+  "prettier.semi": true,
+  "prettier.singleQuote": false,
+  "prettier.jsxSingleQuote": false,
+  "prettier.quoteProps": "as-needed",
+  "prettier.trailingComma": "all",
+  "prettier.singleAttributePerLine": false,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.vueIndentScriptAndStyle": false,
+  "prettier.proseWrap": "preserve",
+  "prettier.endOfLine": "lf",
+  "prettier.insertPragma": false,
+  "prettier.requirePragma": false,
+  "prettier.printWidth": 100,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": true,
+  "prettier.embeddedLanguageFormatting": "auto",
+
+  // ----- ARCHIVOS Y EXPLORADOR -----
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 600,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "symbols.hidesExplorerArrows": false,
+
+  // ----- TERMINAL -----
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font'",
+  "terminal.integrated.initialHint": false,
+
+  // ----- GIT -----
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+
+  // ----- EXTENSIONES -----
+  "auto-close-tag.enableAutoCloseTag": true,
+  "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"],
+  "claudeCode.preferredLocation": "panel",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+
+  // ----- SEGURIDAD Y PRIVACIDAD -----
+  // Confianza del espacio de trabajo activa (por defecto) y con aviso: al abrir
+  // material de labs o repos descargados, VSCodium lo abre en modo restringido
+  // (sin tareas ni extensiones que ejecuten código) hasta que lo confirmes.
+  "security.workspace.trust.enabled": true,
+  "telemetry.telemetryLevel": "off"
+}

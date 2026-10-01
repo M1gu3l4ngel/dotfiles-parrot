@@ -11,6 +11,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - Gestor de archivos Nautilus con la paleta Monokai Soda (`gtk/`): se abre
   con `Super+E` o con click en el logo de Parrot. Indexador de archivos
   desactivado, sin animaciones y con `VMShare` en la barra lateral.
+- Ajustes de VSCodium versionados (`vscodium/`): código con Monokai,
+  interfaz con la paleta del sistema, sin telemetría y con la confianza del
+  espacio de trabajo activa.
 
 ### Cambiado
 

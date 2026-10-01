@@ -133,9 +133,16 @@ else
 fi
 
 # ----- 5. JSON -----
+# Los ajustes de VSCodium son JSONC (admiten comentarios //): se quitan las
+# líneas de comentario antes de validarlos como JSON.
+STRIP_JSONC='import json, re, sys; json.loads(re.sub(r"(?m)^\s*//.*$", "", open(sys.argv[1]).read()))'
 errors=0
 while IFS= read -r f; do
-  python3 -m json.tool "$f" >/dev/null 2>&1 || {
+  if [[ "$f" == vscodium/* ]]; then
+    python3 -c "$STRIP_JSONC" "$f" >/dev/null 2>&1
+  else
+    python3 -m json.tool "$f" >/dev/null 2>&1
+  fi || {
     fail "JSON inválido: $f"
     errors=1
   }
