@@ -146,6 +146,7 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `Super+Escape` | Recargar los atajos |
 | `Super+Alt+R` | Recargar bspwm (y polybar) |
 | `Super+Alt+Q` | Cerrar la sesión |
+| Botón de apagado (polybar, esquina derecha) | Menú: apagar, reiniciar o cerrar sesión de forma ordenada |
 | `Alt+Shift` | Cambiar la distribución de teclado (us / latam) |
 
 ### Ventanas

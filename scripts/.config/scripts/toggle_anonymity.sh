@@ -9,9 +9,10 @@
 #      Tor (no solo que el proceso `tor` esté vivo). Si falla, revierte todo.
 # Al desactivar, se restauran las policies a ACCEPT y se quita la regla ICMP.
 #
-# Iconos (Nerd Font, UTF-8 directos):
-#   - OFF (normal):   power-off (Font Awesome)      \xef\x80\x91
-#   - ON  (anónimo):  fa-user-secret (Font Awesome) \xef\x88\x9b
+# El estado se toma del servicio anonsurfd (el que enruta el tráfico por Tor),
+# no de si hay un proceso `tor`: Parrot puede dejar tor@default corriendo
+# suelto al arrancar (anonsurf-recovery) sin que haya anonimato, y entonces el
+# toggle creía que estaba activo e intentaba desactivarlo sin éxito.
 #
 # Uso:
 #   - Atajo Super+A (configurado en sxhkdrc)
@@ -27,8 +28,9 @@
 STATE_FILE="$HOME/.config/bin/anon_state"
 mkdir -p "$(dirname "$STATE_FILE")"
 
-ICON_OFF=$'\xef\x80\x91' #  power-off
-ICON_ON=$'\xef\x88\x9b'  #  user-secret
+# Mismo fantasma que el módulo de polybar (anon_module.sh), nf-md-ghost
+# (U+F02A0) como escape UTF-8. En las notificaciones el estado lo da el texto.
+ICON=$'\xf3\xb0\x8a\xa0'
 
 # ----- HARDENING: IPv6 + ICMP -----
 # Capas que anonsurf no cubre (IPv6 a DROP, ICMP saliente a DROP). Las reglas
@@ -56,58 +58,56 @@ verify_tor() {
   echo "$resp" | grep -q '"IsTor":true'
 }
 
-# Estado actual: ¿el proceso tor está corriendo?
-if pgrep -x tor >/dev/null; then
-  current="on"
-else
-  current="off"
-fi
+# ¿Está AnonSurf enrutando el tráfico por Tor? (ver la cabecera)
+anonsurf_active() {
+  systemctl is-active --quiet anonsurfd
+}
 
-if [ "$current" = "on" ]; then
+if anonsurf_active; then
   # ----- DESACTIVAR -----
   notify-send -u low -t 3000 \
-    "$ICON_OFF  Desactivando anonimato..." \
+    "$ICON  Desactivando anonimato..." \
     "Cerrando Tor y restaurando conexión directa"
   harden_down
   # `yes y |` auto-confirma el prompt "kill dangerous apps? [Y/n]"
   yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
   sleep 2
 
-  if pgrep -x tor >/dev/null; then
+  if anonsurf_active; then
     notify-send -u critical -t 5000 \
-      "$ICON_ON  Error al desactivar" \
-      "Tor sigue corriendo. Intenta manualmente: sudo anonsurf stop"
+      "$ICON  Error al desactivar" \
+      "AnonSurf sigue activo. Intenta manualmente: sudo anonsurf stop"
   else
     echo "off" >"$STATE_FILE"
     notify-send -u low -t 4000 \
-      "$ICON_OFF  Anonimato OFF" \
+      "$ICON  Anonimato OFF" \
       "Conexión directa restaurada · tráfico sin enmascarar"
   fi
 else
   # ----- ACTIVAR -----
   notify-send -u normal -t 3000 \
-    "$ICON_ON  Activando anonimato..." \
+    "$ICON  Activando anonimato..." \
     "Conectando a la red Tor (puede tardar 10-15s)"
   # anonsurf start también pregunta "kill dangerous apps? [Y/n]"; sin un
   # 'y' en stdin aborta con EOFError y tor nunca arranca.
   yes y | sudo -n "$ANONSURF" start >/dev/null 2>&1
   sleep 5
 
-  if ! pgrep -x tor >/dev/null; then
+  if ! anonsurf_active; then
     notify-send -u critical -t 5000 \
-      "$ICON_OFF  Error al activar" \
-      "Tor no arrancó. Intenta manualmente: sudo anonsurf start"
+      "$ICON  Error al activar" \
+      "AnonSurf no arrancó. Intenta manualmente: sudo anonsurf start"
     exit 1
   fi
 
-  # Tor está vivo → endurecer capas que anonsurf no cubre
+  # AnonSurf activo → endurecer capas que anonsurf no cubre
   harden_up
 
   # Validación real contra check.torproject.org. Si falla, ROLLBACK completo.
   if verify_tor; then
     echo "on" >"$STATE_FILE"
     notify-send -u critical -t 5000 \
-      "$ICON_ON  Anonimato ON · verificado" \
+      "$ICON  Anonimato ON · verificado" \
       "Todo el tráfico via Tor (IPv6 bloqueado, ICMP bloqueado, IsTor:true)"
   else
     # Bootstrap incompleto o leak detectado: revertir TODO
@@ -115,7 +115,7 @@ else
     yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
     echo "off" >"$STATE_FILE"
     notify-send -u critical -t 7000 \
-      "$ICON_OFF  Error: no se confirmó salida por Tor" \
+      "$ICON  Error: no se confirmó salida por Tor" \
       "check.torproject.org no devolvió IsTor:true. Rollback aplicado."
   fi
 fi

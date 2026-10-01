@@ -11,6 +11,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - `uninstall.sh`: quita los enlaces del repo y restaura las copias
   `.pre-dotfiles.bak`; `--dry-run` muestra qué haría sin tocar nada. La lista
   de enlaces pasa a `lib/links.sh`, compartida con `install.sh`.
+- polybar: botón de apagado, solo en la esquina derecha. Abre un menú de
+  rofi (apagar, reiniciar, cerrar sesión) que usa `systemctl`, para no apagar
+  la VM de golpe (un corte así dejó objetos de git vacíos).
 - Gestor de archivos Nautilus con la paleta Monokai Soda (`gtk/`): se abre
   con `Super+E` o con click en el logo de Parrot. Indexador de archivos
   desactivado, sin animaciones y con `VMShare` en la barra lateral.
@@ -39,6 +42,15 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   login de LightDM, instantánea y sin paquetes extra.
 - Fondo de pantalla nuevo en 4K (casi negro, degradado suave), compartido por
   el escritorio y la pantalla de login/bloqueo (`system/setup.sh`, paso 9).
+- Anonimato con un fantasma como icono (verde activado, gris desactivado),
+  ahora junto a los lanzadores de Firefox.
+
+### Corregido
+
+- El toggle de anonimato decidía el estado por si había un proceso `tor`:
+  con el Tor que Parrot deja corriendo al arrancar, creía que el anonimato
+  estaba activo y fallaba al desactivarlo. Ahora usa el estado de AnonSurf
+  (`anonsurfd`).
 
 ### Eliminado
 

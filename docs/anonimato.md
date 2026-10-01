@@ -17,15 +17,20 @@ toggle falla con "Tor no arrancó".
 
 ## Activar y desactivar
 
-1. Pulsa `Super+A` o haz clic en el botón de la esquina derecha de polybar.
+1. Pulsa `Super+A` o haz clic en el fantasma de polybar, junto a los iconos
+   de Firefox.
 2. Espera entre 15 y 20 segundos: Tor se conecta a la red y el script
    comprueba la salida.
 3. Resultado:
-    - Correcto: notificación "Anonimato ON · verificado" y botón verde.
+    - Correcto: notificación "Anonimato ON · verificado" y fantasma verde.
     - Error: notificación roja. Si la salida no se pudo confirmar como Tor, el
       script deshace todos los cambios y vuelve a la conexión directa.
 4. Para desactivar, pulsa `Super+A` otra vez: notificación "Anonimato OFF" y
-   botón gris.
+   fantasma gris.
+
+El estado se toma de AnonSurf (`systemctl is-active anonsurfd`), no de si
+hay un proceso `tor`: Parrot puede dejar Tor corriendo tras arrancar sin que
+el anonimato esté activo (`anonsurf status` muestra `AnonSurf: inactive`).
 
 ## Qué hace al activarse
 
