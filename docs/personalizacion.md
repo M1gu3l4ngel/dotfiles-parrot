@@ -122,6 +122,9 @@ guardar el archivo.
 - Cambiar un color de la interfaz: edita su valor en ese bloque.
 - Usar otro tema: cambia `workbench.colorTheme`. El bloque `"[Monokai]"` solo
   afecta a Monokai, así que el tema nuevo se verá con sus colores originales.
+- Añadir una extensión: búscala en [Open VSX](https://open-vsx.org) (el
+  catálogo de VSCodium), añade su identificador a `vscodium/extensions.txt` y
+  ejecuta `./bootstrap.sh`, que instala solo las que falten.
 
 La confianza del espacio de trabajo queda activa: al abrir material de labs o
 repos descargados, VSCodium los abre en modo restringido (sin tareas ni

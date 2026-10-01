@@ -158,7 +158,8 @@
   // ----- EXTENSIONES -----
   "auto-close-tag.enableAutoCloseTag": true,
   "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"],
-  "claudeCode.preferredLocation": "panel",
+  "sqltools.highlightQuery": false,
+  "sqltools.results.limit": 100,
   "js/ts.updateImportsOnFileMove.enabled": "always",
 
   // ----- SEGURIDAD Y PRIVACIDAD -----

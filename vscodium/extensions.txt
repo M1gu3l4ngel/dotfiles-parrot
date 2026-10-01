@@ -1,0 +1,43 @@
+# vscodium/extensions.txt
+# Extensiones de VSCodium, desde Open VSX (el catálogo de VSCodium). Las
+# instala bootstrap.sh (solo las que faltan). Una por línea; # comenta.
+# Para añadir una: búscala en https://open-vsx.org y copia su identificador
+# (editor.nombre).
+#
+# No incluidas a propósito: SonarLint (239 MB, trae su propio Java) y Claude
+# Code (107 MB, ya está instalado como CLI); las de licencia exclusiva de VS
+# Code (SQL Server, .NET Runtime) y las de Windows (PowerShell, WSL).
+
+# ----- ASPECTO -----
+miguelsolorio.symbols
+miguelsolorio.fluent-icons
+ms-ceintl.vscode-language-pack-es
+
+# ----- WEB Y JS/TS -----
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+bradlc.vscode-tailwindcss
+ecmel.vscode-html-css
+htmlhint.vscode-htmlhint
+pranaygp.vscode-css-peek
+formulahendry.auto-close-tag
+formulahendry.auto-rename-tag
+bradgashler.htmltagwrap
+xabikos.javascriptsnippets
+yoavbls.pretty-ts-errors
+wix.vscode-import-cost
+sainoba.px-to-rem
+naumovs.color-highlight
+
+# ----- PRODUCTIVIDAD -----
+usernamehw.errorlens
+christian-kohler.path-intellisense
+exodiusstudios.comment-anchors
+pflannery.vscode-versionlens
+mhutchie.git-graph
+
+# ----- DATOS Y APIS -----
+humao.rest-client
+mechatroner.rainbow-csv
+mtxr.sqltools
+tomoki1207.pdf

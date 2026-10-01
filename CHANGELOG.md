@@ -14,6 +14,8 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - Ajustes de VSCodium versionados (`vscodium/`): código con Monokai,
   interfaz con la paleta del sistema, sin telemetría y con la confianza del
   espacio de trabajo activa.
+- `bootstrap.sh` instala VSCodium y sus 26 extensiones desde Open VSX
+  (`vscodium/extensions.txt`), solo las que falten.
 
 ### Cambiado
 

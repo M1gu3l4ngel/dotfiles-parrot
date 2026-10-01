@@ -6,8 +6,8 @@
 #   cd ~/dotfiles && ./bootstrap.sh
 #
 # Orden: paquetes de apt -> fuentes -> Neovim -> oh-my-posh -> nvm + Node +
-# pnpm + Claude Code -> symlinks (install.sh) -> hardening (system/setup.sh)
-# -> zsh como shell -> guía de GPG/SSH/pass.
+# pnpm + Claude Code -> symlinks (install.sh) -> extensiones de VSCodium ->
+# hardening (system/setup.sh) -> zsh como shell -> guía de GPG/SSH/pass.
 #
 # Idempotente: cada paso comprueba si ya está hecho (y en qué versión) y solo
 # aplica lo que falta. Se puede volver a ejecutar tras un fallo o para
@@ -70,9 +70,10 @@ APT_PACKAGES=(
   # Shell y herramientas de terminal.
   zsh zsh-autosuggestions zsh-syntax-highlighting
   bat lsd fzf tmux ripgrep jq xclip
-  # Desarrollo: git, análisis de shell scripts y lo que necesita Mason (nvim)
-  # para descargar LSPs y formateadores.
-  git shellcheck shfmt curl wget unzip xz-utils tar
+  # Desarrollo: git, análisis de shell scripts, lo que necesita Mason (nvim)
+  # para descargar LSPs y formateadores, y VSCodium (VS Code sin telemetría,
+  # del repositorio de Parrot).
+  git shellcheck shfmt curl wget unzip xz-utils tar codium
   # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
   ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
   # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
@@ -271,6 +272,38 @@ link_dotfiles() {
   "$DOTFILES_DIR/install.sh"
 }
 
+install_vscodium_extensions() {
+  step "Extensiones de VSCodium"
+  local list="$DOTFILES_DIR/vscodium/extensions.txt"
+  if ! command -v codium >/dev/null; then
+    warn "VSCodium no está instalado; se omiten las extensiones"
+    return
+  fi
+  # Una sola consulta de las instaladas; codium las lista en minúsculas.
+  local -A installed=()
+  local id
+  while read -r id; do
+    installed[${id,,}]=1
+  done < <(codium --list-extensions 2>/dev/null)
+  local wanted=() args=()
+  while read -r id; do
+    id=${id%%#*}
+    id=${id//[[:space:]]/}
+    [ -n "$id" ] || continue
+    wanted+=("$id")
+    [ -n "${installed[${id,,}]:-}" ] || args+=(--install-extension "$id")
+  done <"$list"
+  if [ "${#args[@]}" -eq 0 ]; then
+    ok "Las ${#wanted[@]} extensiones ya están instaladas"
+    return
+  fi
+  # Todas en una sola llamada: VSCodium arranca una vez, no una por extensión.
+  # Se filtra el aviso de obsolescencia de Node que imprime su CLI (ruido
+  # interno, no un fallo); cualquier otro error sigue saliendo por stderr.
+  codium "${args[@]}" >/dev/null 2> >(grep -v -e DeprecationWarning -e trace-deprecation >&2)
+  ok "$((${#args[@]} / 2)) extensiones instaladas desde Open VSX"
+}
+
 harden_system() {
   step "Hardening del sistema (system/setup.sh)"
   sudo "$DOTFILES_DIR/system/setup.sh"
@@ -331,6 +364,7 @@ install_neovim
 install_oh_my_posh
 install_node_toolchain
 link_dotfiles
+install_vscodium_extensions
 harden_system
 set_default_shell
 print_next_steps
