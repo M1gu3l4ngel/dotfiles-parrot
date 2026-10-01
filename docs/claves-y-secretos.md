@@ -107,15 +107,17 @@ como máximo: los mismos valores que en Windows.
     git config --global tag.gpgsign true
     ```
 
-4. Exportar la clave pública solo con la identidad noreply (si la clave tiene
-   también tu email personal, este filtro evita publicarlo):
+4. Copiar la clave pública al portapapeles. Comprueba antes con
+   `gpg --list-keys <fingerprint>` que su único `uid` es el noreply; si
+   también aparece tu email personal, sigue antes
+   [Quitar el email personal de la clave](#quitar-el-email-personal-de-la-clave):
 
     ```bash
-    gpg --armor --export --export-filter keep-uid='mbox = <tu-noreply>' <fingerprint>
+    gpg --armor --export <fingerprint> | xclip -selection clipboard
     ```
 
 5. En GitHub, Settings -> SSH and GPG keys -> New GPG key: pega el bloque
-   completo, de `-----BEGIN` a `-----END`, y guarda.
+   (`Ctrl+V`) y guarda.
 
 6. Hacer un commit y comprobar la firma (`G` = firma válida):
 
@@ -168,6 +170,43 @@ gpg --quick-set-expire <fingerprint> 2y '*'
 ```
 
 Después, vuelve a exportarla (paso 4) y reemplázala en GitHub.
+
+### Quitar el email personal de la clave
+
+Si la clave tiene también un UID con tu email personal, GitHub lo publica en
+`github.com/<usuario>.gpg`. Lo recomendado es borrar ese UID: la clave queda
+limpia para siempre y la firma no cambia (los commits siguen "Verified"
+porque usan el noreply). Como usuario normal, en cualquier directorio:
+
+1. Hacer antes la [copia de seguridad](#copia-de-seguridad-obligatoria).
+2. Abrir el editor de la clave:
+
+    ```bash
+    gpg --edit-key <fingerprint>
+    ```
+
+3. En el prompt `gpg>`, una línea cada vez: `uid N` (N = posición del UID
+   personal en la lista; comprueba que el `*` queda en esa línea, nunca en la
+   del noreply), `deluid`, `y` y `save`.
+4. Comprobar que el único `uid` es el noreply:
+
+    ```bash
+    gpg --list-keys <fingerprint>
+    ```
+
+5. Rehacer la copia de seguridad (la anterior aún tiene el UID personal) y
+   reemplazar la clave en GitHub: borra la entrada antigua (GitHub rechaza dos
+   claves con el mismo fingerprint) y sube la nueva (pasos 4 y 5).
+
+Borrar el UID solo afecta a tu copia y a lo que vuelvas a publicar: si la
+clave ya estaba en un servidor de claves público, allí sigue con el UID.
+
+Alternativa sin modificar la clave: exportar filtrando el UID. Hay que
+recordar el filtro en cada exportación; si se olvida, se publica el email:
+
+```bash
+gpg --armor --export --export-filter keep-uid='mbox = <tu-noreply>' <fingerprint>
+```
 
 ## pass (gestor de secretos)
 
