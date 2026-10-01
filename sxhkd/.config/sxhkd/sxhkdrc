@@ -24,6 +24,13 @@ super + Return
 super + d
 	/usr/bin/rofi -show drun -modes drun,run
 
+# ----- GESTOR DE ARCHIVOS -----
+# Nautilus en la carpeta personal, como Win+E en Windows. --new-window abre
+# siempre una ventana nueva aunque ya haya otra abierta en otro workspace.
+# También se abre con click en el logo de Parrot (polybar).
+super + e
+	/usr/bin/nautilus --new-window
+
 # ----- RECARGAR SXHKD -----
 # Envía la señal USR1 al daemon, que lo obliga a releer este archivo.
 # Útil cuando se añade un nuevo binding y no se quiere cerrar sesión.

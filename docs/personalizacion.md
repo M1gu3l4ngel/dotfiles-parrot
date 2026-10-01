@@ -11,7 +11,7 @@ el escritorio siga viéndose como un conjunto.
 
 | Elemento | Valor | Dónde |
 |---|---|---|
-| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi` |
+| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css` |
 | Fuente | CaskaydiaCove Nerd Font en todo; Hack solo en el logo de Parrot | `kitty.conf`, `current.ini`, `workspace.ini`, `dunstrc`, `monokai-soda.rasi` |
 | Tamaño de texto | 12 pt (16 px) en barras y menú; 11 pt en kitty | |
 | Radios | Ventanas 10 px; barras, notificaciones y menú 8 px; elementos internos 4 px | `picom.conf`, `current.ini`, `dunstrc`, `monokai-soda.rasi` |

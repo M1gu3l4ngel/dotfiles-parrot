@@ -6,6 +6,12 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Añadido
+
+- Gestor de archivos Nautilus con la paleta Monokai Soda (`gtk/`): se abre
+  con `Super+E` o con click en el logo de Parrot. Indexador de archivos
+  desactivado, sin animaciones y con `VMShare` en la barra lateral.
+
 ### Cambiado
 
 - polybar: colores con significado (gris = apagado, color = activo) desde una

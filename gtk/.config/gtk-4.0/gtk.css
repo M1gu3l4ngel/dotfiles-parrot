@@ -1,0 +1,54 @@
+/*
+ * ~/.config/gtk-4.0/gtk.css
+ * Paleta Monokai Soda para las apps GTK4/libadwaita (Nautilus, el gestor de
+ * archivos), con los mismos valores que polybar, rofi y kitty.
+ * libadwaita lee estos colores con nombre al arrancar cada app: para aplicar
+ * un cambio basta con cerrar y volver a abrir la app.
+ * install.sh enlaza este archivo y settings.ini; el resto de
+ * ~/.config/gtk-4.0 sigue siendo de cada app.
+ */
+
+/* ----- SUPERFICIES ----- */
+/* Mismo fondo que las barras (#1A1A1A); ventanas emergentes y tarjetas un
+ * tono más claro (#242424) para separarse del fondo sin bordes marcados. */
+@define-color window_bg_color #1A1A1A;
+@define-color view_bg_color #1A1A1A;
+@define-color headerbar_bg_color #1A1A1A;
+@define-color headerbar_backdrop_color #1A1A1A;
+@define-color sidebar_bg_color #1A1A1A;
+@define-color sidebar_backdrop_color #1A1A1A;
+@define-color secondary_sidebar_bg_color #1A1A1A;
+@define-color card_bg_color #242424;
+@define-color dialog_bg_color #242424;
+@define-color popover_bg_color #242424;
+@define-color thumbnail_bg_color #242424;
+
+/* ----- BORDES ----- */
+/* El mismo gris neutro del borde de ventanas y barras. */
+@define-color headerbar_border_color #343434;
+@define-color sidebar_border_color #343434;
+
+/* ----- TEXTO ----- */
+/* Gris cálido en vez de blanco puro: sobre fondo oscuro el blanco deslumbra. */
+@define-color window_fg_color #C4C5B5;
+@define-color view_fg_color #C4C5B5;
+@define-color headerbar_fg_color #C4C5B5;
+@define-color sidebar_fg_color #C4C5B5;
+@define-color card_fg_color #C4C5B5;
+@define-color dialog_fg_color #C4C5B5;
+@define-color popover_fg_color #C4C5B5;
+@define-color thumbnail_fg_color #C4C5B5;
+
+/* ----- ACENTO ----- */
+/* Naranja: el color de foco y selección del sistema (workspace activo,
+ * opción seleccionada en rofi). accent_fg: texto sobre fondo naranja. */
+@define-color accent_bg_color #FA8419;
+@define-color accent_fg_color #1A1A1A;
+@define-color accent_color #FA8419;
+
+/* ----- ESTADOS ----- */
+@define-color destructive_bg_color #F4005F;
+@define-color destructive_color #F4005F;
+@define-color success_color #98E024;
+@define-color warning_color #E0D561;
+@define-color error_color #F4005F;

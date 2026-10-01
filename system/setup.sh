@@ -211,6 +211,13 @@ else
   systemctl start "$(systemd-escape -p --suffix=automount "$SHARE_MNT")"
   # Acceso directo en el home para no tener que recordar la ruta de montaje.
   sudo -u "$TARGET_USER" ln -sfn "$SHARE_MNT" "$TARGET_HOME/VMShare"
+  # Marcador en la barra lateral del gestor de archivos (Nautilus lee los
+  # marcadores de gtk-3.0 también en GTK4). Solo se añade si falta.
+  BOOKMARKS="$TARGET_HOME/.config/gtk-3.0/bookmarks"
+  if ! grep -qs "^file://$TARGET_HOME/VMShare " "$BOOKMARKS"; then
+    sudo -u "$TARGET_USER" mkdir -p "$(dirname "$BOOKMARKS")"
+    echo "file://$TARGET_HOME/VMShare VMShare" | sudo -u "$TARGET_USER" tee -a "$BOOKMARKS" >/dev/null
+  fi
   echo "      Disponible en $SHARE_MNT (acceso directo: ~/VMShare)"
 fi
 

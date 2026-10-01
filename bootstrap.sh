@@ -63,8 +63,9 @@ NODE_MAJOR="24"
 # =============================================================================
 APT_PACKAGES=(
   # Entorno gráfico: WM, atajos, barra, compositor, lanzador, terminal, fondo,
-  # notificaciones y utilidades de X11 (xkbcomp para el keymap, xset).
-  bspwm sxhkd polybar picom rofi kitty feh dunst libnotify-bin
+  # notificaciones, gestor de archivos y utilidades de X11 (xkbcomp para el
+  # keymap, xset).
+  bspwm sxhkd polybar picom rofi kitty feh dunst libnotify-bin nautilus
   x11-xkb-utils x11-xserver-utils
   # Shell y herramientas de terminal.
   zsh zsh-autosuggestions zsh-syntax-highlighting

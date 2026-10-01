@@ -113,6 +113,10 @@ create_symlink "$DOTFILES_DIR/polybar/.config/polybar" "$HOME/.config/polybar"
 create_symlink "$DOTFILES_DIR/rofi/.config/rofi" "$HOME/.config/rofi"
 create_symlink "$DOTFILES_DIR/dunst/.config/dunst" "$HOME/.config/dunst"
 create_symlink "$DOTFILES_DIR/xkb/.config/xkb" "$HOME/.config/xkb"
+# Archivo a archivo, no ~/.config/gtk-4.0 entero: ahí guardan su estado otras
+# apps.
+create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
+create_symlink "$DOTFILES_DIR/gtk/.config/gtk-4.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
 # Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
 # privadas y debe ser real, con permisos 700 y fuera de cualquier repo.
 # Se crea antes que el enlace porque create_symlink usaría los permisos por
@@ -142,6 +146,37 @@ fi
 mkdir -p "$HOME/.config/bin"
 if [ ! -f "$HOME/.config/bin/target" ]; then
   : >"$HOME/.config/bin/target"
+fi
+
+# ----- MODO OSCURO EN APPS GTK4 -----
+# libadwaita (Nautilus) toma el modo oscuro de esta preferencia del sistema;
+# sin ella abre en claro aunque el resto del escritorio sea oscuro. Se guarda
+# en dconf, no en un archivo que se pueda enlazar.
+if command -v gsettings >/dev/null &&
+  [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" != "'prefer-dark'" ]; then
+  gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+  ok "Modo oscuro activado para las apps GTK4"
+fi
+
+# ----- GESTOR DE ARCHIVOS POR DEFECTO -----
+# Las apps que abren una carpeta (p. ej. "Mostrar en carpeta" de Firefox) usan
+# la asociación de inode/directory. Sin esto la tomaba un editor de código.
+FOLDER_APP="org.gnome.Nautilus.desktop"
+if command -v xdg-mime >/dev/null && [ -f "/usr/share/applications/$FOLDER_APP" ] &&
+  [ "$(xdg-mime query default inode/directory)" != "$FOLDER_APP" ]; then
+  xdg-mime default "$FOLDER_APP" inode/directory
+  ok "Carpetas asociadas al gestor de archivos (Nautilus)"
+fi
+
+# ----- INDEXADOR DE ARCHIVOS DESACTIVADO -----
+# Nautilus instala localsearch, que recorre todos los archivos en segundo
+# plano (CPU y disco constantes) para acelerar las búsquedas. `mask` impide
+# que arranque aunque Nautilus lo pida; la búsqueda sigue funcionando
+# recorriendo las carpetas en el momento.
+if command -v systemctl >/dev/null &&
+  [ "$(systemctl --user is-enabled localsearch-3.service 2>/dev/null)" != "masked" ]; then
+  systemctl --user mask --now localsearch-3.service >/dev/null 2>&1 &&
+    ok "Indexador de archivos (localsearch) desactivado"
 fi
 
 # ----- RESUMEN -----

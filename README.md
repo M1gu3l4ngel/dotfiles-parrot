@@ -87,6 +87,7 @@ sufijo al archivo original.
 | `rofi/` | Lanzador de aplicaciones y temas | `~/.config/rofi/` |
 | `kitty/` | Terminal | `~/.config/kitty/` |
 | `dunst/` | Notificaciones | `~/.config/dunst/` |
+| `gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
 | `xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
 | `zsh/` | Shell | `~/.zshrc` |
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
@@ -106,6 +107,7 @@ sufijo al archivo original.
 |---|---|
 | `Super+Enter` | Terminal (kitty) |
 | `Super+D` | Lanzador de aplicaciones (rofi) |
+| `Super+E` | Gestor de archivos (Nautilus); también con click en el logo de Parrot |
 | `Super+Shift+F` | Firefox personal |
 | `Super+Shift+P` | Firefox pentest |
 | `Super+A` | Activar o desactivar el anonimato con Tor |
