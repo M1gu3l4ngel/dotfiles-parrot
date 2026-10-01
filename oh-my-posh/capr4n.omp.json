@@ -29,7 +29,7 @@
           },
           "trailing_diamond": "\ue0b0",
           "template": "{{if .Root}} \uf0e7 {{.UserName}} {{else}} {{.UserName}} {{end}}",
-          "foreground": "#ffffff",
+          "foreground": "#193549",
           "background": "#61AFEF",
           "type": "session",
           "style": "diamond"
@@ -43,7 +43,7 @@
             "style": "agnoster_short"
           },
           "template": " {{ .Path }} ",
-          "foreground": "#ffffff",
+          "foreground": "#193549",
           "powerline_symbol": "\ue0b0",
           "background": "#C678DD",
           "type": "path",
