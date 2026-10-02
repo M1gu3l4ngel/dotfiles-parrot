@@ -343,7 +343,7 @@ print_next_steps() {
     4. pass (gestor de secretos):
          pass init <fingerprint> && pass git init
 
-    Detalle de cada paso en el README.
+    Detalle de cada paso en README.es.md (en inglés: README.md).
 EOF
 }
 

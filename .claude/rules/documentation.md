@@ -5,14 +5,28 @@ paths:
 
 # Documentación
 
-Aplica a `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/` y a los
-`README.md` de cada carpeta.
+Aplica a `README.md`, `README.es.md`, `CONTRIBUTING.md`, `CHANGELOG.md`,
+`docs/` y a los `README.md` de cada carpeta.
+
+## Idioma
+
+- El README de la raíz es bilingüe: `README.md` en inglés (la portada que ve
+  GitHub) y `README.es.md` en español, con el selector `English | Español`
+  arriba en ambos. Mismo contenido: secciones, tablas, comandos y enlaces.
+  Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los
+  lectores de pantalla); comandos, rutas y URLs quedan idénticos.
+- Cualquier cambio en uno se hace también en el otro, en el mismo commit.
+  `tools/check.sh` falla si no tienen el mismo número de secciones y filas de
+  tabla o si sus bloques de comandos difieren.
+- El resto (`docs/`, `CONTRIBUTING.md`, `CHANGELOG.md`, comentarios) sigue en
+  español. Desde `README.md`, los enlaces a guías indican "(in Spanish)".
 
 ## Estilo
 
 - Sin iconos ni emojis. Texto sobrio.
 - Lenguaje directo y simple. Sin relleno ni marketing.
-- En español. Términos técnicos, comandos y rutas tal cual.
+- En español (salvo `README.md`, ver arriba). Términos técnicos, comandos y
+  rutas tal cual.
 - Escaneable: secciones cortas, títulos claros, lo importante arriba.
 - El lector debe poder reproducir el setup sin leerlo todo.
 

@@ -15,7 +15,8 @@
 #   5. JSON válido (tema de oh-my-posh, lazy-lock) y presupuesto de líneas de
 #      la capa global de Claude Code (claude/check-budget.mjs)
 #   6. sudoers y keymap XKB (se validan con visudo y xkbcomp)
-#   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>
+#   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>,
+#      y README.md / README.es.md con la misma estructura
 #   8. Secretos en todo el historial con gitleaks (si está instalado)
 #
 # Una herramienta que falte se avisa y se omite (en local); el CI instala todas.
@@ -196,6 +197,24 @@ paths=$(git grep -nIE '/home/[a-z_][a-z0-9_-]*/' || true)
 if [ -z "$paths" ]; then pass "Sin rutas /home/<usuario> hardcodeadas"; else
   fail "Rutas de home hardcodeadas:"
   echo "$paths"
+fi
+
+# ----- 7b. README BILINGÜE SINCRONIZADO -----
+# README.md (inglés) y README.es.md (español) deben decir lo mismo. El texto
+# no se puede comparar, pero sí la estructura: mismo número de secciones y de
+# filas de tabla, y bloques de comandos idénticos (los comandos no se traducen).
+readme_shape() {
+  local file="$1"
+  printf 'secciones:%s filas:%s\n' \
+    "$(grep -c '^#' "$file")" "$(grep -c '^|' "$file")"
+  # Contenido de los bloques de código, sin las líneas ``` ni la sangría.
+  awk '/^ *```/ { inside = !inside; next } inside { sub(/^ +/, ""); print }' "$file"
+}
+if diff <(readme_shape README.md) <(readme_shape README.es.md) >/dev/null; then
+  pass "README.md y README.es.md sincronizados"
+else
+  fail "README.md y README.es.md no coinciden (secciones, tablas o comandos):"
+  diff <(readme_shape README.md) <(readme_shape README.es.md) || true
 fi
 
 # ----- 8. SECRETOS -----

@@ -49,7 +49,7 @@ Como usuario normal (el script pedirá la contraseña de sudo una vez).
     ./bootstrap.sh
     ```
 
-Qué hace cada paso del script: [README](../README.md#qué-hace-bootstrapsh).
+Qué hace cada paso del script: [README](../README.es.md#qué-hace-bootstrapsh).
 Si falla (por ejemplo, un corte de red), vuelve a ejecutarlo: solo aplica lo
 que falta.
 

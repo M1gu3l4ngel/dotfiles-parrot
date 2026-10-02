@@ -9,6 +9,11 @@ herramientas globales).
 Responde siempre en español, también en los mensajes cortos de progreso y tras leer salidas
 técnicas en inglés. Comandos, rutas y código, tal cual.
 
+## README en repos públicos
+- Bilingüe: `README.md` en inglés (portada) y `README.es.md` en español, con selector `English | Español` arriba en ambos. Mismo contenido; un cambio en uno va también al otro en el mismo commit.
+- Se traduce el texto, incluido el `alt` de imágenes y badges; no se tocan comandos, rutas ni URLs (idénticos en ambos).
+- El resto (docs, comentarios, commits) sigue en español. Repos privados: todo en español, sin README en inglés.
+
 ## Disco: el trabajo va en `~/Dev`
 - Proyectos con git en `~/Dev/projects/`; experimentos sin git en `~/Dev/scratch/` (desechable). Excepción: `~/dotfiles`, que clona el bootstrap.
 - `/tmp` vive en RAM: nada grande ahí. Scratchpad de sesión solo para archivos pequeños; si pasa de ~50 MB, va a `~/Dev/scratch/`. Limpia al terminar.

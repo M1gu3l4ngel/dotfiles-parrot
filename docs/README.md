@@ -1,6 +1,6 @@
 # Documentación
 
-Guías detalladas del setup. La instalación está en el [README](../README.md)
+Guías detalladas del setup. La instalación está en el [README](../README.es.md)
 principal.
 
 | Guía | Contenido |

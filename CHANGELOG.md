@@ -8,6 +8,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- README bilingüe: `README.md` en inglés (portada de GitHub) y
+  `README.es.md` en español, con selector de idioma. `tools/check.sh`
+  verifica que tengan la misma estructura y los mismos comandos.
 - Capa global de Claude Code (`claude/`), la misma que en dotfiles-windows:
   `CLAUDE.md` con las costuras de Linux, barra de estado, hook que impone
   editar con Edit/Write y plantilla de `settings.json` (secretos en

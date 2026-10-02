@@ -1,17 +1,20 @@
+**English** | [Español](README.es.md)
+
 # dotfiles-parrot
 
-Entorno de trabajo para pentesting sobre Parrot OS: bspwm, polybar, kitty, zsh
-y Neovim, con hardening del sistema e instalación en un comando.
+A pentesting workstation on Parrot OS: bspwm, polybar, kitty, zsh and Neovim,
+with system hardening and a one-command install.
 
-![Escritorio](assets/preview.png)
+![Desktop](assets/preview.png)
 
-## Reproducir en un comando
+## One-command setup
 
-¿Empiezas desde cero, sin VM? Sigue [docs/primeros-pasos.md](docs/primeros-pasos.md):
-crear la VM, instalar Parrot, el entorno, comprobarlo y la snapshot.
+Starting from scratch, with no VM yet? Follow
+[docs/primeros-pasos.md](docs/primeros-pasos.md) (in Spanish): create the VM,
+install Parrot, set up the environment, check it and take a snapshot.
 
-En un Parrot OS 7 recién instalado, como usuario normal (pedirá la contraseña
-de sudo una vez):
+On a fresh Parrot OS 7 install, as a regular user (it asks for the sudo
+password once):
 
 ```bash
 git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
@@ -25,198 +28,200 @@ cd ~/dotfiles
 ./bootstrap.sh
 ```
 
-Después, reinicia y en la pantalla de login elige la sesión `bspwm`.
+Then reboot and pick the `bspwm` session on the login screen.
 
-## Requisitos previos
+## Requirements
 
-- Parrot OS 7 (basado en Debian 13). `anonsurf` solo existe en Parrot.
-- Usuario con permisos de sudo y conexión a internet.
-- Sesión X11: bspwm no funciona en Wayland.
-- En VMware: "Accelerate 3D graphics" activado y 2 GB o más de memoria de
-  vídeo. Ver [docs/vmware.md](docs/vmware.md).
+- Parrot OS 7 (based on Debian 13). `anonsurf` only exists on Parrot.
+- A user with sudo rights and an internet connection.
+- An X11 session: bspwm does not run on Wayland.
+- On VMware: "Accelerate 3D graphics" enabled and 2 GB or more of graphics
+  memory. See [docs/vmware.md](docs/vmware.md) (in Spanish).
 
-## Qué hace bootstrap.sh
+## What bootstrap.sh does
 
-Cada paso comprueba si ya está hecho, así que se puede ejecutar varias veces
-sin efectos colaterales (por ejemplo, tras un fallo de red).
+Every step checks whether it is already done, so it can be run again safely
+(for example, after a network failure).
 
-| Paso | Qué instala o configura |
+| Step | What it installs or configures |
 |---|---|
-| 1 | Paquetes de apt: entorno gráfico, herramientas de terminal, seguridad, openvpn |
-| 2 | Fuentes Nerd Fonts (CaskaydiaCove y Hack) en `~/.local/share/fonts/` |
-| 3 | Neovim oficial en `/opt`, enlazado en `/usr/local/bin/nvim` |
-| 4 | oh-my-posh (prompt) en `~/.local/bin/` |
-| 5 | nvm, Node 24, pnpm y Claude Code |
-| 6 | Enlaces de las configuraciones en `~/.config/` (`install.sh`) |
-| 7 | Hardening del sistema (`system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
-| 8 | zsh como shell por defecto |
-| 9 | Muestra los pasos manuales pendientes |
+| 1 | apt packages: desktop, terminal tools, security, openvpn, VSCodium |
+| 2 | Nerd Fonts (CaskaydiaCove and Hack) in `~/.local/share/fonts/` |
+| 3 | Official Neovim in `/opt`, linked as `/usr/local/bin/nvim` |
+| 4 | oh-my-posh (prompt) in `~/.local/bin/` |
+| 5 | nvm, Node 24, pnpm and Claude Code |
+| 6 | Config symlinks in `~/.config/` and `~/.claude/` (`install.sh`) |
+| 7 | VSCodium extensions from Open VSX (`vscodium/extensions.txt`) |
+| 8 | System hardening (`system/setup.sh`): firewall, sudoers, automatic patches, login screen |
+| 9 | zsh as the default shell |
+| 10 | Prints the remaining manual steps |
 
-Todo lo que no viene de apt se descarga en una versión fijada y se verifica
-con SHA-256 antes de instalarse.
+Everything that does not come from apt is downloaded at a pinned version and
+verified against a SHA-256 hash before it is installed.
 
-## Pasos manuales tras la instalación
+## Manual steps after installing
 
-Implican secretos, así que no se automatizan:
+They involve secrets, so they are not automated (guides in Spanish):
 
-1. Claves SSH y GPG, firma de commits y `pass`:
+1. SSH and GPG keys, commit signing and `pass`:
    [docs/claves-y-secretos.md](docs/claves-y-secretos.md).
-2. Perfil de Firefox para pentesting: [docs/firefox.md](docs/firefox.md).
+2. Firefox profile for pentesting: [docs/firefox.md](docs/firefox.md).
 
-## Instalar sobre una configuración existente
+## Install on top of an existing setup
 
-Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
+If the environment is already installed and you only want these configs, from
 `~/dotfiles`:
 
 ```bash
 ./install.sh
 ```
 
-Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
-(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`. Para volver atrás, ver [Desinstalar](#desinstalar).
+Before creating each link, `install.sh` renames whatever is at the target
+(file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix. To go
+back, see [Uninstall](#uninstall).
 
-## Desinstalar
+## Uninstall
 
-`uninstall.sh` revierte `install.sh`: quita los enlaces que apuntan a este
-repo y devuelve a su sitio las copias `.pre-dotfiles.bak` de tus archivos
-originales. Como usuario normal, desde `~/dotfiles`:
+`uninstall.sh` reverts `install.sh`: it removes the links that point to this
+repo and puts your original files back from their `.pre-dotfiles.bak` copies.
+As a regular user, from `~/dotfiles`:
 
-1. Ver qué haría, sin tocar nada:
+1. See what it would do, without changing anything:
 
     ```bash
     ./uninstall.sh --dry-run
     ```
 
-2. Aplicarlo:
+2. Apply it:
 
     ```bash
     ./uninstall.sh
     ```
 
-3. Cerrar sesión y volver a entrar para usar la configuración original.
+3. Log out and back in to use the original configuration.
 
-Solo quita enlaces de este repo: si en un destino hay un archivo tuyo, lo deja
-y avisa. No desinstala paquetes ni revierte el hardening de `system/setup.sh`,
-ni los ajustes que `install.sh` aplica sin enlaces (modo oscuro de GTK4,
-Nautilus como gestor de carpetas e indexador desactivado). Las copias con
-fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
-script las lista para que elijas a mano.
+It only removes links from this repo: if a target holds a file of yours, it
+leaves it and warns. It does not uninstall packages or revert the
+`system/setup.sh` hardening, nor the settings `install.sh` applies without
+links (GTK4 dark mode, Nautilus as the folder handler, file indexer disabled).
+Dated copies (`.pre-dotfiles.bak.<date>`), from reinstalls, are not restored:
+the script lists them so you can choose by hand.
 
-La lista de enlaces vive en `lib/links.sh` y la comparten los dos scripts:
-para añadir una configuración nueva basta con sumar una línea allí.
+The list of links lives in `lib/links.sh` and both scripts share it: to add a
+new config, add one line there.
 
-## Estructura del repo
+## Repository layout
 
-| Directorio | Contenido | Se instala en |
+| Directory | Contents | Installed to |
 |---|---|---|
-| `bspwm/` | Gestor de ventanas y script de redimensionado | `~/.config/bspwm/` |
-| `sxhkd/` | Atajos de teclado | `~/.config/sxhkd/` |
-| `polybar/` | Barras, paleta de colores y lanzador | `~/.config/polybar/` |
-| `picom/` | Compositor (esquinas, transparencias) | `~/.config/picom/` |
-| `rofi/` | Lanzador de aplicaciones y temas | `~/.config/rofi/` |
+| `bspwm/` | Window manager and resize script | `~/.config/bspwm/` |
+| `sxhkd/` | Keyboard shortcuts | `~/.config/sxhkd/` |
+| `polybar/` | Bars, color palette and launcher | `~/.config/polybar/` |
+| `picom/` | Compositor (corners, transparency) | `~/.config/picom/` |
+| `rofi/` | Application launcher and themes | `~/.config/rofi/` |
 | `kitty/` | Terminal | `~/.config/kitty/` |
-| `dunst/` | Notificaciones | `~/.config/dunst/` |
-| `gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
-| `vscodium/` | Ajustes del editor VSCodium | `~/.config/Visual Studio Code/User/` |
-| `xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
+| `dunst/` | Notifications | `~/.config/dunst/` |
+| `gtk/` | File manager colors and settings (GTK4) | `~/.config/gtk-4.0/` |
+| `vscodium/` | VSCodium settings, shortcuts and extensions | `~/.config/Visual Studio Code/User/` |
+| `xkb/` | Keyboard layout (us and latam) | `~/.config/xkb/` |
 | `zsh/` | Shell | `~/.zshrc` |
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
-| `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
-| `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `claude/` | Capa global de Claude Code ([claude/README.md](claude/README.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
-| `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
-| `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
-| `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
-| `docs/` | Guías detalladas | No se instala |
-| `lib/` | Lista de enlaces compartida por `install.sh` y `uninstall.sh` | No se instala |
-| `tools/` | Comprobaciones del repo (`check.sh`) | No se instala |
+| `gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
+| `oh-my-posh/` | Prompt theme | Read from the repo |
+| `claude/` | Global Claude Code layer ([claude/README.md](claude/README.md)) | `~/.claude/` (and `settings.json` from the template) |
+| `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
+| `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
+| `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |
+| `docs/` | Detailed guides (in Spanish) | Not installed |
+| `lib/` | Link list shared by `install.sh` and `uninstall.sh` | Not installed |
+| `tools/` | Repo checks (`check.sh`) | Not installed |
 
-## Atajos
+## Shortcuts
 
-### Sistema y aplicaciones
+### System and applications
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
 | `Super+Enter` | Terminal (kitty) |
-| `Super+D` | Lanzador de aplicaciones (rofi) |
-| `Super+E` | Gestor de archivos (Nautilus); también con click en el logo de Parrot |
-| `Super+Shift+F` | Firefox personal |
-| `Super+Shift+P` | Firefox pentest |
-| `Super+A` | Activar o desactivar el anonimato con Tor |
-| `Super+Shift+X` | Bloquear la pantalla |
-| `Super+Escape` | Recargar los atajos |
-| `Super+Alt+R` | Recargar bspwm (y polybar) |
-| `Super+Alt+Q` | Cerrar la sesión |
-| Botón de apagado (polybar, esquina derecha) | Menú: apagar, reiniciar o cerrar sesión de forma ordenada |
-| `Alt+Shift` | Cambiar la distribución de teclado (us / latam) |
+| `Super+D` | Application launcher (rofi) |
+| `Super+E` | File manager (Nautilus); also by clicking the Parrot logo |
+| `Super+Shift+F` | Personal Firefox |
+| `Super+Shift+P` | Pentest Firefox |
+| `Super+A` | Toggle anonymity through Tor |
+| `Super+Shift+X` | Lock the screen |
+| `Super+Escape` | Reload shortcuts |
+| `Super+Alt+R` | Reload bspwm (and polybar) |
+| `Super+Alt+Q` | Log out |
+| Power button (polybar, right corner) | Menu: clean shutdown, reboot or log out |
+| `Alt+Shift` | Switch keyboard layout (us / latam) |
 
-### Ventanas
+### Windows
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Super+Q` | Cerrar la ventana |
-| `Super+Shift+Q` | Forzar el cierre de la ventana |
-| `Super+Flechas` | Mover el foco |
-| `Super+Shift+Flechas` | Intercambiar con la ventana vecina |
-| `Super+Alt+Flechas` | Redimensionar |
-| `Super+Ctrl+Flechas` | Mover una ventana flotante |
-| `Super+T` / `Super+S` / `Super+F` | Modo mosaico / flotante / pantalla completa |
-| `Super+M` | Alternar entre mosaico y una sola ventana |
-| `Super+G` | Intercambiar con la ventana más grande |
+| `Super+Q` | Close the window |
+| `Super+Shift+Q` | Force-close the window |
+| `Super+Arrows` | Move focus |
+| `Super+Shift+Arrows` | Swap with the neighboring window |
+| `Super+Alt+Arrows` | Resize |
+| `Super+Ctrl+Arrows` | Move a floating window |
+| `Super+T` / `Super+S` / `Super+F` | Tiled / floating / fullscreen |
+| `Super+M` | Toggle between tiled and a single window |
+| `Super+G` | Swap with the largest window |
 
-### Escritorios
+### Desktops
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Super+1` ... `Super+0` | Ir al escritorio 1 a 10 |
-| `Super+Shift+1` ... `Super+Shift+0` | Enviar la ventana a ese escritorio |
-| `Super+[` / `Super+]` | Escritorio anterior / siguiente |
-| `Super+Tab` | Último escritorio visitado |
+| `Super+1` ... `Super+0` | Go to desktop 1 to 10 |
+| `Super+Shift+1` ... `Super+Shift+0` | Send the window to that desktop |
+| `Super+[` / `Super+]` | Previous / next desktop |
+| `Super+Tab` | Last visited desktop |
 
-### Terminal (kitty y zsh)
+### Terminal (kitty and zsh)
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Ctrl+Shift+Enter` | Nueva ventana de kitty en el mismo directorio |
-| `Ctrl+Shift+T` | Nueva pestaña en el mismo directorio |
-| `Ctrl+Tab` | Cambiar de pestaña |
-| `Ctrl+Flechas` | Mover el foco entre ventanas de kitty |
-| `Ctrl+Shift+V` | Pegar |
-| `Shift+Flechas` / `Ctrl+Shift+Flechas` | Seleccionar texto por carácter / por palabra |
-| `Ctrl+U` | Borrar la línea |
-| `Ctrl+R` / `Ctrl+T` | Buscar en el historial / buscar archivos (fzf) |
-| `Esc` `Esc` | Añadir o quitar `sudo` al comando |
+| `Ctrl+Shift+Enter` | New kitty window in the same directory |
+| `Ctrl+Shift+T` | New tab in the same directory |
+| `Ctrl+Tab` | Switch tab |
+| `Ctrl+Arrows` | Move focus between kitty windows |
+| `Ctrl+Shift+V` | Paste |
+| `Shift+Arrows` / `Ctrl+Shift+Arrows` | Select text by character / by word |
+| `Ctrl+U` | Clear the line |
+| `Ctrl+R` / `Ctrl+T` | Search history / search files (fzf) |
+| `Esc` `Esc` | Add or remove `sudo` on the command |
 
-Para el flujo de pentesting (VPN, target, qué IP usar) ver
-[docs/pentesting.md](docs/pentesting.md).
+For the pentesting workflow (VPN, target, which IP to use) see
+[docs/pentesting.md](docs/pentesting.md) (in Spanish).
 
-## Solución de problemas
+## Troubleshooting
 
-| Síntoma | Causa | Solución |
+| Symptom | Cause | Fix |
 |---|---|---|
-| Pantalla negra o bspwm no arranca al iniciar sesión | Sesión Wayland | Elegir la sesión `bspwm` en el login |
-| El escritorio va lento al cambiar de workspace | VM sin aceleración 3D | Activarla en VMware ([docs/vmware.md](docs/vmware.md)) |
-| `glxinfo` dice `Accelerated: no` | Falso positivo del driver de VMware | Mirar el renderer: `SVGA3D` es correcto |
-| Iconos como cuadrados | Faltan las fuentes Nerd Font | Volver a ejecutar `./bootstrap.sh` |
-| Un cambio en `.zshrc` no se aplica | Cada terminal conserva lo que cargó al abrirse | `exec zsh` en esa terminal |
-| keychain pide la passphrase en cada terminal | La clave SSH no se llama `id_ed25519` | Ajustar el nombre en la línea de keychain de `zsh/.zshrc` |
-| El anonimato falla con "Tor no arrancó" | Falta la regla sudoers | `sudo ./system/setup.sh` desde `~/dotfiles` |
-| Las notificaciones salen arriba y en azul | dunst arrancó antes de existir su configuración | `dunstctl reload` |
-| polybar consume mucha CPU | Un módulo con `interval = 0` | Usar un intervalo mayor que 0 |
+| Black screen or bspwm does not start on login | Wayland session | Pick the `bspwm` session at login |
+| The desktop is slow when switching workspaces | VM without 3D acceleration | Enable it in VMware ([docs/vmware.md](docs/vmware.md)) |
+| `glxinfo` says `Accelerated: no` | False positive from the VMware driver | Check the renderer: `SVGA3D` is correct |
+| Icons show as squares | Nerd Fonts missing | Run `./bootstrap.sh` again |
+| A `.zshrc` change does not apply | Each terminal keeps what it loaded at startup | `exec zsh` in that terminal |
+| keychain asks for the passphrase in every terminal | The SSH key is not named `id_ed25519` | Change the name in the keychain line of `zsh/.zshrc` |
+| Anonymity fails with "Tor no arrancó" | The sudoers rule is missing | `sudo ./system/setup.sh` from `~/dotfiles` |
+| Notifications appear at the top and in blue | dunst started before its config existed | `dunstctl reload` |
+| polybar uses a lot of CPU | A module with `interval = 0` | Use an interval greater than 0 |
 
-Para restaurar la configuración anterior a los dotfiles, ver
-[Desinstalar](#desinstalar).
+To restore the configuration you had before these dotfiles, see
+[Uninstall](#uninstall).
 
-## Documentación
+## Documentation
 
-Guías detalladas en [docs/](docs/README.md): pentesting, anonimato, Firefox,
-claves y secretos, VMware y personalización.
+Detailed guides in [docs/](docs/README.md) (in Spanish): pentesting,
+anonymity, Firefox, keys and secrets, VMware and customization.
 
-Para contribuir o modificar el repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+To contribute or change the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Créditos y licencia
+## Credits and license
 
-El prompt y la paleta de colores son compartidos con
+The prompt and the color palette are shared with
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows).
 
-Licencia [MIT](LICENSE).
+[MIT](LICENSE) license.
