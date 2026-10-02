@@ -62,7 +62,6 @@
       "tab.border": "#1A1A1A",
       // Texto de la interfaz: gris cálido; apagado en lo inactivo.
       "foreground": "#C4C5B5",
-      "sideBar.foreground": "#C4C5B5",
       "statusBar.foreground": "#C4C5B5",
       "titleBar.activeForeground": "#C4C5B5",
       "titleBar.inactiveForeground": "#8F8B7A",
@@ -72,6 +71,17 @@
       "tab.inactiveForeground": "#8F8B7A",
       "editorLineNumber.foreground": "#625E4C",
       "editorLineNumber.activeForeground": "#C4C5B5",
+      // Explorador: los mismos colores que Monokai Night en Windows (Monokai
+      // no define los de git y usaba los genéricos, más apagados). Sin cambios
+      // en casi blanco, para que se distingan de los ignorados (gris oscuro).
+      "sideBar.foreground": "#DDDDDD",
+      "gitDecoration.modifiedResourceForeground": "#B3B42B",
+      "gitDecoration.untrackedResourceForeground": "#86B42B",
+      "gitDecoration.addedResourceForeground": "#007ACC",
+      "gitDecoration.deletedResourceForeground": "#C4265E",
+      "gitDecoration.conflictingResourceForeground": "#FE413F",
+      "gitDecoration.ignoredResourceForeground": "#777777",
+      "gitDecoration.submoduleResourceForeground": "#2BB3B4",
       // Foco y elementos activos: el gris neutro del borde de la ventana con
       // foco en bspwm. Se nota sin distraer; los colores fuertes quedan para
       // el código. Texto claro (#F6F6EF) donde va encima del gris.
@@ -95,6 +105,10 @@
 
   // ----- EDITOR -----
   "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
+  // SemiBold: Linux dibuja el trazo más fino que Windows (ClearType) con el
+  // mismo peso, y la familia no tiene Medium (un 500 caería en Regular). Mismo
+  // peso que el texto de polybar.
+  "editor.fontWeight": "600",
   "editor.fontLigatures": true,
   "editor.wordWrap": "off",
   "editor.codeLens": true,

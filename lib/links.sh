@@ -26,6 +26,7 @@ LINKS=(
   "$DOTFILES_DIR/gtk/.config/gtk-4.0/settings.ini|$HOME/.config/gtk-4.0/settings.ini"
   # VSCodium de Parrot lee sus ajustes de "Visual Studio Code", no de VSCodium.
   "$DOTFILES_DIR/vscodium/settings.json|$HOME/.config/Visual Studio Code/User/settings.json"
+  "$DOTFILES_DIR/vscodium/keybindings.json|$HOME/.config/Visual Studio Code/User/keybindings.json"
   # Solo el archivo, no ~/.gnupg entero: ese directorio contiene las claves
   # privadas y debe ser real, con permisos 700 y fuera de cualquier repo
   # (install.sh lo crea así antes de enlazar).

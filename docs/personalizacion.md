@@ -13,7 +13,7 @@ el escritorio siga viéndose como un conjunto.
 |---|---|---|
 | Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css`, `vscodium/settings.json` |
 | Fuente | CaskaydiaCove Nerd Font en todo; Hack solo en el logo de Parrot | `kitty.conf`, `current.ini`, `workspace.ini`, `dunstrc`, `monokai-soda.rasi` |
-| Tamaño de texto | 12 pt (16 px) en barras y menú; 11 pt en kitty | |
+| Tamaño de texto | 12 pt (16 px) en barras, menú y kitty (igual que Windows Terminal) | |
 | Radios | Ventanas 10 px; barras, notificaciones y menú 8 px; elementos internos 4 px | `picom.conf`, `current.ini`, `dunstrc`, `monokai-soda.rasi` |
 | Bordes | 1 px `#555555` en la ventana con foco y en las barras | `bspwmrc`, `current.ini` |
 | Espaciado | 12 px entre barras, con los bordes de pantalla y entre ventanas | `current.ini`, `bspwmrc` (`window_gap`) |
@@ -114,7 +114,8 @@ ejecutables del `$PATH`, para herramientas de terminal sin entrada de menú.
 
 ## Editor (VSCodium)
 
-Los ajustes están en `vscodium/settings.json`, enlazado por `install.sh`. El
+Los ajustes están en `vscodium/settings.json` y los atajos en
+`vscodium/keybindings.json`, enlazados por `install.sh`. El
 código usa el tema Monokai; la interfaz, la paleta del sistema, definida en
 `workbench.colorCustomizations` bajo `"[Monokai]"`. Los cambios se aplican al
 guardar el archivo.
@@ -132,7 +133,7 @@ extensiones que ejecuten código) hasta que lo confirmes.
 
 ## Fuente de la terminal
 
-kitty usa `CaskaydiaCove Nerd Font`, tamaño 11 (`font_family` y `font_size`
+kitty usa `CaskaydiaCove Nerd Font`, tamaño 12 (`font_family` y `font_size`
 en `kitty/.config/kitty/kitty.conf`). Recarga con `Ctrl+Shift+F5` dentro de
 kitty.
 

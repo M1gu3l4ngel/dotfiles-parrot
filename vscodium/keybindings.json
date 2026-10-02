@@ -1,0 +1,18 @@
+// ~/.config/Visual Studio Code/User/keybindings.json
+// Atajos de VSCodium, los mismos que VS Code en Windows (dotfiles-windows).
+// install.sh enlaza este archivo. Los cambios se aplican al guardar.
+[
+  // Comentar un bloque con Ctrl + "/" del teclado numérico.
+  {
+    "key": "ctrl+numpad_divide",
+    "command": "editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  // Se quita el atajo por defecto (Shift+Alt+A) para que el de arriba sea el
+  // único y no choque con otros usos de esa combinación.
+  {
+    "key": "shift+alt+a",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  }
+]

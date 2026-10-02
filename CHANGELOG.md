@@ -30,6 +30,10 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- Igual que en Windows: kitty a 12 pt (como PowerShell en Windows Terminal),
+  atajo `Ctrl+/` del teclado numérico para comentar bloques en VSCodium
+  (`vscodium/keybindings.json`) y colores de git del explorador de Monokai
+  Night. Código de VSCodium en SemiBold: Linux dibuja el trazo más fino.
 - polybar: colores con significado (gris = apagado, color = activo) desde una
   paleta única, `scripts/.config/scripts/palette.sh`.
 - polybar: texto en CaskaydiaCove SemiBold de 12 pt, la misma familia que
