@@ -5,28 +5,37 @@ paths:
 
 # Documentación
 
-Aplica a `README.md`, `README.es.md`, `CONTRIBUTING.md`, `CHANGELOG.md`,
-`docs/` y a los `README.md` de cada carpeta.
+Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a
+`CLAUDE.md` ni a `.claude/rules/` (instrucciones para el agente, solo en
+español) ni a `nvim/.config/nvim/README.md` (protegido).
 
-## Idioma
+## Idioma: toda la documentación es bilingüe
 
-- El README de la raíz es bilingüe: `README.md` en inglés (la portada que ve
-  GitHub) y `README.es.md` en español, con el selector `English | Español`
-  arriba en ambos. Mismo contenido: secciones, tablas, comandos y enlaces.
-  Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los
-  lectores de pantalla); comandos, rutas y URLs quedan idénticos.
-- Cualquier cambio en uno se hace también en el otro, en el mismo commit.
-  `tools/check.sh` falla si no tienen el mismo número de secciones y filas de
-  tabla o si sus bloques de comandos difieren.
-- El resto (`docs/`, `CONTRIBUTING.md`, `CHANGELOG.md`, comentarios) sigue en
-  español. Desde `README.md`, los enlaces a guías indican "(in Spanish)".
+- Pareja por documento: `X.md` en inglés (el nombre que reconoce GitHub y el
+  que ve el visitante) y `X.es.md` en español, en la misma carpeta. Nombres de
+  archivo en inglés. Un documento nuevo nace con su pareja.
+- Línea 1, el selector: `**English** | [Español](X.es.md)` en el inglés y
+  `[English](X.md) | **Español**` en el español.
+- Mismo contenido y misma estructura: secciones, tablas, listas y enlaces en
+  el mismo orden. Cada idioma enlaza a su idioma (`x.es.md` desde el
+  español); las anclas siguen al título traducido.
+- Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los
+  lectores de pantalla). Los bloques de código son idénticos byte a byte:
+  comandos, rutas, URLs y placeholders en inglés neutro (`<user>`,
+  `<your-noreply>`), explicados en el texto de cada idioma. Los textos que
+  muestra el programa (notificaciones, salidas) se citan tal cual.
+- Un cambio en uno va también al otro, en el mismo commit.
+  `tools/check.sh` (`tools/check-docs.py`) falla si falta una pareja o un
+  selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
+  o bloques de código, o si hay enlaces o anclas rotos.
+- Solo en español: comentarios de código, mensajes de commit y la salida de
+  los scripts.
 
 ## Estilo
 
 - Sin iconos ni emojis. Texto sobrio.
 - Lenguaje directo y simple. Sin relleno ni marketing.
-- En español (salvo `README.md`, ver arriba). Términos técnicos, comandos y
-  rutas tal cual.
+- Términos técnicos, comandos y rutas tal cual.
 - Escaneable: secciones cortas, títulos claros, lo importante arriba.
 - El lector debe poder reproducir el setup sin leerlo todo.
 

@@ -1,72 +1,85 @@
-# Contribuir
+**English** | [Español](CONTRIBUTING.es.md)
 
-## Flujo
+# Contributing
 
-1. Crea una rama desde `main`.
-2. Haz los cambios siguiendo las convenciones de abajo.
-3. Ejecuta las comprobaciones desde la raíz del repo. Deben pasar todas:
+## Workflow
+
+1. Create a branch from `main`.
+2. Make your changes following the conventions below.
+3. Run the checks from the repo root. They must all pass:
 
     ```bash
     ./tools/check.sh
     ```
 
-4. Haz commit siguiendo el formato de commits.
-5. Abre un pull request. El CI ejecuta las mismas comprobaciones y marca el
-   resultado en GitHub.
+4. Commit following the commit format.
+5. Open a pull request. CI runs the same checks and reports the result on
+   GitHub.
 
-Si el cambio es visible para el usuario, añádelo a `CHANGELOG.md` en la
-sección "Sin publicar".
+If the change is visible to users, add it to `CHANGELOG.md` ("Unreleased")
+and to `CHANGELOG.es.md` ("Sin publicar").
+
+## Documentation in two languages
+
+All documentation exists in English (`X.md`) and Spanish (`X.es.md`), with
+the language selector on the first line. When you change a document, change
+its pair in the same commit. `./tools/check.sh` fails if they do not share
+the same structure (sections, tables, lists, links) or if their code blocks
+differ: commands are not translated.
+
+Code comments, commit messages and the rules in `.claude/rules/` are written
+in Spanish only.
 
 ## Commits
 
-Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)
-en una sola línea de 72 caracteres como máximo:
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format,
+on a single line of at most 72 characters, with the description in Spanish:
 
 ```
 type(scope): descripción en español
 ```
 
-- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
-- `scope` opcional: el componente afectado (`polybar`, `zsh`, `system`...).
-- Un commit por cambio lógico, aunque toque varios archivos.
+- `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- Optional `scope`: the affected component (`polybar`, `zsh`, `system`...).
+- One commit per logical change, even if it touches several files.
 
-Ejemplo:
+Example:
 
 ```
 fix(polybar): esperar a que se cierren las barras antes de relanzarlas
 ```
 
-El repo es público y cada commit publica el email del autor: usa el email
-noreply de GitHub y firma los commits con GPG. Cómo configurarlo:
-[docs/claves-y-secretos.md](docs/claves-y-secretos.md).
+The repo is public and every commit publishes the author's email: use your
+GitHub noreply email and sign your commits with GPG. How to set it up:
+[docs/keys-and-secrets.md](docs/keys-and-secrets.md).
 
-## Convenciones
+## Conventions
 
-Están en `.claude/rules/`. Son Markdown normal: sirven igual para personas y
-para Claude Code, que las carga automáticamente.
+They live in `.claude/rules/` (in Spanish). They are plain Markdown: they work
+the same for people and for Claude Code, which loads them automatically.
 
-| Archivo | Qué define |
+| File | What it defines |
 |---|---|
-| [security.md](.claude/rules/security.md) | Datos personales y secretos, descargas verificadas, mínimo privilegio |
-| [style.md](.claude/rules/style.md) | Comentarios en español que explican el porqué, indentación por formato |
-| [shell.md](.claude/rules/shell.md) | Scripts de shell y zsh |
-| [documentation.md](.claude/rules/documentation.md) | Estilo de la documentación |
-| [file-edits.md](.claude/rules/file-edits.md) | Iconos Nerd Font y archivos protegidos |
-| [environment.md](.claude/rules/environment.md) | Particularidades del entorno (X11, VMware, polybar, fuentes) |
+| [security.md](.claude/rules/security.md) | Personal data and secrets, verified downloads, least privilege |
+| [style.md](.claude/rules/style.md) | Spanish comments that explain the why, indentation per format |
+| [shell.md](.claude/rules/shell.md) | Shell and zsh scripts |
+| [documentation.md](.claude/rules/documentation.md) | Documentation style and the two-language rule |
+| [file-edits.md](.claude/rules/file-edits.md) | Nerd Font icons and protected files |
+| [environment.md](.claude/rules/environment.md) | Environment quirks (X11, VMware, polybar, fonts) |
 
-Lo más importante:
+The most important:
 
-- Nunca incluyas datos personales ni secretos: usuario local, emails, IPs,
-  fingerprints, nombres de clientes.
-- Todo lo que no venga de apt se descarga en versión fijada y se verifica con
-  SHA-256 (ver `bootstrap.sh`). Nunca `curl ... | bash`.
-- Los iconos Nerd Font se escriben como escapes (`$'\xef\x8c\xa9'`), nunca como
-  caracteres literales.
+- Never include personal data or secrets: local user name, emails, IPs,
+  fingerprints, client names.
+- Everything that does not come from apt is downloaded at a pinned version and
+  verified with SHA-256 (see `bootstrap.sh`). Never `curl ... | bash`.
+- Nerd Font icons are written as escapes (`$'\xef\x8c\xa9'`), never as
+  literal characters.
 
-## Reportar problemas
+## Reporting issues
 
-Abre un issue con:
+Open an issue with:
 
-- Qué esperabas y qué pasó.
-- Versión de Parrot (`cat /etc/os-release`) y si es una VM.
-- Los pasos para reproducirlo y, si es visual, una captura.
+- What you expected and what happened.
+- Parrot version (`cat /etc/os-release`) and whether it runs in a VM.
+- The steps to reproduce it and, if it is visual, a screenshot.

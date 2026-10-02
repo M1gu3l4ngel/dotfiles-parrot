@@ -10,8 +10,8 @@ with system hardening and a one-command install.
 ## One-command setup
 
 Starting from scratch, with no VM yet? Follow
-[docs/primeros-pasos.md](docs/primeros-pasos.md) (in Spanish): create the VM,
-install Parrot, set up the environment, check it and take a snapshot.
+[docs/getting-started.md](docs/getting-started.md): create the VM, install
+Parrot, set up the environment, check it and take a snapshot.
 
 On a fresh Parrot OS 7 install, as a regular user (it asks for the sudo
 password once):
@@ -36,7 +36,7 @@ Then reboot and pick the `bspwm` session on the login screen.
 - A user with sudo rights and an internet connection.
 - An X11 session: bspwm does not run on Wayland.
 - On VMware: "Accelerate 3D graphics" enabled and 2 GB or more of graphics
-  memory. See [docs/vmware.md](docs/vmware.md) (in Spanish).
+  memory. See [docs/vmware.md](docs/vmware.md).
 
 ## What bootstrap.sh does
 
@@ -61,10 +61,10 @@ verified against a SHA-256 hash before it is installed.
 
 ## Manual steps after installing
 
-They involve secrets, so they are not automated (guides in Spanish):
+They involve secrets, so they are not automated:
 
 1. SSH and GPG keys, commit signing and `pass`:
-   [docs/claves-y-secretos.md](docs/claves-y-secretos.md).
+   [docs/keys-and-secrets.md](docs/keys-and-secrets.md).
 2. Firefox profile for pentesting: [docs/firefox.md](docs/firefox.md).
 
 ## Install on top of an existing setup
@@ -132,7 +132,7 @@ new config, add one line there.
 | `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |
-| `docs/` | Detailed guides (in Spanish) | Not installed |
+| `docs/` | Detailed guides | Not installed |
 | `lib/` | Link list shared by `install.sh` and `uninstall.sh` | Not installed |
 | `tools/` | Repo checks (`check.sh`) | Not installed |
 
@@ -193,7 +193,7 @@ new config, add one line there.
 | `Esc` `Esc` | Add or remove `sudo` on the command |
 
 For the pentesting workflow (VPN, target, which IP to use) see
-[docs/pentesting.md](docs/pentesting.md) (in Spanish).
+[docs/pentesting.md](docs/pentesting.md).
 
 ## Troubleshooting
 
@@ -214,8 +214,8 @@ To restore the configuration you had before these dotfiles, see
 
 ## Documentation
 
-Detailed guides in [docs/](docs/README.md) (in Spanish): pentesting,
-anonymity, Firefox, keys and secrets, VMware and customization.
+Detailed guides in [docs/](docs/README.md): pentesting, anonymity,
+Firefox, keys and secrets, VMware and customization.
 
 To contribute or change the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -9,10 +9,10 @@ herramientas globales).
 Responde siempre en español, también en los mensajes cortos de progreso y tras leer salidas
 técnicas en inglés. Comandos, rutas y código, tal cual.
 
-## README en repos públicos
-- Bilingüe: `README.md` en inglés (portada) y `README.es.md` en español, con selector `English | Español` arriba en ambos. Mismo contenido; un cambio en uno va también al otro en el mismo commit.
-- Se traduce el texto, incluido el `alt` de imágenes y badges; no se tocan comandos, rutas ni URLs (idénticos en ambos).
-- El resto (docs, comentarios, commits) sigue en español. Repos privados: todo en español, sin README en inglés.
+## Documentación en repos públicos: bilingüe
+- Todo documento (README, CONTRIBUTING, CHANGELOG, `docs/`, README de carpetas) va en pareja: `X.md` en inglés (el nombre que reconoce GitHub) y `X.es.md` en español, en la misma carpeta, nombres de archivo en inglés y selector `English | Español` en la línea 1 de ambos. Cada idioma enlaza a su idioma.
+- Misma estructura (secciones, tablas, listas, enlaces); se traduce el texto, incluido el `alt`. Bloques de código idénticos byte a byte (placeholders en inglés neutro). Un cambio va a los dos en el mismo commit, y el check del repo (CI) lo verifica: pareja, selector, estructura, código, enlaces y anclas.
+- Solo en español: comentarios de código, commits, `CLAUDE.md` y reglas del agente. Repos privados: todo en español, sin versión en inglés.
 
 ## Disco: el trabajo va en `~/Dev`
 - Proyectos con git en `~/Dev/projects/`; experimentos sin git en `~/Dev/scratch/` (desechable). Excepción: `~/dotfiles`, que clona el bootstrap.

@@ -1,3 +1,5 @@
+[English](getting-started.md) | **Español**
+
 # Primeros pasos
 
 De una VM vacía al escritorio terminado, en orden. Cada paso es corto y enlaza
@@ -9,7 +11,7 @@ a la guía con el detalle.
    instalación completa ocupa unos 25 GB.
 2. Con la VM apagada, en VM -> Settings -> Hardware -> Display: marca
    "Accelerate 3D graphics" y asigna 2 GB o más de "Graphics memory". Sin
-   esto el escritorio va lento ([vmware.md](vmware.md)).
+   esto el escritorio va lento ([vmware.es.md](vmware.es.md)).
 3. Red: un solo adaptador en NAT. No hace falta un segundo adaptador
    host-only: la carpeta compartida no usa la red.
 4. Carpeta compartida, antes de instalar nada (así el paso 3 la deja
@@ -18,7 +20,7 @@ a la guía con el detalle.
     2. En VM -> Settings -> Options -> Shared Folders: "Always enabled" ->
        Add, con esa carpeta y el nombre `VMShare`.
 
-    Detalle y uso seguro en [vmware.md](vmware.md#carpeta-compartida-con-el-host).
+    Detalle y uso seguro en [vmware.es.md](vmware.es.md#carpeta-compartida-con-el-host).
 
 ## 2. Instalar Parrot OS
 
@@ -95,8 +97,8 @@ En cualquier directorio, como usuario normal salvo donde se indica.
 Implican secretos, así que no se automatizan:
 
 1. Claves SSH y GPG, firma de commits y `pass`:
-   [claves-y-secretos.md](claves-y-secretos.md).
-2. Perfil de Firefox para pentesting: [firefox.md](firefox.md).
+   [keys-and-secrets.es.md](keys-and-secrets.es.md).
+2. Perfil de Firefox para pentesting: [firefox.es.md](firefox.es.md).
 
 ## 7. Snapshot
 
@@ -113,6 +115,6 @@ Guarda este estado limpio para poder volver a él si algo se rompe.
 
 ## Siguiente
 
-- Trabajar contra un lab: [pentesting.md](pentesting.md).
-- Anonimato con Tor: [anonimato.md](anonimato.md).
-- Cambiar el aspecto: [personalizacion.md](personalizacion.md).
+- Trabajar contra un lab: [pentesting.es.md](pentesting.es.md).
+- Anonimato con Tor: [anonymity.es.md](anonymity.es.md).
+- Cambiar el aspecto: [customization.es.md](customization.es.md).

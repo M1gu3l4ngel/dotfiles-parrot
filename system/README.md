@@ -1,108 +1,118 @@
+**English** | [Español](README.es.md)
+
 # system/
 
-Configuración y hardening fuera de `$HOME` que el `install.sh` principal
-**no puede manejar** porque requiere root (sudoers, ufw, `/etc/...`). Aquí
-no se usan symlinks: son copias con dueño root (ver al final por qué).
+Configuration and hardening outside `$HOME` that the main `install.sh`
+**cannot handle** because it requires root (sudoers, ufw, `/etc/...`). No
+symlinks here: they are root-owned copies (see the end for why).
 
-## Contenido
+## Contents
 
-- `sbin/anon-harden` — kill switch del toggle de anonimato (IPv6 a DROP e
-  ICMP saliente a DROP). Solo acepta `up` o `down`. Se instala en
-  `/usr/local/sbin/` como `root:root 0755`.
-- `sudoers.d/anon_toggle` — regla NOPASSWD para que
-  `~/.config/scripts/toggle_anonymity.sh` ejecute **solo** estos comandos
-  exactos: `anonsurf start`, `anonsurf stop`, `anon-harden up` y
+- `sbin/anon-harden` — kill switch for the anonymity toggle (IPv6 to DROP and
+  outgoing ICMP to DROP). It only accepts `up` or `down`. Installed in
+  `/usr/local/sbin/` as `root:root 0755`.
+- `sudoers.d/anon_toggle` — NOPASSWD rule so that
+  `~/.config/scripts/toggle_anonymity.sh` runs **only** these exact commands:
+  `anonsurf start`, `anonsurf stop`, `anon-harden up` and
   `anon-harden down`.
-- `firefox/pentest.user.js` — hardening del perfil pentest de Firefox: sin
-  fugas de targets a terceros (sugerencias de búsqueda, Safe Browsing,
-  telemetría), sin tráfico no solicitado (precargas, conexiones
-  especulativas), WebRTC off y todo borrado al cerrar. HTTPS-Only desactivado
-  a propósito: el pentester controla el esquema de cada petición.
-- `apt/52parrot-hardening.conf` — override de unattended-upgrades: solo se
-  auto-instala `parrot-security` (kernel y Tor incluidos) y se excluyen las
-  herramientas de pentest que no conviene actualizar a mitad de un engagement.
-- `apt/20auto-upgrades` — activa la ejecución diaria de unattended-upgrades.
-- `lightdm/slick-greeter.conf` — pantalla de login y de bloqueo con el mismo
-  fondo que el escritorio (`assets/wallpaper.jpg`), sin la rejilla de puntos.
-- `setup.sh` — instala todo lo anterior y aplica el baseline del sistema.
+- `firefox/pentest.user.js` — hardening for the pentest Firefox profile: no
+  target leaks to third parties (search suggestions, Safe Browsing,
+  telemetry), no unrequested traffic (prefetching, speculative connections),
+  WebRTC off and everything deleted on close. HTTPS-Only disabled on purpose:
+  the pentester controls the scheme of each request.
+- `apt/52parrot-hardening.conf` — unattended-upgrades override: only
+  `parrot-security` (kernel and Tor included) is auto-installed, and the
+  pentest tools that should not update in the middle of an engagement are
+  excluded.
+- `apt/20auto-upgrades` — enables the daily unattended-upgrades run.
+- `lightdm/slick-greeter.conf` — login and lock screen with the same
+  wallpaper as the desktop (`assets/wallpaper.jpg`), without the dot grid.
+- `setup.sh` — installs everything above and applies the system baseline.
 
-## Cómo usar
+## Usage
 
-Después del `install.sh` principal y de instalar `ufw`, `anonsurf` y
-`unattended-upgrades` con `apt`, desde la raíz del repo:
+After the main `install.sh` and after installing `ufw`, `anonsurf` and
+`unattended-upgrades` with `apt`, from the repo root:
 
 ```bash
 sudo ./system/setup.sh
 ```
 
-El script:
+The script:
 
-1. Instala `sbin/anon-harden` en `/usr/local/sbin/`.
-2. Genera `anon_toggle` sustituyendo `__USER__` por `$SUDO_USER`, lo valida
-   con `visudo -c` **sobre una copia temporal** y solo si es válido lo
-   instala en `/etc/sudoers.d/` con permisos `0440`.
-3. Aplica el baseline de ufw (deny incoming, allow outgoing, allow en `lo` y
-   `tun+`), fuerza `IPV6=yes` y lo activa.
-4. Restaura `/etc/profile` desde `base-files` si su `PATH` tiene una entrada
-   vacía (equivale al directorio actual), guardando copia de la versión previa.
-5. Quita al usuario del grupo `docker` si el daemon de Docker no está
-   instalado (ese grupo equivale a root). Si Docker sí está, solo avisa.
-6. Copia `firefox/pentest.user.js` al perfil `*.pentest` si existe.
-7. Instala `apt/52parrot-hardening.conf` y crea `20auto-upgrades` si falta.
-8. **Solo en VMware:** monta la carpeta compartida `VMShare` del host en
-   `/mnt/vmshare` (acceso directo `~/VMShare`), accesible solo para tu
-   usuario. Si no hay carpeta compartida configurada, lo indica y sigue.
-9. Copia el fondo a `/usr/share/backgrounds/dotfiles-wallpaper.jpg` e instala
-   `lightdm/slick-greeter.conf`. La config original de Parrot se guarda una
-   vez en `/etc/lightdm/slick-greeter.conf.parrot`.
+1. Installs `sbin/anon-harden` in `/usr/local/sbin/`.
+2. Generates `anon_toggle` replacing `__USER__` with `$SUDO_USER`, validates
+   it with `visudo -c` **on a temporary copy** and only installs it in
+   `/etc/sudoers.d/` with `0440` permissions if it is valid.
+3. Applies the ufw baseline (deny incoming, allow outgoing, allow on `lo` and
+   `tun+`), forces `IPV6=yes` and enables it.
+4. Restores `/etc/profile` from `base-files` if its `PATH` has an empty entry
+   (equivalent to the current directory), keeping a copy of the previous
+   version.
+5. Removes the user from the `docker` group if the Docker daemon is not
+   installed (that group is equivalent to root). If Docker is installed, it
+   only warns.
+6. Copies `firefox/pentest.user.js` into the `*.pentest` profile if it exists.
+7. Installs `apt/52parrot-hardening.conf` and creates `20auto-upgrades` if it
+   is missing.
+8. **VMware only:** mounts the host's `VMShare` shared folder at
+   `/mnt/vmshare` (shortcut `~/VMShare`), accessible only to your user. If no
+   shared folder is set up, it says so and moves on.
+9. Copies the wallpaper to `/usr/share/backgrounds/dotfiles-wallpaper.jpg` and
+   installs `lightdm/slick-greeter.conf`. Parrot's original config is saved
+   once as `/etc/lightdm/slick-greeter.conf.parrot`.
 
-Es **idempotente**: se puede ejecutar varias veces sin efectos colaterales.
+It is **idempotent**: it can run several times without side effects.
 
-## Carpeta compartida Windows ↔ Linux (VMware)
+## Windows ↔ Linux shared folder (VMware)
 
-Para pasar archivos entre el host y la VM en ambos sentidos:
+To move files between the host and the VM in both directions:
 
-1. En el host, crea una carpeta **dedicada** (p. ej. `C:\VMShare`). Nunca
-   compartas el disco entero: si la VM se compromete, solo alcanza esa carpeta.
-2. En VMware: **VM → Settings → Options → Shared Folders → Always enabled →
-   Add…**, con esa carpeta y el nombre `VMShare`.
-3. En la VM: `sudo ./system/setup.sh` (paso 8).
+1. On the host, create a **dedicated** folder (e.g. `C:\VMShare`). Never
+   share the whole disk: if the VM is compromised, it only reaches that
+   folder.
+2. In VMware: **VM → Settings → Options → Shared Folders → Always enabled →
+   Add…**, with that folder and the name `VMShare`.
+3. In the VM: `sudo ./system/setup.sh` (step 8).
 
-Todo lo que dejes en `C:\VMShare` aparece en `~/VMShare` y viceversa. Para
-secretos (claves, backups), bórralos de la carpeta en ambos lados en cuanto
-los hayas movido a su destino.
+Everything you leave in `C:\VMShare` shows up in `~/VMShare` and vice versa.
+For secrets (keys, backups), delete them from the folder on both sides as
+soon as you have moved them to their destination.
 
-## Verificación
+## Verification
 
 ```bash
 sudo ufw status verbose
-sudo -l -U "$USER"                  # NOPASSWD solo para anonsurf/anon-harden
+sudo -l -U "$USER"
 sudo unattended-upgrade --dry-run --debug
 ```
 
-## Decisiones de seguridad
+`sudo -l` must show `NOPASSWD` only for the anonsurf and anon-harden
+commands.
 
-- **Nunca NOPASSWD sobre `iptables`/`ip6tables` directos.** Aceptan
-  `--modprobe=<programa>`, que ejecuta ese programa como root: una regla así
-  equivale a root sin contraseña para cualquier proceso del usuario. Por eso
-  las reglas viven en `anon-harden`, con argumentos fijos.
-- **`allow in on tun+` abre todos los puertos en la VPN.** Hace falta para
-  recibir reverse shells en cualquier puerto, pero en labs compartidos (HTB)
-  los demás usuarios de la VPN también pueden alcanzarte: no dejes servicios
-  sensibles escuchando mientras estés conectado.
+## Security decisions
 
-## Por qué no symlinks
+- **Never NOPASSWD on `iptables`/`ip6tables` directly.** They accept
+  `--modprobe=<program>`, which runs that program as root: such a rule is
+  equivalent to passwordless root for any process of the user. That is why
+  the rules live in `anon-harden`, with fixed arguments.
+- **`allow in on tun+` opens every port on the VPN.** It is needed to
+  receive reverse shells on any port, but in shared labs (HTB) other users on
+  the VPN can reach you too: do not leave sensitive services listening while
+  connected.
 
-Un archivo de `/etc` enlazado a un repo del usuario le daría a ese usuario
-control sobre algo que ejecuta root. Además, sudo ignora los archivos de
-`/etc/sudoers.d/` que no son de root con modo `0440`.
+## Why no symlinks
 
-`/etc/ufw/user.rules` y `user6.rules` los genera ufw a partir de los comandos
-`ufw allow ...`; no son archivos de config "humanos", así que se reconstruyen
-con los comandos en vez de copiarlos.
+A file in `/etc` linked to a user's repo would give that user control over
+something root runs. Besides, sudo ignores files in `/etc/sudoers.d/` that are
+not owned by root with mode `0440`.
 
-## Qué NO está aquí
+`/etc/ufw/user.rules` and `user6.rules` are generated by ufw from the
+`ufw allow ...` commands; they are not "human" config files, so they are
+rebuilt with the commands instead of being copied.
 
-- La instalación de paquetes del sistema (`apt install ufw anonsurf ...`):
-  este script solo configura. La instalación la hará `bootstrap.sh`.
-- Hooks de pre/post engagement (van como scripts en `~/.config/scripts/`).
+## What is NOT here
+
+- Installing system packages (`apt install ufw anonsurf ...`): this script
+  only configures. `bootstrap.sh` does the installing.
+- Pre/post engagement hooks (they go as scripts in `~/.config/scripts/`).

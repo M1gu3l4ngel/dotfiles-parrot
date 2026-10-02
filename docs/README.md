@@ -1,14 +1,16 @@
-# Documentación
+**English** | [Español](README.es.md)
 
-Guías detalladas del setup. La instalación está en el [README](../README.es.md)
-principal.
+# Documentation
 
-| Guía | Contenido |
+Detailed guides for the setup. Installation is covered in the main
+[README](../README.md).
+
+| Guide | Contents |
 |---|---|
-| [primeros-pasos.md](primeros-pasos.md) | Instalación completa desde cero, de la VM vacía a la snapshot final |
-| [pentesting.md](pentesting.md) | VPN de los labs, target activo y qué IP usar como LHOST |
-| [anonimato.md](anonimato.md) | Anonimato con Tor (`Super+A`), comprobación de fugas y auditoría externa |
-| [firefox.md](firefox.md) | Perfiles personal y pentest, y qué protege cada uno |
-| [claves-y-secretos.md](claves-y-secretos.md) | Claves SSH y GPG, firma de commits, copias de seguridad y `pass` |
-| [vmware.md](vmware.md) | Aceleración gráfica, sesión X11 y carpeta compartida con el host |
-| [personalizacion.md](personalizacion.md) | Fondo, prompt, temas, fuentes, notificaciones y atajos |
+| [getting-started.md](getting-started.md) | Full install from scratch, from an empty VM to the final snapshot |
+| [pentesting.md](pentesting.md) | Lab VPN, active target and which IP to use as LHOST |
+| [anonymity.md](anonymity.md) | Anonymity through Tor (`Super+A`), leak checks and external audit |
+| [firefox.md](firefox.md) | Personal and pentest profiles, and what each one protects |
+| [keys-and-secrets.md](keys-and-secrets.md) | SSH and GPG keys, commit signing, backups and `pass` |
+| [vmware.md](vmware.md) | Graphics acceleration, X11 session and folder shared with the host |
+| [customization.md](customization.md) | Wallpaper, prompt, themes, fonts, notifications and shortcuts |

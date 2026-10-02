@@ -1,85 +1,89 @@
+**English** | [Español](vmware.es.md)
+
 # VMware
 
-Requisitos y ajustes para ejecutar el setup en una VM de VMware.
+Requirements and settings to run the setup in a VMware VM.
 
-## Configuración de la VM
+## VM settings
 
-Con la VM apagada, en VM -> Settings:
+With the VM powered off, in VM -> Settings:
 
-1. Hardware -> Display: marcar "Accelerate 3D graphics" y asignar 2 GB o más
-   de "Graphics memory".
-2. Al iniciar sesión en Parrot, elegir la sesión `bspwm` (X11). bspwm no
-   funciona en Wayland.
+1. Hardware -> Display: check "Accelerate 3D graphics" and assign 2 GB or
+   more of "Graphics memory".
+2. When logging into Parrot, pick the `bspwm` session (X11). bspwm does not
+   run on Wayland.
 
-`bootstrap.sh` instala `open-vm-tools-desktop` (portapapeles compartido,
-resolución automática y carpetas compartidas) cuando detecta VMware.
+`bootstrap.sh` installs `open-vm-tools-desktop` (shared clipboard, automatic
+resolution and shared folders) when it detects VMware.
 
-## Comprobar la aceleración gráfica
+## Check graphics acceleration
 
 ```bash
 glxinfo -B | grep -E "renderer|Accelerated"
 ```
 
-| Resultado | Significado |
+| Result | Meaning |
 |---|---|
-| Renderer `SVGA3D` | La GPU virtual funciona |
-| Renderer `llvmpipe` | Renderizado por software: activar "Accelerate 3D graphics" |
+| Renderer `SVGA3D` | The virtual GPU works |
+| Renderer `llvmpipe` | Software rendering: enable "Accelerate 3D graphics" |
 
-La línea `Accelerated: no` aparece aunque la GPU funcione: es un falso
-positivo del driver `vmwgfx`. El dato fiable es el renderer.
+The `Accelerated: no` line shows up even when the GPU works: it is a false
+positive from the `vmwgfx` driver. The reliable signal is the renderer.
 
-picom usa el backend `glx` (composición en la GPU). Con `xrender` componía en
-la CPU y cambiar de workspace iba lento.
+picom uses the `glx` backend (compositing on the GPU). With `xrender` it
+composited on the CPU and switching workspaces was slow.
 
-## Carpeta compartida con el host
+## Shared folder with the host
 
-Para pasar archivos entre Windows y Linux en ambos sentidos.
+To move files between Windows and Linux in both directions.
 
-1. En Windows, crea una carpeta dedicada, por ejemplo `C:\VMShare`. No
-   compartas el disco entero: si la VM se compromete, solo alcanza esa carpeta.
-2. En VMware, con la VM encendida: VM -> Settings -> Options -> Shared Folders.
-   Marca "Always enabled", pulsa "Add...", elige la carpeta y ponle el nombre
-   `VMShare` (con esa mayúscula). Deja "Read-only" sin marcar.
-3. Comprueba que la VM la ve (debe responder `VMShare`):
+1. On Windows, create a dedicated folder, for example `C:\VMShare`. Do not
+   share the whole disk: if the VM is compromised, it only reaches that
+   folder.
+2. In VMware, with the VM running: VM -> Settings -> Options -> Shared
+   Folders. Check "Always enabled", click "Add...", choose the folder and name
+   it `VMShare` (with that capitalization). Leave "Read-only" unchecked.
+3. Check that the VM sees it (it must answer `VMShare`):
 
     ```bash
     vmware-hgfsclient
     ```
 
-4. Móntala. Desde `~/dotfiles`, requiere sudo:
+4. Mount it. From `~/dotfiles`, requires sudo:
 
     ```bash
     sudo ./system/setup.sh
     ```
 
-    El paso `[8/9]` la monta en `/mnt/vmshare`, crea el acceso directo
-    `~/VMShare` y la añade a `/etc/fstab`. Solo tu usuario puede leerla, y si
-    la desactivas en VMware el sistema arranca igual.
+    Step `[8/9]` mounts it at `/mnt/vmshare`, creates the `~/VMShare`
+    shortcut and adds it to `/etc/fstab`. Only your user can read it, and if
+    you disable it in VMware the system still boots.
 
-Todo lo que pongas en `C:\VMShare` aparece en `~/VMShare`, y al revés.
+Everything you put in `C:\VMShare` shows up in `~/VMShare`, and the other way
+around.
 
-### Pasar un archivo sensible sin dejar copias
+### Move a sensitive file without leaving copies
 
-Para claves o backups: copiar, verificar que llegó intacto y borrar el
-original. Ejemplo con `archivo.asc`:
+For keys or backups: copy, check that it arrived intact and delete the
+original. Example with `file.asc`:
 
-1. Copiar:
-
-    ```bash
-    cp ~/archivo.asc ~/VMShare/
-    ```
-
-2. Comparar las huellas: las dos líneas deben mostrar el mismo hash:
+1. Copy:
 
     ```bash
-    sha256sum ~/archivo.asc ~/VMShare/archivo.asc
+    cp ~/file.asc ~/VMShare/
     ```
 
-3. Borrar el original:
+2. Compare the hashes: both lines must show the same hash:
 
     ```bash
-    rm ~/archivo.asc
+    sha256sum ~/file.asc ~/VMShare/file.asc
     ```
 
-4. En Windows, mover el archivo de `C:\VMShare` a su destino y vaciar la
-   papelera. La carpeta compartida es un punto de paso, no un almacén.
+3. Delete the original:
+
+    ```bash
+    rm ~/file.asc
+    ```
+
+4. On Windows, move the file from `C:\VMShare` to its destination and empty
+   the recycle bin. The shared folder is a hand-off point, not storage.

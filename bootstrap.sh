@@ -78,7 +78,7 @@ APT_PACKAGES=(
   ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
   # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
   # muestra la barra de VPN de polybar, y dig para las pruebas de fugas de
-  # DNS del anonimato (docs/anonimato.md).
+  # DNS del anonimato (docs/anonymity.md).
   openvpn bind9-dnsutils
   # Base para fuentes y descargas HTTPS, y glxinfo (mesa-utils) para
   # comprobar la aceleración gráfica (docs/vmware.md).

@@ -1,3 +1,5 @@
+[English](keys-and-secrets.md) | **Español**
+
 # Claves y secretos
 
 Claves SSH (autenticación en GitHub), GPG (firma de commits y cifrado) y
@@ -13,8 +15,8 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
 
 1. Marca "Keep my email addresses private".
 2. Marca "Block command line pushes that expose my email".
-3. Copia tu dirección `<id>+<usuario>@users.noreply.github.com`. En esta guía
-   aparece como `<tu-noreply>`.
+3. Copia tu dirección `<id>+<user>@users.noreply.github.com`. En esta guía
+   aparece como `<your-noreply>`; `<user>` es tu usuario de GitHub.
 
 ## SSH
 
@@ -22,7 +24,7 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
    passphrase:
 
     ```bash
-    ssh-keygen -t ed25519 -C "<usuario>@<equipo>"
+    ssh-keygen -t ed25519 -C "<user>@<machine>"
     ```
 
     Guarda la passphrase en tu lugar seguro. Si la olvidas, no se recupera:
@@ -58,12 +60,12 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
     ssh -T git@github.com
     ```
 
-    Debe responder `Hi <usuario>! You've successfully authenticated`.
+    Debe responder `Hi <user>! You've successfully authenticated`.
 
 7. Usar SSH en el repo en vez de HTTPS. Desde `~/dotfiles`:
 
     ```bash
-    git remote set-url origin git@github.com:<usuario>/dotfiles-parrot.git
+    git remote set-url origin git@github.com:<user>/dotfiles-parrot.git
     ```
 
 ## GPG
@@ -77,7 +79,7 @@ como máximo: los mismos valores que en Windows.
    años). Pedirá la passphrase en un diálogo:
 
     ```bash
-    gpg --quick-generate-key "<nombre> <tu-noreply>" default default 2y
+    gpg --quick-generate-key "<name> <your-noreply>" default default 2y
     ```
 
     Guarda la passphrase en tu lugar seguro.
@@ -92,7 +94,7 @@ como máximo: los mismos valores que en Windows.
 3. Configurar git para firmar siempre:
 
     ```bash
-    git config --global user.email "<tu-noreply>"
+    git config --global user.email "<your-noreply>"
     ```
 
     ```bash
@@ -134,26 +136,26 @@ como máximo: los mismos valores que en Windows.
 1. Exportar la clave privada (va cifrada con tu passphrase):
 
     ```bash
-    gpg --armor --export-secret-keys <fingerprint> > ~/gpg-privada.asc
+    gpg --armor --export-secret-keys <fingerprint> > ~/gpg-private.asc
     ```
 
     ```bash
-    chmod 600 ~/gpg-privada.asc
+    chmod 600 ~/gpg-private.asc
     ```
 
 2. Copiar el certificado de revocación que GnuPG generó al crear la clave.
    Sirve para invalidar la clave públicamente si te la roban:
 
     ```bash
-    cp ~/.gnupg/openpgp-revocs.d/<fingerprint>.rev ~/gpg-revocacion.rev
+    cp ~/.gnupg/openpgp-revocs.d/<fingerprint>.rev ~/gpg-revocation.rev
     ```
 
 3. Llevar los dos archivos a tu lugar seguro (por ejemplo, con la carpeta
-   compartida de [vmware.md](vmware.md)) y guardar la passphrase por separado.
+   compartida de [vmware.es.md](vmware.es.md)) y guardar la passphrase por separado.
 4. Borrarlos del home cuando estén a salvo:
 
     ```bash
-    rm ~/gpg-privada.asc ~/gpg-revocacion.rev
+    rm ~/gpg-private.asc ~/gpg-revocation.rev
     ```
 
 ### Renovar antes de que caduque
@@ -174,7 +176,7 @@ Después, vuelve a exportarla (paso 4) y reemplázala en GitHub.
 ### Quitar el email personal de la clave
 
 Si la clave tiene también un UID con tu email personal, GitHub lo publica en
-`github.com/<usuario>.gpg`. Lo recomendado es borrar ese UID: la clave queda
+`github.com/<user>.gpg`. Lo recomendado es borrar ese UID: la clave queda
 limpia para siempre y la firma no cambia (los commits siguen "Verified"
 porque usan el noreply). Como usuario normal, en cualquier directorio:
 
@@ -205,7 +207,7 @@ Alternativa sin modificar la clave: exportar filtrando el UID. Hay que
 recordar el filtro en cada exportación; si se olvida, se publica el email:
 
 ```bash
-gpg --armor --export --export-filter keep-uid='mbox = <tu-noreply>' <fingerprint>
+gpg --armor --export --export-filter keep-uid='mbox = <your-noreply>' <fingerprint>
 ```
 
 ## pass (gestor de secretos)

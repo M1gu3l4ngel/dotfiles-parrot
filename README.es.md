@@ -9,7 +9,7 @@ y Neovim, con hardening del sistema e instalación en un comando.
 
 ## Reproducir en un comando
 
-¿Empiezas desde cero, sin VM? Sigue [docs/primeros-pasos.md](docs/primeros-pasos.md):
+¿Empiezas desde cero, sin VM? Sigue [docs/getting-started.es.md](docs/getting-started.es.md):
 crear la VM, instalar Parrot, el entorno, comprobarlo y la snapshot.
 
 En un Parrot OS 7 recién instalado, como usuario normal (pedirá la contraseña
@@ -35,7 +35,7 @@ Después, reinicia y en la pantalla de login elige la sesión `bspwm`.
 - Usuario con permisos de sudo y conexión a internet.
 - Sesión X11: bspwm no funciona en Wayland.
 - En VMware: "Accelerate 3D graphics" activado y 2 GB o más de memoria de
-  vídeo. Ver [docs/vmware.md](docs/vmware.md).
+  vídeo. Ver [docs/vmware.es.md](docs/vmware.es.md).
 
 ## Qué hace bootstrap.sh
 
@@ -63,8 +63,8 @@ con SHA-256 antes de instalarse.
 Implican secretos, así que no se automatizan:
 
 1. Claves SSH y GPG, firma de commits y `pass`:
-   [docs/claves-y-secretos.md](docs/claves-y-secretos.md).
-2. Perfil de Firefox para pentesting: [docs/firefox.md](docs/firefox.md).
+   [docs/keys-and-secrets.es.md](docs/keys-and-secrets.es.md).
+2. Perfil de Firefox para pentesting: [docs/firefox.es.md](docs/firefox.es.md).
 
 ## Instalar sobre una configuración existente
 
@@ -127,7 +127,7 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `claude/` | Capa global de Claude Code ([claude/README.md](claude/README.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
+| `claude/` | Capa global de Claude Code ([claude/README.es.md](claude/README.es.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
@@ -192,14 +192,14 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `Esc` `Esc` | Añadir o quitar `sudo` al comando |
 
 Para el flujo de pentesting (VPN, target, qué IP usar) ver
-[docs/pentesting.md](docs/pentesting.md).
+[docs/pentesting.es.md](docs/pentesting.es.md).
 
 ## Solución de problemas
 
 | Síntoma | Causa | Solución |
 |---|---|---|
 | Pantalla negra o bspwm no arranca al iniciar sesión | Sesión Wayland | Elegir la sesión `bspwm` en el login |
-| El escritorio va lento al cambiar de workspace | VM sin aceleración 3D | Activarla en VMware ([docs/vmware.md](docs/vmware.md)) |
+| El escritorio va lento al cambiar de workspace | VM sin aceleración 3D | Activarla en VMware ([docs/vmware.es.md](docs/vmware.es.md)) |
 | `glxinfo` dice `Accelerated: no` | Falso positivo del driver de VMware | Mirar el renderer: `SVGA3D` es correcto |
 | Iconos como cuadrados | Faltan las fuentes Nerd Font | Volver a ejecutar `./bootstrap.sh` |
 | Un cambio en `.zshrc` no se aplica | Cada terminal conserva lo que cargó al abrirse | `exec zsh` en esa terminal |
@@ -213,10 +213,10 @@ Para restaurar la configuración anterior a los dotfiles, ver
 
 ## Documentación
 
-Guías detalladas en [docs/](docs/README.md): pentesting, anonimato, Firefox,
+Guías detalladas en [docs/](docs/README.es.md): pentesting, anonimato, Firefox,
 claves y secretos, VMware y personalización.
 
-Para contribuir o modificar el repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+Para contribuir o modificar el repo: [CONTRIBUTING.es.md](CONTRIBUTING.es.md).
 
 ## Créditos y licencia
 

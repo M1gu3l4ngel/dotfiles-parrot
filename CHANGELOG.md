@@ -1,129 +1,144 @@
+**English** | [Español](CHANGELOG.es.md)
+
 # Changelog
 
-Cambios relevantes del proyecto. El formato sigue
-[Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones
-siguen [versionado semántico](https://semver.org/lang/es/).
+Notable changes to the project. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
+[semantic versioning](https://semver.org/).
 
-## [Sin publicar]
+## [Unreleased]
 
-### Añadido
+### Added
 
-- README bilingüe: `README.md` en inglés (portada de GitHub) y
-  `README.es.md` en español, con selector de idioma. `tools/check.sh`
-  verifica que tengan la misma estructura y los mismos comandos.
-- Capa global de Claude Code (`claude/`), la misma que en dotfiles-windows:
-  `CLAUDE.md` con las costuras de Linux, barra de estado, hook que impone
-  editar con Edit/Write y plantilla de `settings.json` (secretos en
-  `deny`/`ask`). `install.sh` la enlaza y crea `settings.json` si falta;
-  `tools/check.sh` vigila su presupuesto de líneas.
-- `uninstall.sh`: quita los enlaces del repo y restaura las copias
-  `.pre-dotfiles.bak`; `--dry-run` muestra qué haría sin tocar nada. La lista
-  de enlaces pasa a `lib/links.sh`, compartida con `install.sh`.
-- polybar: botón de apagado, solo en la esquina derecha. Abre un menú de
-  rofi (apagar, reiniciar, cerrar sesión) que usa `systemctl`, para no apagar
-  la VM de golpe (un corte así dejó objetos de git vacíos).
-- Gestor de archivos Nautilus con la paleta Monokai Soda (`gtk/`): se abre
-  con `Super+E` o con click en el logo de Parrot. Indexador de archivos
-  desactivado, sin animaciones y con `VMShare` en la barra lateral.
-- Ajustes de VSCodium versionados (`vscodium/`): código con Monokai,
-  interfaz con la paleta del sistema, sin telemetría y con la confianza del
-  espacio de trabajo activa.
-- `bootstrap.sh` instala VSCodium y sus 26 extensiones desde Open VSX
-  (`vscodium/extensions.txt`), solo las que falten.
+- Full documentation in English and Spanish: each `X.md` document (English,
+  the one GitHub shows) has its `X.es.md` pair, with a language selector.
+  This covers the README, `CONTRIBUTING`, this changelog, `docs/` and the
+  READMEs of `system/` and `claude/`. `tools/check.sh` (`tools/check-docs.py`)
+  fails if a pair is missing or if they differ in structure, links or code
+  blocks.
+- Global Claude Code layer (`claude/`), the same as in dotfiles-windows:
+  `CLAUDE.md` with the Linux specifics, status line, a hook that enforces
+  editing with Edit/Write and a `settings.json` template (secrets in
+  `deny`/`ask`). `install.sh` links it and creates `settings.json` if it is
+  missing; `tools/check.sh` watches its line budget.
+- `uninstall.sh`: removes the repo's links and restores the
+  `.pre-dotfiles.bak` copies; `--dry-run` shows what it would do without
+  changing anything. The link list moves to `lib/links.sh`, shared with
+  `install.sh`.
+- polybar: power button, alone in the right corner. It opens a rofi menu
+  (power off, reboot, log out) that uses `systemctl`, so the VM is never
+  powered off abruptly (a cut like that left empty git objects).
+- Nautilus file manager with the Monokai Soda palette (`gtk/`): it opens with
+  `Super+E` or by clicking the Parrot logo. File indexer disabled, no
+  animations and `VMShare` in the sidebar.
+- Versioned VSCodium settings (`vscodium/`): code with Monokai, interface
+  with the system palette, no telemetry and workspace trust enabled.
+- `bootstrap.sh` installs VSCodium and its 26 extensions from Open VSX
+  (`vscodium/extensions.txt`), only the missing ones.
 
-### Cambiado
+### Changed
 
-- Igual que en Windows: kitty a 12 pt (como PowerShell en Windows Terminal),
-  atajo `Ctrl+/` del teclado numérico para comentar bloques en VSCodium
-  (`vscodium/keybindings.json`) y colores de git del explorador de Monokai
-  Night. Código de VSCodium en SemiBold: Linux dibuja el trazo más fino.
-- zsh como PowerShell en Windows: texto entre comillas en cian y selección
-  con fondo claro. `Ctrl+Shift+←/→` selecciona palabras también en la
-  terminal de VSCodium.
-- polybar: colores con significado (gris = apagado, color = activo) desde una
-  paleta única, `scripts/.config/scripts/palette.sh`.
-- polybar: texto en CaskaydiaCove SemiBold de 12 pt, la misma familia que
-  kitty, dunst y rofi.
-- polybar: barras con anchos ajustados al contenido y 12 px de separación
-  entre ellas y con los bordes, alineadas con el `window_gap` de bspwm.
-- polybar: workspaces con jerarquía clara (activo `●` naranja, con ventanas
-  en color de texto, vacíos atenuados).
-- Radios de esquina más discretos: ventanas 10 px (antes 20), barras,
-  notificaciones y rofi 8 px.
-- Borde de 1 px `#555555` en la ventana con foco y en las barras.
-- rofi: tema `monokai-soda` con la paleta del escritorio; `Super+D` abre las
-  aplicaciones con icono (`Ctrl+Tab` cambia al modo de ejecutables).
-- Bloqueo de pantalla (`Super+Shift+X`) con `dm-tool lock`: la pantalla de
-  login de LightDM, instantánea y sin paquetes extra.
-- Fondo de pantalla nuevo en 4K (casi negro, degradado suave), compartido por
-  el escritorio y la pantalla de login/bloqueo (`system/setup.sh`, paso 9).
-- Anonimato con un fantasma como icono (verde activado, gris desactivado),
-  ahora junto a los lanzadores de Firefox.
+- `docs/` guides with English names (`getting-started`, `customization`,
+  `anonymity`, `keys-and-secrets`) and code examples with English
+  placeholders (`<your-noreply>`, `<user>`), the same in both languages.
+- Same as on Windows: kitty at 12 pt (like PowerShell in Windows Terminal),
+  the numeric keypad `Ctrl+/` shortcut to comment blocks in VSCodium
+  (`vscodium/keybindings.json`) and Monokai Night's git colors in the
+  explorer. VSCodium code in SemiBold: Linux draws a thinner stroke.
+- zsh like PowerShell on Windows: quoted text in cyan and selection with a
+  light background. `Ctrl+Shift+←/→` selects words in the VSCodium terminal
+  too.
+- polybar: colors with meaning (gray = off, color = active) from a single
+  palette, `scripts/.config/scripts/palette.sh`.
+- polybar: text in CaskaydiaCove SemiBold 12 pt, the same family as kitty,
+  dunst and rofi.
+- polybar: bars with widths fitted to their content and 12 px of spacing
+  between them and from the edges, aligned with bspwm's `window_gap`.
+- polybar: workspaces with a clear hierarchy (active `●` in orange, with
+  windows in the text color, empty ones dimmed).
+- Subtler corner radii: windows 10 px (was 20), bars, notifications and rofi
+  8 px.
+- 1 px `#555555` border on the focused window and on the bars.
+- rofi: `monokai-soda` theme with the desktop palette; `Super+D` opens
+  applications with icons (`Ctrl+Tab` switches to executables mode).
+- Screen lock (`Super+Shift+X`) with `dm-tool lock`: LightDM's login screen,
+  instant and with no extra packages.
+- New 4K wallpaper (almost black, soft gradient), shared by the desktop and
+  the login/lock screen (`system/setup.sh`, step 9).
+- Anonymity with a ghost icon (green on, gray off), now next to the Firefox
+  launchers.
 
-### Corregido
+### Fixed
 
-- Hook de Claude Code: bloqueaba `$(cmd 2>/dev/null)` porque tomaba el `)`
-  como parte del destino de la redirección.
-- El toggle de anonimato decidía el estado por si había un proceso `tor`:
-  con el Tor que Parrot deja corriendo al arrancar, creía que el anonimato
-  estaba activo y fallaba al desactivarlo. Ahora usa el estado de AnonSurf
+- `system/README`: the verification block had a `#` comment that zsh rejects
+  when pasted (without `interactivecomments`).
+- Claude Code hook: it blocked `$(cmd 2>/dev/null)` because it took the `)`
+  as part of the redirection target.
+- The anonymity toggle decided the state by whether a `tor` process existed:
+  with the Tor that Parrot leaves running after boot, it believed anonymity
+  was on and failed to turn it off. It now uses AnonSurf's state
   (`anonsurfd`).
 
-### Eliminado
+### Removed
 
-- Iosevka: ya no la usa ninguna configuración y `bootstrap.sh` no la descarga.
-- i3lock-fancy e imagemagick: sustituidos por `dm-tool lock`.
+- Iosevka: no configuration uses it anymore and `bootstrap.sh` no longer
+  downloads it.
+- i3lock-fancy and imagemagick: replaced by `dm-tool lock`.
 
 ## [1.0.0] - 2026-09-30
 
-Primera versión publicada.
+First published version.
 
-### Instalación
+### Installation
 
-- `bootstrap.sh`: instalación completa en un comando, idempotente, con
-  descargas en versión fijada y verificadas por SHA-256. Solo instala lo que
-  falta y muestra una salida breve en español.
-- `install.sh`: enlaces de configuración desde cualquier carpeta, con copia de
-  seguridad de lo existente (sin sobrescribir copias anteriores).
-- `system/setup.sh`: hardening del sistema, idempotente.
-- Fuentes Nerd Fonts (Iosevka, Hack, CaskaydiaCove) instaladas por el
-  bootstrap; el repo no incluye binarios de fuentes.
+- `bootstrap.sh`: full install in one command, idempotent, with downloads at
+  pinned versions verified by SHA-256. It only installs what is missing and
+  prints a short output in Spanish.
+- `install.sh`: config links from any folder, backing up what already exists
+  (without overwriting previous backups).
+- `system/setup.sh`: system hardening, idempotent.
+- Nerd Fonts (Iosevka, Hack, CaskaydiaCove) installed by the bootstrap; the
+  repo includes no font binaries.
 
-### Entorno
+### Environment
 
-- bspwm, sxhkd, polybar, picom (backend `glx`), rofi, kitty, dunst y zsh con
-  la paleta Monokai Soda; Neovim con NvChad y LSP de Lua y bash.
-- Prompt oh-my-posh con el tema capr4n, compartido con dotfiles-windows.
-- zsh arranca en unos 70 ms: nvm se carga al usarlo por primera vez.
-- Keymap XKB us/latam con Caps Lock que se apaga al pulsar.
-- Selección de texto con `Shift+Flechas` en zsh.
-- Barras de Ethernet y VPN que detectan la interfaz solas (incluido WireGuard).
+- bspwm, sxhkd, polybar, picom (`glx` backend), rofi, kitty, dunst and zsh
+  with the Monokai Soda palette; Neovim with NvChad and Lua and bash LSP.
+- oh-my-posh prompt with the capr4n theme, shared with dotfiles-windows.
+- zsh starts in about 70 ms: nvm loads the first time it is used.
+- us/latam XKB keymap with a Caps Lock that turns off on press.
+- Text selection with `Shift+Arrows` in zsh.
+- Ethernet and VPN bars that detect the interface on their own (WireGuard
+  included).
 
-### Pentesting y privacidad
+### Pentesting and privacy
 
-- Target activo en polybar con `settarget` (valida la IPv4) y `cleartarget`.
-- Anonimato con Tor (`Super+A`) con kill switch de IPv6 e ICMP y verificación
-  de la salida.
-- Perfiles de Firefox personal y pentest; el pentest sin fugas de targets a
-  terceros ni tráfico no solicitado (Firefox ESR 140).
-- Configuración del agente GPG, firma de commits y guía de `pass`.
-- Carpeta compartida con el host en VMware.
+- Active target in polybar with `settarget` (validates the IPv4) and
+  `cleartarget`.
+- Anonymity through Tor (`Super+A`) with an IPv6 and ICMP kill switch and
+  exit verification.
+- Personal and pentest Firefox profiles; the pentest one without target leaks
+  to third parties or unrequested traffic (Firefox ESR 140).
+- GPG agent configuration, commit signing and a `pass` guide.
+- Folder shared with the host in VMware.
 
-### Seguridad
+### Security
 
-- Regla sudoers limitada a comandos exactos (nunca `iptables` directo) y
-  validada antes de instalarse.
-- Firewall ufw con entrada bloqueada salvo loopback y VPN, en IPv4 e IPv6.
-- Parches de seguridad automáticos (kernel y Tor incluidos).
-- Reparación de `/etc/profile` si su `PATH` incluye el directorio actual.
-- Retirada del grupo `docker` (equivale a root) si Docker no está instalado.
+- Sudoers rule limited to exact commands (never `iptables` directly) and
+  validated before it is installed.
+- ufw firewall with incoming traffic blocked except loopback and VPN, on IPv4
+  and IPv6.
+- Automatic security patches (kernel and Tor included).
+- Repair of `/etc/profile` if its `PATH` includes the current directory.
+- Removal of the `docker` group (equivalent to root) if Docker is not
+  installed.
 
-### Calidad
+### Quality
 
-- CI en GitHub Actions y `tools/check.sh`: sintaxis, shellcheck, formato con
-  shfmt, Lua, JSON, sudoers, XKB, higiene del repo público y gitleaks en todo
-  el historial.
-- Documentación en `docs/` y reglas para Claude Code en `.claude/rules/`.
+- CI on GitHub Actions and `tools/check.sh`: syntax, shellcheck, shfmt
+  formatting, Lua, JSON, sudoers, XKB, public repo hygiene and gitleaks over
+  the whole history.
+- Documentation in `docs/` and rules for Claude Code in `.claude/rules/`.
 
-[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/releases/tag/v1.0.0

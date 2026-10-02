@@ -1,83 +1,85 @@
-# Perfiles de Firefox
+**English** | [Español](firefox.es.md)
 
-Dos perfiles aislados para no mezclar tu identidad personal con el trabajo de
-pentesting: cookies, sesiones, historial y extensiones no se comparten.
+# Firefox profiles
 
-## Perfiles
+Two isolated profiles so your personal identity does not mix with pentesting
+work: cookies, sessions, history and extensions are not shared.
 
-| Perfil | Abrir | Polybar | Uso |
+## Profiles
+
+| Profile | Open | Polybar | Use |
 |---|---|---|---|
-| `default-esr` | `Super+Shift+F` | Icono rojo de Firefox | Personal: correo, GitHub, uso diario |
-| `pentest` | `Super+Shift+P` | Icono verde de bicho | Targets, labs, OSINT, enlaces sospechosos |
+| `default-esr` | `Super+Shift+F` | Red Firefox icon | Personal: email, GitHub, daily use |
+| `pentest` | `Super+Shift+P` | Green bug icon | Targets, labs, OSINT, suspicious links |
 
-Los dos pueden estar abiertos a la vez: los lanzadores usan `--no-remote`.
+Both can be open at the same time: the launchers use `--no-remote`.
 
-## Crear el perfil pentest
+## Create the pentest profile
 
-Una sola vez tras la instalación, como usuario normal:
+Once after installing, as a regular user:
 
-1. Crear el perfil (no muestra ningún mensaje si todo va bien):
+1. Create the profile (it prints nothing if all goes well):
 
     ```bash
     firefox -CreateProfile pentest
     ```
 
-2. Copiarle el `user.js`. Desde `~/dotfiles`, requiere sudo:
+2. Copy the `user.js` into it. From `~/dotfiles`, requires sudo:
 
     ```bash
     sudo ./system/setup.sh
     ```
 
-    En el paso `[6/9]` debe aparecer `Copiado al perfil pentest`.
+    Step `[6/9]` must show `Copiado al perfil pentest`.
 
-3. Abrirlo con `Super+Shift+P`.
+3. Open it with `Super+Shift+P`.
 
-Para aplicar cambios futuros del `user.js`: volver a ejecutar el paso 2 y
-reabrir Firefox.
+To apply future changes to the `user.js`: run step 2 again and reopen
+Firefox.
 
-## Qué protege el perfil pentest
+## What the pentest profile protects
 
-Configuración en `system/firefox/pentest.user.js` (validada en Firefox ESR 140):
+Settings in `system/firefox/pentest.user.js` (validated on Firefox ESR 140):
 
-| Bloque | Qué hace | Porqué |
+| Block | What it does | Why |
 |---|---|---|
-| Sin fugas a terceros | Sin sugerencias de búsqueda, sin Safe Browsing, sin telemetría ni comprobaciones de conectividad | Lo que escribes o visitas (hostnames de clientes incluidos) no sale hacia buscadores, Google ni Mozilla. Evita problemas de NDA |
-| Sin tráfico no solicitado | Sin precarga de enlaces, DNS anticipado ni conexiones especulativas | Firefox no toca un target sin que lo pidas; evita peticiones fuera de alcance |
-| Esquema sin reescribir | HTTPS-Only y HTTPS-First desactivados | En labs casi todo es HTTP (`http://box.htb`); reescribir a HTTPS alteraría la petición que quieres probar |
-| WebRTC | Desactivado | Evita que JavaScript obtenga tu IP real aunque uses VPN |
-| Credenciales | No guarda contraseñas ni autocompleta formularios | Las credenciales de pruebas no se quedan en el perfil y tus datos no acaban en un formulario del target |
-| Limpieza al cerrar | Borra cookies, almacenamiento, caché, historial, descargas y formularios | Perfil limpio en cada sesión. Se conservan marcadores y extensiones |
+| No leaks to third parties | No search suggestions, no Safe Browsing, no telemetry or connectivity checks | What you type or visit (client hostnames included) does not go out to search engines, Google or Mozilla. Avoids NDA problems |
+| No unrequested traffic | No link prefetching, DNS prefetching or speculative connections | Firefox does not touch a target unless you ask it to; avoids out-of-scope requests |
+| Scheme left as is | HTTPS-Only and HTTPS-First disabled | In labs almost everything is HTTP (`http://box.htb`); rewriting to HTTPS would change the request you want to test |
+| WebRTC | Disabled | Keeps JavaScript from getting your real IP even behind a VPN |
+| Credentials | Does not save passwords or autofill forms | Test credentials do not stay in the profile and your data does not end up in a target's form |
+| Cleanup on close | Deletes cookies, storage, cache, history, downloads and forms | A clean profile every session. Bookmarks and extensions are kept |
 
-## Lo que Parrot ya aplica a los dos perfiles
+## What Parrot already applies to both profiles
 
-Parrot configura Firefox para todo el sistema en `/etc/firefox-esr/00parrot.js`
-y `/etc/firefox-esr/policies/policies.json`:
+Parrot sets up Firefox system-wide in `/etc/firefox-esr/00parrot.js` and
+`/etc/firefox-esr/policies/policies.json`:
 
-- `privacy.resistFingerprinting` activado: la misma protección contra huella
-  digital que Tor Browser. Entre otras cosas, reporta la zona horaria
-  `Atlantic/Reykjavik` (UTC+0) a todos sus usuarios.
-- Telemetría bloqueada (`lockPref`) y sugerencias de búsqueda desactivadas por
-  política.
+- `privacy.resistFingerprinting` enabled: the same fingerprinting protection
+  as Tor Browser. Among other things, it reports the `Atlantic/Reykjavik`
+  time zone (UTC+0) for all its users.
+- Telemetry locked (`lockPref`) and search suggestions disabled by policy.
 
-El `user.js` del perfil pentest no depende de esto: si Parrot cambiara su
-configuración, el perfil seguiría protegido. Por el mismo motivo el lanzador
-del perfil pentest añade `TZ=UTC`, como respaldo de la zona horaria.
+The pentest profile's `user.js` does not depend on this: if Parrot changed
+its settings, the profile would stay protected. For the same reason the
+pentest profile launcher adds `TZ=UTC`, as a fallback for the time zone.
 
-## Comprobar que el perfil pentest está aplicado
+## Check that the pentest profile is applied
 
-En cada perfil, escribe `about:config` en la barra de direcciones, acepta el
-aviso y busca `media.peerconnection.enabled`:
+In each profile, type `about:config` in the address bar, accept the warning
+and search for `media.peerconnection.enabled`:
 
-| Perfil | Valor esperado |
+| Profile | Expected value |
 |---|---|
-| pentest | `false` (en negrita: modificado por el `user.js`) |
+| pentest | `false` (in bold: changed by the `user.js`) |
 | personal | `true` |
 
-Para comprobar las fugas desde fuera (IP, DNS, WebRTC, zona horaria), ver la
-auditoría externa de [anonimato.md](anonimato.md).
+To check for leaks from the outside (IP, DNS, WebRTC, time zone), see the
+external audit in [anonymity.md](anonymity.md).
 
-## Limitaciones
+## Limitations
 
-- Reduce la huella, pero no te hace indistinguible: para eso, Tor Browser.
-- Iniciar sesión en tus cuentas personales desde el perfil pentest te
-  identifica, sea cual sea la IP.
+- It reduces the fingerprint, but does not make you indistinguishable: use
+  Tor Browser for that.
+- Logging into your personal accounts from the pentest profile identifies
+  you, whatever the IP.

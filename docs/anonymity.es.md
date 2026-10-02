@@ -1,3 +1,5 @@
+[English](anonymity.md) | **Español**
+
 # Anonimato con Tor
 
 Envía todo el tráfico del sistema a través de la red Tor con un atajo, bloquea
@@ -124,7 +126,7 @@ No debe aparecer ninguna regla con el comentario `anon_toggle_icmp`.
   Browser (hace que todos sus usuarios parezcan iguales).
 - El nodo de salida de Tor ve el tráfico que no va cifrado: usa siempre HTTPS.
 - Añade latencia y muchos servicios bloquean los nodos de Tor. Es una
-  herramienta puntual (ver [pentesting.md](pentesting.md)).
+  herramienta puntual (ver [pentesting.es.md](pentesting.es.md)).
 - No sirve para atacar targets: va contra las normas de los labs y de los
   engagements, y la VPN de HTB y THM no funciona sobre Tor. Apágalo antes de
   conectar la VPN.

@@ -1,3 +1,5 @@
+[English](customization.md) | **Español**
+
 # Personalización
 
 Cambios de aspecto habituales. Salvo que se indique otra cosa, se ejecutan
@@ -39,7 +41,7 @@ través del enlace y sobrescribiría el archivo del repo. Apunta el enlace a tu
 imagen:
 
 ```bash
-ln -sfn /ruta/a/tu-fondo.jpg ~/.config/wallpaper.jpg
+ln -sfn /path/to/your-wallpaper.jpg ~/.config/wallpaper.jpg
 ```
 
 Aplica el cambio con `Super+Alt+R`.
@@ -151,7 +153,7 @@ dunstctl reload
 ```
 
 ```bash
-notify-send -u critical "Prueba" "Así se ven los errores"
+notify-send -u critical "Test" "Critical notification"
 ```
 
 ## Atajos de teclado
@@ -161,7 +163,7 @@ una línea y el comando en la siguiente, indentado con un tabulador:
 
 ```
 super + shift + n
-	notify-send "hola"
+	notify-send "hello"
 ```
 
 Recarga con `Super+Escape`. Antes de usar una combinación, comprueba que no
