@@ -34,6 +34,11 @@ LINKS=(
   "$DOTFILES_DIR/nvim/.config/nvim|$HOME/.config/nvim"
   "$DOTFILES_DIR/scripts/.config/scripts|$HOME/.config/scripts"
   "$DOTFILES_DIR/zsh/.zshrc|$HOME/.zshrc"
+  # Estilo de formato por defecto para los proyectos sin configuración propia
+  # (ver format/editorconfig). Sin punto en el repo: si no, se aplicarían a la
+  # propia carpeta format/.
+  "$DOTFILES_DIR/format/prettierrc.json|$HOME/.prettierrc.json"
+  "$DOTFILES_DIR/format/editorconfig|$HOME/.editorconfig"
   # Capa global de Claude Code (ver claude/README.md). Archivo a archivo: el
   # resto de ~/.claude es estado local (sesiones, memoria, settings.json).
   "$DOTFILES_DIR/claude/CLAUDE.md|$HOME/.claude/CLAUDE.md"

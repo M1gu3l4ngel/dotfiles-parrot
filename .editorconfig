@@ -20,6 +20,11 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
+# Clave propia de shfmt: indenta los `case` (equivale a `-ci`). shfmt solo lee
+# .editorconfig cuando se ejecuta sin flags, como hace la extensión de
+# VSCodium; sin esta línea el editor formatearía distinto que tools/check.sh.
+# Va en [*] porque los scripts sin extensión (bspwmrc) no tienen otro patrón.
+switch_case_indent = true
 
 # ----- MARKDOWN -----
 # Los 2 espacios al final de una línea en Markdown son un "soft break"

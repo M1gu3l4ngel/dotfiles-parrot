@@ -127,6 +127,7 @@ new config, add one line there.
 | `zsh/` | Shell | `~/.zshrc` |
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
+| `format/` | Default Prettier and EditorConfig style for projects | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Prompt theme | Read from the repo |
 | `claude/` | Global Claude Code layer ([claude/README.md](claude/README.md)) | `~/.claude/` (and `settings.json` from the template) |
 | `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |

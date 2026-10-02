@@ -29,6 +29,12 @@ wix.vscode-import-cost
 sainoba.px-to-rem
 naumovs.color-highlight
 
+# ----- FORMATO -----
+# EditorConfig: VSCodium no lee .editorconfig sin ella. shfmt: formatea shell
+# con el binario de apt y el .editorconfig del proyecto.
+editorconfig.editorconfig
+mkhl.shfmt
+
 # ----- PRODUCTIVIDAD -----
 usernamehw.errorlens
 christian-kohler.path-intellisense

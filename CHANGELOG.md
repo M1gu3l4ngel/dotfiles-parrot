@@ -33,8 +33,14 @@ Notable changes to the project. The format follows
   animations and `VMShare` in the sidebar.
 - Versioned VSCodium settings (`vscodium/`): code with Monokai, interface
   with the system palette, no telemetry and workspace trust enabled.
-- `bootstrap.sh` installs VSCodium and its 26 extensions from Open VSX
+- `bootstrap.sh` installs VSCodium and its 28 extensions from Open VSX
   (`vscodium/extensions.txt`), only the missing ones.
+- Global formatting style (`format/`): `~/.prettierrc.json` and
+  `~/.editorconfig` for projects without their own configuration (tabs,
+  double quotes, 100 columns). A project with its own never uses the global
+  one. The repo has its own `.prettierrc.json` and `.prettierignore`.
+- VSCodium formats shell with shfmt and SQL with SQLTools, and reads
+  `.editorconfig` (EditorConfig extension).
 
 ### Changed
 

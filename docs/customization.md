@@ -134,6 +134,30 @@ Workspace trust stays on: when you open lab material or downloaded repos,
 VSCodium opens them in restricted mode (no tasks or extensions that run code)
 until you confirm.
 
+## Code formatting
+
+The style lives in two files that every tool reads (VSCodium, the Prettier
+CLI, CI), not in the editor settings:
+
+| File | Linked to | What it formats |
+|---|---|---|
+| `format/prettierrc.json` | `~/.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown and YAML |
+| `format/editorconfig` | `~/.editorconfig` | Indentation and line endings of everything else (shell, SQL, TOML, `.env`) |
+
+The configuration closest to the file wins, with no merging:
+
+- A project with its own `.prettierrc` or `.editorconfig` (with
+  `root = true`) uses its own and never the global one.
+- The global one only applies to files under `~` that have no configuration.
+- A shared project or one with CI must always carry its own: CI and other
+  people do not have your home.
+
+On save, VSCodium formats with Prettier; shell with shfmt (it reads the
+`.editorconfig`), and SQL with SQLTools. It only saves when you switch tab or
+window: time-based autosave does not format.
+
+To change the style, edit both files with the same values.
+
 ## Terminal font
 
 kitty uses `CaskaydiaCove Nerd Font`, size 12 (`font_family` and `font_size`

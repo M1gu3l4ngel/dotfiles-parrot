@@ -12,7 +12,7 @@ independent and each machine works on its own.
 
 | File | Linked to | What it is |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules (in Spanish): language, disk, edit with Edit/Write, confirm before deleting, interaction, compaction |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules (in Spanish): language, disk, edit with Edit/Write, confirm before deleting, interaction, formatting, compaction |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable across Windows/Linux |
 | `settings.template.json` | — (template) | Portable base for `settings.json`: `deny`/`ask` for generic secrets + hook registration + `skillOverrides` |

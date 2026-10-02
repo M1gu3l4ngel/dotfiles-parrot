@@ -33,6 +33,10 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar y si va como usuario normal o con `sudo`.
 - Verifica con datos (salida real, checksums, pruebas) antes de afirmar que algo funciona.
 
+## Formato
+- El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; `~/.prettierrc.json` y `~/.editorconfig` (dotfiles, `format/`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
+- Formatea solo los archivos que editaste, con el Prettier del proyecto (`pnpm exec prettier --write <archivos>`), nunca con un glob: reformatear archivos ajenos al cambio ensucia el diff y rompe los generados.
+
 ## pnpm
 - No cambies el `packageManager` de un proyecto sin pedirlo (reescribe el lockfile y desincroniza el CI). No toques los `overrides` de `pnpm-workspace.yaml`: tapan CVEs.
 

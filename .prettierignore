@@ -1,0 +1,20 @@
+# .prettierignore
+# Archivos del repo que Prettier no debe reformatear al guardar en VSCodium.
+# El estilo del repo está en .prettierrc.json (2 espacios, como .editorconfig);
+# sin él, el repo heredaría el estilo global de ~/.prettierrc.json, que usa
+# tabuladores.
+
+# ----- MARKDOWN -----
+# Las listas anidadas van con 4 espacios (.claude/rules/documentation.md) y
+# Prettier las realinea a 2. tools/check-docs.py vigila su estructura.
+*.md
+
+# ----- COMPARTIDOS CON DOTFILES-WINDOWS -----
+# Idénticos byte a byte en los dos repos (la capa de Claude Code entera y el
+# tema del prompt): reformatearlos aquí los separaría.
+claude/
+oh-my-posh/capr4n.omp.json
+
+# ----- PROTEGIDOS -----
+# Lock file que escribe lazy.nvim.
+nvim/.config/nvim/lazy-lock.json

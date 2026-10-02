@@ -126,6 +126,7 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `zsh/` | Shell | `~/.zshrc` |
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
+| `format/` | Estilo por defecto de Prettier y EditorConfig para proyectos | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
 | `claude/` | Capa global de Claude Code ([claude/README.es.md](claude/README.es.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |

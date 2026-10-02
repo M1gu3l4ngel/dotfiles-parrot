@@ -1,0 +1,32 @@
+# format/editorconfig -> ~/.editorconfig
+# Estilo por defecto para los proyectos que no traen su propio .editorconfig.
+# Los editores lo buscan subiendo carpetas desde el archivo abierto, así que
+# alcanza a todo lo que esté bajo ~ (~/Dev/projects, ~/Dev/scratch). Un
+# proyecto con su .editorconfig y `root = true` corta la búsqueda: este
+# nunca pisa a uno de proyecto.
+#
+# Mismos valores que format/prettierrc.json (~/.prettierrc.json): este cubre
+# lo que Prettier no formatea (shell, SQL, TOML, .env...) y la sangría que
+# pone el editor al escribir. Se aplica al abrir el archivo; en VSCodium
+# requiere la extensión EditorConfig.EditorConfig.
+
+root = true
+
+# ----- TODOS LOS ARCHIVOS -----
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 2
+
+# ----- MARKDOWN -----
+# Dos espacios al final de una línea son un salto de línea forzado.
+[*.md]
+trim_trailing_whitespace = false
+
+# ----- YAML -----
+# La especificación de YAML prohíbe tabuladores para indentar.
+[*.{yml,yaml}]
+indent_style = space

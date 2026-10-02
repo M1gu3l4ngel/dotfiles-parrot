@@ -133,6 +133,30 @@ La confianza del espacio de trabajo queda activa: al abrir material de labs o
 repos descargados, VSCodium los abre en modo restringido (sin tareas ni
 extensiones que ejecuten código) hasta que lo confirmes.
 
+## Formato de código
+
+El estilo vive en dos archivos que lee cualquier herramienta (VSCodium, el
+CLI de Prettier, el CI), no en los ajustes del editor:
+
+| Archivo | Enlazado a | Qué formatea |
+|---|---|---|
+| `format/prettierrc.json` | `~/.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown y YAML |
+| `format/editorconfig` | `~/.editorconfig` | Sangría y finales de línea del resto (shell, SQL, TOML, `.env`) |
+
+Gana la configuración más cercana al archivo, sin mezclarse:
+
+- Un proyecto con su `.prettierrc` o su `.editorconfig` (con `root = true`)
+  usa la suya y nunca la global.
+- La global solo se aplica a lo que está bajo `~` y no trae configuración.
+- Un proyecto compartido o con CI debe llevar siempre la suya: el CI y las
+  demás personas no tienen tu home.
+
+Al guardar, VSCodium formatea con Prettier; el shell, con shfmt (lee el
+`.editorconfig`), y el SQL, con SQLTools. Guarda solo al cambiar de pestaña o
+de ventana: el guardado automático por tiempo no formatea.
+
+Para cambiar el estilo, edita los dos archivos con los mismos valores.
+
 ## Fuente de la terminal
 
 kitty usa `CaskaydiaCove Nerd Font`, tamaño 12 (`font_family` y `font_size`

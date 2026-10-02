@@ -32,8 +32,14 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - Ajustes de VSCodium versionados (`vscodium/`): código con Monokai,
   interfaz con la paleta del sistema, sin telemetría y con la confianza del
   espacio de trabajo activa.
-- `bootstrap.sh` instala VSCodium y sus 26 extensiones desde Open VSX
+- `bootstrap.sh` instala VSCodium y sus 28 extensiones desde Open VSX
   (`vscodium/extensions.txt`), solo las que falten.
+- Estilo de formato global (`format/`): `~/.prettierrc.json` y
+  `~/.editorconfig` para los proyectos sin configuración propia
+  (tabuladores, comillas dobles, 100 columnas). Un proyecto con la suya nunca
+  usa la global. El repo tiene su propio `.prettierrc.json` y `.prettierignore`.
+- VSCodium formatea el shell con shfmt y el SQL con SQLTools, y lee
+  `.editorconfig` (extensión EditorConfig).
 
 ### Cambiado
 

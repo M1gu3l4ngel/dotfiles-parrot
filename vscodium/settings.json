@@ -128,34 +128,31 @@
   "editor.largeFileOptimizations": false,
 
   // ----- FORMATO -----
+  // El estilo no vive aquí sino en archivos que también lee el CLI de
+  // Prettier: el .prettierrc de cada proyecto o, si no tiene, ~/.prettierrc.json
+  // (format/prettierrc.json). Así el editor, la terminal y el CI formatean
+  // igual. Los ajustes "prettier.*" del editor solo se usarían sin ningún
+  // archivo de configuración, y bajo ~ siempre hay uno.
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "html.format.wrapLineLength": 130,
   "css.enabledLanguages": ["html"],
-  "prettier.arrowParens": "always",
-  "prettier.bracketSameLine": false,
-  "prettier.bracketSpacing": true,
-  "prettier.semi": true,
-  "prettier.singleQuote": false,
-  "prettier.jsxSingleQuote": false,
-  "prettier.quoteProps": "as-needed",
-  "prettier.trailingComma": "all",
-  "prettier.singleAttributePerLine": false,
-  "prettier.htmlWhitespaceSensitivity": "css",
-  "prettier.vueIndentScriptAndStyle": false,
-  "prettier.proseWrap": "preserve",
-  "prettier.endOfLine": "lf",
-  "prettier.insertPragma": false,
-  "prettier.requirePragma": false,
-  "prettier.printWidth": 100,
-  "prettier.tabWidth": 2,
-  "prettier.useTabs": true,
-  "prettier.embeddedLanguageFormatting": "auto",
+  // Lo que Prettier no formatea, con su herramienta nativa. shfmt sin flags
+  // lee el .editorconfig del proyecto (sangría y `switch_case_indent`).
+  "[shellscript]": {
+    "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "mtxr.sqltools"
+  },
 
   // ----- ARCHIVOS Y EXPLORADOR -----
-  "files.autoSave": "afterDelay",
-  "files.autoSaveDelay": 600,
+  // Guardar al cambiar de pestaña o de ventana, no por tiempo: el formateo al
+  // guardar no se ejecuta en los guardados automáticos por retardo
+  // ("afterDelay"), así que con él los archivos casi nunca se formateaban.
+  "files.autoSave": "onFocusChange",
+  "files.eol": "\n",
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "symbols.hidesExplorerArrows": false,
