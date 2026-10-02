@@ -34,6 +34,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   atajo `Ctrl+/` del teclado numérico para comentar bloques en VSCodium
   (`vscodium/keybindings.json`) y colores de git del explorador de Monokai
   Night. Código de VSCodium en SemiBold: Linux dibuja el trazo más fino.
+- zsh como PowerShell en Windows: texto entre comillas en cian y selección
+  con fondo claro. `Ctrl+Shift+←/→` selecciona palabras también en la
+  terminal de VSCodium.
 - polybar: colores con significado (gris = apagado, color = activo) desde una
   paleta única, `scripts/.config/scripts/palette.sh`.
 - polybar: texto en CaskaydiaCove SemiBold de 12 pt, la misma familia que
@@ -56,6 +59,8 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Corregido
 
+- Hook de Claude Code: bloqueaba `$(cmd 2>/dev/null)` porque tomaba el `)`
+  como parte del destino de la redirección.
 - El toggle de anonimato decidía el estado por si había un proceso `tor`:
   con el Tor que Parrot deja corriendo al arrancar, creía que el anonimato
   estaba activo y fallaba al desactivarlo. Ahora usa el estado de AnonSurf

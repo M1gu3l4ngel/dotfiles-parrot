@@ -310,4 +310,15 @@ path=("$HOME/.local/bin" $path)
 # (sudo con doble Esc, selección con Shift) no refrescarían el color.
 if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
   source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  # Texto entre comillas en cian, como PowerShell en Windows (por defecto era
+  # amarillo). En hexadecimal y no con el nombre `cyan`: la terminal de
+  # VSCodium usa la paleta de su tema, y así se ve igual que en kitty.
+  ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#58D1EB'
+  ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#58D1EB'
+  ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#58D1EB'
 fi
+
+# Selección (Shift+flechas): fondo claro con texto oscuro, como en PowerShell
+# de Windows. Por defecto invertía los colores del resaltado y el fondo salía
+# del color de cada palabra (verde, amarillo...).
+zle_highlight=(region:bg=#C4C5B5,fg=#1A1A1A)

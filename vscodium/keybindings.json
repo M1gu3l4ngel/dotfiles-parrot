@@ -14,5 +14,21 @@
     "key": "shift+alt+a",
     "command": "-editor.action.blockComment",
     "when": "editorTextFocus && !editorReadonly"
+  },
+  // Terminal integrada: Ctrl+Shift+←/→ selecciona palabra a palabra, como en
+  // kitty. VSCodium se quedaba esas teclas y no llegaban a zsh; aquí se envía
+  // la misma secuencia que manda kitty (formato xterm), que zsh ya entiende
+  // (ver la selección con Shift en .zshrc). Solo con la terminal enfocada.
+  {
+    "key": "ctrl+shift+left",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u001b[1;6D" },
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+right",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u001b[1;6C" },
+    "when": "terminalFocus"
   }
 ]

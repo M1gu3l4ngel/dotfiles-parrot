@@ -36,7 +36,8 @@ function redirectTargets(command) {
 	for (const match of unquoted(command).matchAll(/(\d|&)?>>?/g)) {
 		// El destino se lee del original: en la version tapada su texto entre comillas no existe.
 		const rest = command.slice(match.index + match[0].length);
-		const target = rest.match(/^\s*(&\d|"[^"]*"|'[^']*'|[^\s;|&<>]+)?/)?.[1] ?? "";
+		// Sin `(` ni `)`: en `$(cmd 2>/dev/null)` el `)` cierra la sustitucion, no es del nombre.
+		const target = rest.match(/^\s*(&\d|"[^"]*"|'[^']*'|[^\s;|&<>()]+)?/)?.[1] ?? "";
 		if (target.startsWith("&")) continue;
 		targets.push(target.replaceAll(/^["']|["']$/g, ""));
 	}
@@ -56,7 +57,7 @@ function findViolation(command) {
 	if (PS_WRITERS.test(masked) && !psWriteTargetIsTemp(command)) return "cmdlet que escribe un archivo";
 	const target = redirectTargets(command).find((t) => t && !TEMP_TARGET.test(t));
 	if (target) return `redireccion a ${target}`;
-	const tee = masked.match(/\|\s*tee\s+(?:-a\s+)?([^\s;|&]+)/);
+	const tee = masked.match(/\|\s*tee\s+(?:-a\s+)?([^\s;|&()]+)/);
 	if (tee && !TEMP_TARGET.test(tee[1])) return `tee hacia ${tee[1]}`;
 	return null;
 }
