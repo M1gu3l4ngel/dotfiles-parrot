@@ -12,7 +12,8 @@
 #      bashismos en sh, como el $UID que rompía launch.sh) y formato con shfmt
 #   3. Sintaxis de .zshrc (zsh -n)
 #   4. Sintaxis de la config Lua de Neovim
-#   5. JSON válido (tema de oh-my-posh, lazy-lock)
+#   5. JSON válido (tema de oh-my-posh, lazy-lock) y presupuesto de líneas de
+#      la capa global de Claude Code (claude/check-budget.mjs)
 #   6. sudoers y keymap XKB (se validan con visudo y xkbcomp)
 #   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>
 #   8. Secretos en todo el historial con gitleaks (si está instalado)
@@ -148,6 +149,20 @@ while IFS= read -r f; do
   }
 done < <(git ls-files '*.json')
 [ "$errors" -eq 0 ] && pass "JSON válido"
+
+# ----- 5b. PRESUPUESTO DE LA CAPA DE CLAUDE CODE -----
+# claude/CLAUDE.md se carga en cada sesión de Claude: si crece, cuesta contexto
+# en todas. check-budget.mjs falla si la capa supera sus límites de líneas.
+if have node; then
+  if node claude/check-budget.mjs >/dev/null; then
+    pass "Capa de Claude Code dentro de presupuesto"
+  else
+    node claude/check-budget.mjs
+    fail "Capa de Claude Code fuera de presupuesto (detalle arriba)"
+  fi
+else
+  skip "node no instalado: se omite el presupuesto de claude/"
+fi
 
 # ----- 6. SUDOERS Y XKB -----
 if have visudo || [ -x /usr/sbin/visudo ]; then

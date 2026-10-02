@@ -135,6 +135,23 @@ if [ ! -f "$HOME/.config/bin/target" ]; then
   : >"$HOME/.config/bin/target"
 fi
 
+# ----- SETTINGS DE CLAUDE CODE (SOLO SI NO EXISTE) -----
+# Se copia de la plantilla, no se enlaza: tiene rutas con el usuario y Claude
+# Code le añade datos propios de la máquina (autoMode, plugins). Si ya existe
+# no se toca, para no pisar esos datos; lo que falte se fusiona a mano (ver
+# claude/README.md). La plantilla no registra la barra de estado: se añade
+# aquí con jq, con la ruta real.
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+if [ ! -e "$CLAUDE_SETTINGS" ] && command -v jq >/dev/null; then
+  template=$(<"$DOTFILES_DIR/claude/settings.template.json")
+  mkdir -p "$HOME/.claude"
+  printf '%s\n' "${template//REEMPLAZA_RUTA_HOME/$HOME}" |
+    jq --arg cmd "node $HOME/.claude/statusline.mjs" \
+      '. + {statusLine: {type: "command", command: $cmd}}' >"$CLAUDE_SETTINGS"
+  chmod 600 "$CLAUDE_SETTINGS"
+  ok "Settings de Claude Code creados: $(short "$CLAUDE_SETTINGS")"
+fi
+
 # ----- MODO OSCURO EN APPS GTK4 -----
 # libadwaita (Nautilus) toma el modo oscuro de esta preferencia del sistema;
 # sin ella abre en claro aunque el resto del escritorio sea oscuro. Se guarda

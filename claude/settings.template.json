@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Read(**/.ssh/**)",
+      "Read(**/.credentials.json)",
+      "Read(**/security-keys/**)",
+      "Read(**/id_rsa)",
+      "Read(**/id_ed25519)"
+    ],
+    "ask": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          { "type": "command", "command": "node REEMPLAZA_RUTA_HOME/.claude/hooks/block-shell-edits.mjs", "timeout": 10 }
+        ]
+      }
+    ]
+  },
+  "autoCompactWindow": 400000,
+  "language": "Español",
+  "skillOverrides": {
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:pptx": "off",
+    "anthropic-skills:xlsx": "off",
+    "anthropic-skills:google-workspace": "off",
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:morning": "off",
+    "anthropic-skills:skill-creator": "off",
+    "anthropic-skills:import-memory": "off"
+  }
+}

@@ -33,4 +33,9 @@ LINKS=(
   "$DOTFILES_DIR/nvim/.config/nvim|$HOME/.config/nvim"
   "$DOTFILES_DIR/scripts/.config/scripts|$HOME/.config/scripts"
   "$DOTFILES_DIR/zsh/.zshrc|$HOME/.zshrc"
+  # Capa global de Claude Code (ver claude/README.md). Archivo a archivo: el
+  # resto de ~/.claude es estado local (sesiones, memoria, settings.json).
+  "$DOTFILES_DIR/claude/CLAUDE.md|$HOME/.claude/CLAUDE.md"
+  "$DOTFILES_DIR/claude/statusline.mjs|$HOME/.claude/statusline.mjs"
+  "$DOTFILES_DIR/claude/hooks/block-shell-edits.mjs|$HOME/.claude/hooks/block-shell-edits.mjs"
 )

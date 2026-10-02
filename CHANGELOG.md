@@ -8,6 +8,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- Capa global de Claude Code (`claude/`), la misma que en dotfiles-windows:
+  `CLAUDE.md` con las costuras de Linux, barra de estado, hook que impone
+  editar con Edit/Write y plantilla de `settings.json` (secretos en
+  `deny`/`ask`). `install.sh` la enlaza y crea `settings.json` si falta;
+  `tools/check.sh` vigila su presupuesto de líneas.
 - `uninstall.sh`: quita los enlaces del repo y restaura las copias
   `.pre-dotfiles.bak`; `--dry-run` muestra qué haría sin tocar nada. La lista
   de enlaces pasa a `lib/links.sh`, compartida con `install.sh`.

@@ -123,6 +123,7 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
+| `claude/` | Capa global de Claude Code ([claude/README.md](claude/README.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
