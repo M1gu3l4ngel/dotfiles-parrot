@@ -70,6 +70,43 @@ use one of the themes bundled with oh-my-posh.
 3. To keep it, change the `--config` path in the oh-my-posh line of
    `zsh/.zshrc` and run `exec zsh`.
 
+The prompt shows your user name. To show another name, the same as with
+`POSH_NAME` on Windows, store it in `~/.zshenv` (local, not versioned) and
+open a new terminal:
+
+```bash
+echo 'export POSH_NAME=pentester' >> ~/.zshenv
+```
+
+For a single terminal, without storing it: `POSH_NAME=pentester exec zsh`.
+
+## Demo mode
+
+For screenshots, videos and tutorials without showing real data. In any
+terminal, as a regular user:
+
+```bash
+demo on
+```
+
+| Element | Value shown |
+|---|---|
+| Ethernet bar | `192.168.10.100` |
+| VPN bar | `10.10.14.23` |
+| Target bar | `10.10.11.42 - Lame` |
+| Prompt of every open terminal | `pentester` |
+
+To go back to the real data:
+
+```bash
+demo off
+```
+
+`demo` with no arguments tells you whether it is on. It does not change the
+network or your real target: only what is shown. The values live in
+`_DEMO_VALUES`, in `zsh/.zshrc`. The output of commands such as `ip a` or
+`whoami` is still real: keep them off screen.
+
 ## polybar colors
 
 The colors live in two files with the same values:

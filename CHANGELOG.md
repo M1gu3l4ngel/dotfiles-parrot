@@ -39,6 +39,11 @@ Notable changes to the project. The format follows
   `~/.editorconfig` for projects without their own configuration (tabs,
   double quotes, 100 columns). A project with its own never uses the global
   one. The repo has its own `.prettierrc.json` and `.prettierignore`.
+- Demo mode for screenshots and videos: `demo on` makes polybar (Ethernet,
+  VPN, target) and the prompt of every open terminal show fake data;
+  `demo off` brings back the real data.
+- Prompt with `POSH_NAME`, the same as on Windows: it shows that name instead
+  of the user name, in the window title too.
 - VSCodium formats shell with shfmt and SQL with SQLTools, and reads
   `.editorconfig` (EditorConfig extension).
 

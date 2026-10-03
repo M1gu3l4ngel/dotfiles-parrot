@@ -263,6 +263,74 @@ cleartarget() {
     "Sin objetivo activo"
 }
 
+# =============================================================================
+# MODO DEMO: DATOS FALSOS PARA CAPTURAS Y VÍDEOS
+# =============================================================================
+# `demo on`: polybar (Ethernet, VPN, target) y el prompt de todas las
+# terminales abiertas muestran datos falsos, para publicar capturas o grabar
+# sin enseñar IPs, targets ni el usuario. `demo off` vuelve a lo real y
+# `demo` dice el estado. No cambia nada del sistema: los módulos de polybar
+# leen _DEMO_FILE y, si existe, lo muestran en lugar de lo real.
+#
+# Nombre fijo en el prompt, sin modo demo: `export POSH_NAME=<nombre>` en
+# ~/.zshenv (local, no se versiona). El tema capr4n lo muestra en lugar del
+# usuario, igual que en dotfiles-windows.
+
+# Formato que leen los módulos: "<ethernet> <vpn> <target_ip> <target_nombre>
+# <nombre_prompt>". Los valores son de rangos privados y de labs, no reales.
+_DEMO_FILE="$HOME/.config/bin/demo"
+_DEMO_VALUES="192.168.10.100 10.10.14.23 10.10.11.42 Lame pentester"
+typeset -gi _demo_active=0
+
+demo() {
+  case ${1-} in
+    on)
+      mkdir -p "${_DEMO_FILE:h}"
+      print -r -- "$_DEMO_VALUES" >|"$_DEMO_FILE"
+      notify-send -u low -t 3000 "Modo demo activado" "polybar y el prompt muestran datos falsos"
+      ;;
+    off)
+      rm -f -- "$_DEMO_FILE"
+      notify-send -u low -t 3000 "Modo demo desactivado" "Vuelven los datos reales"
+      ;;
+    "")
+      if [[ -r $_DEMO_FILE ]]; then
+        print -r -- "Modo demo: activado ($(<$_DEMO_FILE))"
+      else
+        print "Modo demo: desactivado"
+      fi
+      ;;
+    *)
+      print -u2 "Uso: demo [on|off]"
+      return 1
+      ;;
+  esac
+}
+
+# Antes de cada prompt y antes de que oh-my-posh lo dibuje (por eso va al
+# principio de precmd_functions): así cambian también las terminales que ya
+# estaban abiertas. Solo actúa al entrar o salir del modo demo, para respetar
+# un POSH_NAME propio y devolverlo al salir. `$(<archivo)` lo lee zsh sin
+# lanzar procesos.
+_demo_precmd() {
+  if [[ -r $_DEMO_FILE ]]; then
+    if ((!_demo_active)); then
+      _demo_saved_name=${POSH_NAME-}
+      _demo_active=1
+    fi
+    local -a fields=(${=$(<$_DEMO_FILE)})
+    export POSH_NAME=${fields[5]}
+  elif ((_demo_active)); then
+    _demo_active=0
+    if [[ -n $_demo_saved_name ]]; then
+      export POSH_NAME=$_demo_saved_name
+    else
+      unset POSH_NAME
+    fi
+  fi
+}
+precmd_functions=(_demo_precmd $precmd_functions)
+
 # ----- FZF -----
 # Fuzzy finder. Activa Ctrl+R (búsqueda en historial), Ctrl+T (archivos) y
 # Alt+C (cambiar de directorio).

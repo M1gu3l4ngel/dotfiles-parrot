@@ -17,18 +17,27 @@ set -u
 # escritos literalmente los eliminan las herramientas de edición.
 ICON=$(printf '\363\260\210\200')
 
+# ----- MODO DEMO -----
+# `demo on` (función de .zshrc) escribe valores falsos en DEMO_FILE para
+# capturas y vídeos; mientras exista, se muestran en lugar de los reales.
+# Formato: "<ethernet> <vpn> <target_ip> <target_nombre> <nombre_prompt>".
+DEMO_FILE="$HOME/.config/bin/demo"
 ip_address=""
-# Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
-while read -r iface _ addr _; do
-  case "$iface" in
-    lo | tun* | wg* | docker* | br-* | veth* | virbr*) continue ;;
-    *) ;;
-  esac
-  ip_address=${addr%%/*}
-  break
-done <<EOF
+[ -r "$DEMO_FILE" ] && read -r ip_address _ <"$DEMO_FILE"
+
+if [ -z "$ip_address" ]; then
+  # Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
+  while read -r iface _ addr _; do
+    case "$iface" in
+      lo | tun* | wg* | docker* | br-* | veth* | virbr*) continue ;;
+      *) ;;
+    esac
+    ip_address=${addr%%/*}
+    break
+  done <<EOF
 $(ip -4 -br addr show 2>/dev/null)
 EOF
+fi
 
 # shellcheck source=palette.sh
 . "${0%/*}/palette.sh"

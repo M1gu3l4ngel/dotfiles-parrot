@@ -16,19 +16,26 @@ set -u
 # (PUA) escritos literalmente los eliminan las herramientas de edición.
 ICON=$(printf '\363\260\206\247')
 
+# ----- MODO DEMO -----
+# Con `demo on` (ver ethernet_status.sh), la VPN falsa es el segundo campo.
+DEMO_FILE="$HOME/.config/bin/demo"
 ip_address=""
-# Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
-while read -r iface _ addr _; do
-  case "$iface" in
-    tun* | wg*)
-      ip_address=${addr%%/*}
-      break
-      ;;
-    *) ;;
-  esac
-done <<EOF
+[ -r "$DEMO_FILE" ] && read -r _ ip_address _ <"$DEMO_FILE"
+
+if [ -z "$ip_address" ]; then
+  # Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
+  while read -r iface _ addr _; do
+    case "$iface" in
+      tun* | wg*)
+        ip_address=${addr%%/*}
+        break
+        ;;
+      *) ;;
+    esac
+  done <<EOF
 $(ip -4 -br addr show 2>/dev/null)
 EOF
+fi
 
 # shellcheck source=palette.sh
 . "${0%/*}/palette.sh"

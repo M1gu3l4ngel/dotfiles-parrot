@@ -1,70 +1,68 @@
 {
-  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-  "console_title_template": "{{if .Root}} ⚡ {{end}}{{.UserName}} ➔ 📁{{.Folder}}",
-  "blocks": [
-    {
-      "type": "prompt",
-      "alignment": "left",
-      "segments": [
-        {
-          "properties": {
-            "always_enabled": true,
-            "cache_duration": "none"
-          },
-          "leading_diamond": "\ue0b6",
-          "trailing_diamond": "\ue0b0",
-          "template": "{{ if gt .Code 0 }} ✗ {{ else }} ✓ {{ end }}",
-          "foreground": "#193549",
-          "background": "#95ffa4",
-          "type": "status",
-          "style": "diamond",
-          "background_templates": [
-            "{{ if gt .Code 0 }}#FF6B6B{{ end }}"
-          ]
-        },
-        {
-          "properties": {
-            "cache_duration": "none",
-            "display_host": false
-          },
-          "trailing_diamond": "\ue0b0",
-          "template": "{{if .Root}} \uf0e7 {{.UserName}} {{else}} {{.UserName}} {{end}}",
-          "foreground": "#193549",
-          "background": "#61AFEF",
-          "type": "session",
-          "style": "diamond"
-        },
-        {
-          "properties": {
-            "cache_duration": "none",
-            "folder_icon": "\uf115",
-            "folder_separator_icon": " \ue0b1 ",
-            "max_depth": 2,
-            "style": "agnoster_short"
-          },
-          "template": " {{ .Path }} ",
-          "foreground": "#193549",
-          "powerline_symbol": "\ue0b0",
-          "background": "#C678DD",
-          "type": "path",
-          "style": "powerline"
-        },
-        {
-          "properties": {
-            "cache_duration": "none",
-            "fetch_status": true,
-            "fetch_upstream_icon": true
-          },
-          "template": " {{ .HEAD }}{{ if .Working.Changed }} {{ end }}{{ if .Staging.Changed }} ✚{{ end }}{{ if gt .Ahead 0 }} ↑ {{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ↓ {{ .Behind }}{{ end }} ",
-          "foreground": "#193549",
-          "powerline_symbol": "\ue0b0",
-          "background": "#95ffa4",
-          "type": "git",
-          "style": "powerline"
-        }
-      ]
-    }
-  ],
-  "version": 3,
-  "final_space": true
+	"$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+	"console_title_template": "{{if .Root}} ⚡ {{end}}{{ if .Env.POSH_NAME }}{{ .Env.POSH_NAME }}{{ else }}{{ .UserName }}{{ end }} ➔ 📁{{.Folder}}",
+	"blocks": [
+		{
+			"type": "prompt",
+			"alignment": "left",
+			"segments": [
+				{
+					"properties": {
+						"always_enabled": true,
+						"cache_duration": "none"
+					},
+					"leading_diamond": "\ue0b6",
+					"trailing_diamond": "\ue0b0",
+					"template": "{{ if gt .Code 0 }} ✗ {{ else }} ✓ {{ end }}",
+					"foreground": "#193549",
+					"background": "#95ffa4",
+					"type": "status",
+					"style": "diamond",
+					"background_templates": ["{{ if gt .Code 0 }}#FF6B6B{{ end }}"]
+				},
+				{
+					"properties": {
+						"cache_duration": "none",
+						"display_host": false
+					},
+					"trailing_diamond": "\ue0b0",
+					"template": "{{ if .Root }} \uf0e7{{ end }} {{ if .Env.POSH_NAME }}{{ .Env.POSH_NAME }}{{ else }}{{ .UserName }}{{ end }} ",
+					"foreground": "#193549",
+					"background": "#61AFEF",
+					"type": "session",
+					"style": "diamond"
+				},
+				{
+					"properties": {
+						"cache_duration": "none",
+						"folder_icon": "\uf115",
+						"folder_separator_icon": " \ue0b1 ",
+						"max_depth": 2,
+						"style": "agnoster_short"
+					},
+					"template": " {{ .Path }} ",
+					"foreground": "#193549",
+					"powerline_symbol": "\ue0b0",
+					"background": "#C678DD",
+					"type": "path",
+					"style": "powerline"
+				},
+				{
+					"properties": {
+						"cache_duration": "none",
+						"fetch_status": true,
+						"fetch_upstream_icon": true
+					},
+					"template": " {{ .HEAD }}{{ if .Working.Changed }} \uf044{{ end }}{{ if .Staging.Changed }} ✚{{ end }}{{ if gt .Ahead 0 }} ↑ {{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ↓ {{ .Behind }}{{ end }} ",
+					"foreground": "#193549",
+					"powerline_symbol": "\ue0b0",
+					"background": "#95ffa4",
+					"type": "git",
+					"style": "powerline"
+				}
+			]
+		}
+	],
+	"version": 3,
+	"final_space": true
 }

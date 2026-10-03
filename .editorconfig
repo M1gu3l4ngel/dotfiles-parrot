@@ -34,6 +34,11 @@ switch_case_indent = true
 indent_size = 4
 trim_trailing_whitespace = false
 
+# ----- TEMA DE OH-MY-POSH -----
+# Idéntico byte a byte al de dotfiles-windows, que indenta con tabuladores.
+[oh-my-posh/*.json]
+indent_style = tab
+
 # ----- SXHKD: CONVENCIÓN ES TABS -----
 # sxhkd usa tabs para indentar el comando bajo el binding. Mantenemos su
 # convención original aunque el resto del repo use espacios.

@@ -38,6 +38,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   `~/.editorconfig` para los proyectos sin configuración propia
   (tabuladores, comillas dobles, 100 columnas). Un proyecto con la suya nunca
   usa la global. El repo tiene su propio `.prettierrc.json` y `.prettierignore`.
+- Modo demo para capturas y vídeos: `demo on` hace que polybar (Ethernet,
+  VPN, target) y el prompt de todas las terminales abiertas muestren datos
+  falsos; `demo off` vuelve a los reales.
+- Prompt con `POSH_NAME`, igual que en Windows: muestra ese nombre en lugar
+  del usuario, también en el título de la ventana.
 - VSCodium formatea el shell con shfmt y el SQL con SQLTools, y lee
   `.editorconfig` (extensión EditorConfig).
 

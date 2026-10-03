@@ -28,7 +28,14 @@ ICON=$'\xf3\xb0\x93\xbe'
 # `2>/dev/null` va ANTES de `<`: las redirecciones se aplican en orden, y si
 # fuera después, el error de "archivo no existe" ya se habría impreso.
 ip_address="" machine_name=""
-read -r ip_address machine_name _ 2>/dev/null <"$TARGET_FILE"
+# Con `demo on` (ver ethernet_status.sh) se muestra el target falso del
+# tercer y cuarto campo, sin tocar el target real.
+DEMO_FILE="$HOME/.config/bin/demo"
+if [ -r "$DEMO_FILE" ]; then
+  read -r _ _ ip_address machine_name _ <"$DEMO_FILE"
+else
+  read -r ip_address machine_name _ 2>/dev/null <"$TARGET_FILE"
+fi
 
 # ----- SALIDA -----
 # Con target: icono rojo (alerta: hay un objetivo activo), IP destacada y
