@@ -13,10 +13,11 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // Presupuestos. CLAUDE.md es el que de verdad cuesta contexto en cada sesión;
 // el resto son topes de cordura para que la capa no se infle.
 const BUDGETS = [
-  { file: 'CLAUDE.md', maxLines: 50 },
+  { file: 'CLAUDE.md', maxLines: 60 },
   { file: 'statusline.mjs', maxLines: 120 },
   { file: 'hooks/block-shell-edits.mjs', maxLines: 160 },
   { file: 'hooks/block-forbidden-commands.mjs', maxLines: 130 },
+  { file: 'hooks/reply-in-spanish.mjs', maxLines: 120 },
 ];
 
 let failed = false;

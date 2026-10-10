@@ -12,15 +12,17 @@ independientes y cada máquina funciona sola.
 
 | Archivo | Enlazado a | Qué es |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: idioma, disco, editar con Edit/Write, confirmar antes de borrar, interacción, formato, compactación |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: documentación bilingüe, disco, editar con Edit/Write, confirmar antes de borrar, interacción, contexto y delegación, hallazgos, artefacto de tareas, formato, nombres, compactación |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | Hook `PreToolUse` que impone editar con Edit/Write (bloquea `sed -i`, redirecciones, heredocs… y deja pasar temporales). Portable Windows/Linux |
 | `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | Hook `PreToolUse` que corta lo que `CLAUDE.md` prohíbe: deniega el git de escritura y `prettier --write` con un glob, y pide confirmación antes de un borrado recursivo fuera de temporales. Portable Windows/Linux |
-| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro de los hooks + `skillOverrides` |
+| `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | Hook `Stop` que bloquea una respuesta escrita en inglés y pide rehacerla en español (ignora código, rutas e identificadores). Portable Windows/Linux |
+| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro de los hooks + límites de salida (`env`) + `skillOverrides` |
 | `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/hooks y falla si exceden. Lo ejecuta `tools/check.sh` |
+| `tasks-artifact.template.html` | — (plantilla) | Diseño fijo del artefacto de tareas que `CLAUDE.md` pide en los trabajos de varios bloques: Claude lo copia, rellena el contenido y no lo rediseña |
 
-`statusline.mjs` y los dos hooks se comparten con Windows; `check-budget.mjs` y
-`settings.template.json` parten de la misma base. `CLAUDE.md` comparte el núcleo y
+`statusline.mjs`, los tres hooks y `tasks-artifact.template.html` se comparten con
+Windows; `check-budget.mjs` y `settings.template.json` parten de la misma base. `CLAUDE.md` comparte el núcleo y
 cambia solo lo propio de Linux: el disco (`~/Dev`, `/tmp` en RAM), el borrado (`rm` sin
 papelera) y que cada comando indique si va como usuario normal o con `sudo`.
 
@@ -34,7 +36,7 @@ papelera) y que cada comando indique si va como usuario normal o con `sudo`.
 
 ## Montar en una máquina nueva
 
-1. `./bootstrap.sh` (o solo `./install.sh`): enlaza los 4 archivos de arriba a `~/.claude/`
+1. `./bootstrap.sh` (o solo `./install.sh`): enlaza los 5 archivos de arriba a `~/.claude/`
    y, si `~/.claude/settings.json` no existe, lo crea desde la plantilla con tu `$HOME` en
    lugar de `REEMPLAZA_RUTA_HOME` y con la barra de estado registrada. Si ya existe, no lo
    toca: fusiona a mano lo que falte (la plantilla y `statusLine`).

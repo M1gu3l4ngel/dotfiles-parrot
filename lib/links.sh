@@ -45,4 +45,5 @@ LINKS=(
   "$DOTFILES_DIR/claude/statusline.mjs|$HOME/.claude/statusline.mjs"
   "$DOTFILES_DIR/claude/hooks/block-shell-edits.mjs|$HOME/.claude/hooks/block-shell-edits.mjs"
   "$DOTFILES_DIR/claude/hooks/block-forbidden-commands.mjs|$HOME/.claude/hooks/block-forbidden-commands.mjs"
+  "$DOTFILES_DIR/claude/hooks/reply-in-spanish.mjs|$HOME/.claude/hooks/reply-in-spanish.mjs"
 )

@@ -48,6 +48,11 @@ Notable changes to the project. The format follows
   dotfiles-windows: it denies write git commands and `prettier --write` with
   a glob, and asks for confirmation before a recursive delete outside
   temporary folders.
+- The rest of the Claude Code layer of dotfiles-windows: the
+  `reply-in-spanish` hook (blocks a reply written in English), the task
+  artifact template, output limits in the `settings.json` template and new
+  `CLAUDE.md` rules (context and delegation, findings, task artifact,
+  naming).
 - VSCodium formats shell with shfmt and SQL with SQLTools, and reads
   `.editorconfig` (EditorConfig extension).
 

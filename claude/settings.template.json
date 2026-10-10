@@ -24,9 +24,20 @@
           { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/block-forbidden-commands.mjs\"", "timeout": 10 }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs\"", "timeout": 10 }
+        ]
+      }
     ]
   },
   "autoCompactWindow": 400000,
+  "env": {
+    "BASH_MAX_OUTPUT_LENGTH": "12000",
+    "MAX_MCP_OUTPUT_TOKENS": "10000"
+  },
   "language": "Español",
   "skillOverrides": {
     "anthropic-skills:docx": "off",

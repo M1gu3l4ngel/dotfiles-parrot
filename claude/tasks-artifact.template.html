@@ -1,0 +1,270 @@
+<title>Tasks NOMBRE-DEL-PROYECTO</title>
+<!--
+  Plantilla del artefacto de tareas. Se copia al scratchpad de la sesión y se rellena; el diseño
+  (Monokai, Cascadia Code, grupos plegables, casillas) no se toca.
+
+  Qué se rellena:
+  - <title>, el <h1> y la fecha de la intro.
+  - La tarjeta "Dónde vamos": los pasos de `.track` (done / now / todo), la lista `.blocks`
+    (pill done / ready / todo) y el párrafo `.next`. Si el trabajo no tiene etapas, se quita
+    `.track` y queda la lista.
+  - PHASES, GROUPS y KEY en el script.
+
+  Las marcas se guardan en el navegador por `id de grupo + posición`: al republicar, un grupo que
+  sigue vivo conserva su `id` y el orden de sus items, y lo nuevo se añade al final.
+-->
+<style>
+/* Layout: una columna tipo terminal; arriba dónde vamos, debajo filtros y grupos plegables. */
+:root{
+  color-scheme: dark;
+  --bg:#1e1f1c; --card:#272822; --hover:#2f302a; --line:#3e3d32; --fg:#f8f8f2; --soft:#cfcfc2; --muted:#75715e;
+  --green:#a6e22e; --pink:#f92672; --orange:#fd971f; --yellow:#e6db74; --blue:#66d9ef; --purple:#ae81ff;
+  --mono:"Cascadia Code", Consolas, "Courier New", monospace;
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:13px/1.55 var(--mono);
+  padding-block:24px; padding-inline:16px;
+}
+.wrap{width:100%; max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:18px 20px}
+header.top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+h1{font-size:17px; margin:0; color:var(--green); font-weight:700}
+h1::before{content:"$ "; color:var(--pink)}
+.count{color:var(--purple); font-size:12px; white-space:nowrap; font-variant-numeric:tabular-nums}
+.bar{height:3px; background:var(--line); border-radius:2px; margin:10px 0 4px; overflow:hidden}
+.bar i{display:block; height:100%; width:0; background:var(--green); transition:width .25s}
+.intro{color:var(--muted); font-size:12px; margin:8px 0 0}
+.intro::before{content:"// "}
+h2{font-size:12px; font-weight:700; color:var(--blue); margin:0 0 10px}
+h2::before{content:"# "; color:var(--muted)}
+code{color:var(--yellow); background:var(--bg); padding:0 4px; border-radius:3px; font-family:inherit; overflow-wrap:anywhere}
+
+/* Dónde vamos */
+.track{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+.step{border:1px solid var(--line); border-radius:6px; padding:8px 10px; min-width:0}
+.step b{display:block; font-size:11px; color:var(--muted); font-weight:400}
+.step span{display:block; font-size:12px; color:var(--soft); overflow-wrap:anywhere}
+.step em{display:block; font-style:normal; font-size:11px; margin-top:4px}
+.step.done{border-color:var(--green)} .step.done em{color:var(--green)}
+.step.now{border-color:var(--orange); background:var(--bg)} .step.now em{color:var(--orange)}
+.step.todo em{color:var(--muted)}
+.blocks{list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:4px}
+.blocks li{display:flex; gap:10px; align-items:baseline}
+.blocks .n{color:var(--orange); flex:none; width:5.2em}
+.blocks .t{flex:1; min-width:0; color:var(--soft)}
+.pill{flex:none; font-size:11px; padding:0 7px; border:1px solid currentColor; border-radius:10px; white-space:nowrap}
+.pill.done{color:var(--green)} .pill.ready{color:var(--yellow)} .pill.todo{color:var(--muted)}
+.next{margin:14px 0 0; padding:10px 12px; border-left:2px solid var(--pink); background:var(--bg); border-radius:0 4px 4px 0; color:var(--soft)}
+.next b{color:var(--pink)}
+
+/* Controles */
+.controls{display:flex; flex-direction:column; gap:10px}
+.search{
+  width:100%; font:inherit; color:var(--fg); background:var(--bg);
+  border:1px solid var(--line); border-radius:4px; padding:6px 10px;
+}
+.search::placeholder{color:var(--muted)}
+.search:focus-visible, button:focus-visible, summary:focus-visible{outline:2px solid var(--yellow); outline-offset:2px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+button{
+  font:inherit; font-size:12px; color:var(--muted); background:none;
+  border:1px solid var(--line); border-radius:4px; padding:3px 10px; cursor:pointer;
+}
+button:hover{color:var(--fg); border-color:var(--muted)}
+button[aria-pressed="true"]{color:var(--bg); background:var(--blue); border-color:var(--blue); font-weight:700}
+.row{display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; align-items:center}
+button.danger:hover{color:var(--pink); border-color:var(--pink)}
+
+/* Grupos */
+.phase{font-size:12px; color:var(--purple); margin:8px 0 -6px; font-weight:700}
+.phase::before{content:"## "; color:var(--muted)}
+details{background:var(--card); border:1px solid var(--line); border-radius:8px}
+summary{
+  list-style:none; cursor:pointer; padding:10px 16px; display:flex; gap:10px; align-items:baseline;
+  border-radius:8px;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+"; color:var(--pink); flex:none; width:1ch}
+details[open] > summary::before{content:"-"}
+summary:hover{background:var(--hover)}
+summary .gt{flex:1; min-width:0; color:var(--blue); font-weight:700}
+summary .gc{flex:none; color:var(--purple); font-size:12px; font-variant-numeric:tabular-nums}
+.body{padding:0 16px 12px}
+.note{color:var(--muted); font-size:12px; margin:0 0 8px}
+.note::before{content:"// "}
+ul.items{list-style:none; margin:0; padding:0}
+label.item{
+  display:flex; gap:10px; align-items:flex-start; padding:4px 6px; margin:0 -6px;
+  border-radius:4px; cursor:pointer;
+}
+label.item:hover{background:var(--hover)}
+label.item input{position:absolute; opacity:0; pointer-events:none}
+.box{
+  flex:none; width:15px; height:15px; margin-top:3px; border:1px solid var(--muted);
+  border-radius:3px; display:grid; place-items:center; color:var(--card); font-size:11px; line-height:1;
+}
+.txt{flex:1; min-width:0; color:var(--soft); overflow-wrap:anywhere}
+input:checked ~ .box{background:var(--green); border-color:var(--green)}
+input:checked ~ .box::after{content:"\2713"; font-weight:700}
+input:checked ~ .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--muted)}
+input:focus-visible ~ .box{outline:2px solid var(--yellow); outline-offset:2px}
+mark{background:none; color:var(--orange); font-weight:700}
+.empty{color:var(--muted); padding:8px 2px}
+@media (max-width:560px){
+  .track{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .blocks li{flex-wrap:wrap}
+  .blocks .t{flex-basis:100%; order:3}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<main class="wrap">
+  <section class="card">
+    <header class="top">
+      <h1>tasks nombre-del-proyecto</h1>
+      <span class="count" id="count">0/0</span>
+    </header>
+    <div class="bar"><i id="bar"></i></div>
+    <p class="intro">Al día a AAAA-MM-DD. La fuente de verdad es <code>docs/tasks.md</code>; las marcas de aquí se guardan solo en este navegador.</p>
+  </section>
+
+  <section class="card">
+    <h2>Dónde vamos: objetivo en curso</h2>
+    <div class="track">
+      <div class="step done"><b>Etapa 1</b><span>Qué cubre</span><em>hecha</em></div>
+      <div class="step now"><b>Etapa 2</b><span>Qué cubre</span><em>en curso</em></div>
+      <div class="step todo"><b>Etapa 3</b><span>Qué cubre</span><em>pendiente</em></div>
+    </div>
+    <ul class="blocks">
+      <li><span class="n">Bloque 1</span><span class="t">Qué resuelve</span><span class="pill done">commiteado</span></li>
+      <li><span class="n">Bloque 2</span><span class="t">Qué resuelve</span><span class="pill ready">falta tu commit</span></li>
+      <li><span class="n">Bloque 3</span><span class="t">Qué resuelve</span><span class="pill todo">pendiente</span></li>
+    </ul>
+    <p class="next"><b>Siguiente paso:</b> lo siguiente que toca hacer.</p>
+  </section>
+
+  <section class="card controls">
+    <input class="search" id="q" type="search" placeholder="Buscar en las tareas..." aria-label="Buscar en las tareas">
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <div class="chips">
+        <button type="button" id="onlyOpen" aria-pressed="false">Ocultar marcadas</button>
+        <button type="button" id="expand">Abrir todo</button>
+        <button type="button" id="collapse">Cerrar todo</button>
+      </div>
+      <button type="button" class="danger" id="reset">Quitar marcas</button>
+    </div>
+  </section>
+
+  <div id="list" class="wrap" style="gap:10px"></div>
+</main>
+
+<script>
+// Las secciones en las que se agrupan los grupos, en el orden en que se pintan.
+const PHASES = [
+  ["now", "Ahora"],
+  ["next", "Después"],
+  ["later", "Aplazado"],
+];
+
+// Cada grupo: `id` estable, `phase` de PHASES, `title`, `note` opcional, `open` opcional e `items`.
+// En el texto, lo que va entre acentos graves se pinta como código.
+const GROUPS = [
+  { id: "ejemplo", phase: "now", title: "Bloque en curso: lo que te toca a ti", open: true,
+    note: "Contexto de una línea, si hace falta.",
+    items: [
+      "Probar tal cosa: qué debe pasar",
+      "Commitear: `type(scope): mensaje`",
+    ] },
+];
+
+// Clave de las marcas en el navegador: una por proyecto, para que no se mezclen.
+const KEY = "tasks-nombre-del-proyecto";
+let state = { done: {}, phase: "all", onlyOpen: false };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function fmt(text, q) {
+  let html = esc(text);
+  if (q) {
+    const at = html.toLowerCase().indexOf(q);
+    if (at >= 0) html = html.slice(0, at) + "<mark>" + html.slice(at, at + q.length) + "</mark>" + html.slice(at + q.length);
+  }
+  return html.replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+const itemKey = (g, i) => g.id + ":" + i;
+// El estado abierto/cerrado de cada grupo vive aparte para que un filtro no lo pise.
+const openState = {};
+GROUPS.forEach((g) => { openState[g.id] = !!g.open; });
+
+const list = document.getElementById("list");
+const qInput = document.getElementById("q");
+const chips = document.getElementById("chips");
+
+function renderChips() {
+  const all = [["all", "Todo"]].concat(PHASES);
+  chips.innerHTML = all.map(([id, label]) => {
+    const n = GROUPS.filter((g) => id === "all" || g.phase === id).reduce((a, g) => a + g.items.length, 0);
+    return '<button type="button" data-phase="' + id + '" aria-pressed="' + (state.phase === id) + '">' + esc(label) + " " + n + "</button>";
+  }).join("");
+}
+
+function render() {
+  const q = qInput.value.trim().toLowerCase();
+  let html = "";
+  let total = 0, done = 0;
+  GROUPS.forEach((g) => g.items.forEach((_, i) => { total++; if (state.done[itemKey(g, i)]) done++; }));
+
+  PHASES.forEach(([pid, plabel]) => {
+    if (state.phase !== "all" && state.phase !== pid) return;
+    let phaseHtml = "";
+    GROUPS.filter((g) => g.phase === pid).forEach((g) => {
+      const rows = g.items.map((text, i) => ({ text, i, checked: !!state.done[itemKey(g, i)] }))
+        .filter((r) => (!q || r.text.toLowerCase().includes(q)) && !(state.onlyOpen && r.checked));
+      if (!rows.length) return;
+      const gDone = g.items.filter((_, i) => state.done[itemKey(g, i)]).length;
+      const isOpen = q ? true : openState[g.id];
+      phaseHtml += '<details data-g="' + g.id + '"' + (isOpen ? " open" : "") + ">" +
+        '<summary><span class="gt">' + esc(g.title) + '</span><span class="gc">' + gDone + "/" + g.items.length + "</span></summary>" +
+        '<div class="body">' + (g.note ? '<p class="note">' + fmt(g.note, "") + "</p>" : "") + '<ul class="items">' +
+        rows.map((r) => '<li><label class="item"><input type="checkbox" id="t-' + g.id + "-" + r.i + '" data-k="' + itemKey(g, r.i) + '"' +
+          (r.checked ? " checked" : "") + '><span class="box"></span><span class="txt">' + fmt(r.text, q) + "</span></label></li>").join("") +
+        "</ul></div></details>";
+    });
+    if (phaseHtml) html += '<p class="phase">' + esc(plabel) + "</p>" + phaseHtml;
+  });
+
+  list.innerHTML = html || '<p class="empty">Nada coincide con el filtro.</p>';
+  document.getElementById("count").textContent = done + "/" + total + " marcadas";
+  document.getElementById("bar").style.width = (total ? (done / total) * 100 : 0) + "%";
+  document.getElementById("onlyOpen").setAttribute("aria-pressed", String(state.onlyOpen));
+}
+
+list.addEventListener("change", (e) => {
+  const k = e.target.dataset && e.target.dataset.k;
+  if (!k) return;
+  if (e.target.checked) state.done[k] = true; else delete state.done[k];
+  save(); render();
+});
+list.addEventListener("toggle", (e) => {
+  const g = e.target.dataset && e.target.dataset.g;
+  if (g && !qInput.value.trim()) openState[g] = e.target.open;
+}, true);
+chips.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-phase]");
+  if (!b) return;
+  state.phase = b.dataset.phase; save(); renderChips(); render();
+});
+qInput.addEventListener("input", render);
+document.getElementById("onlyOpen").addEventListener("click", () => { state.onlyOpen = !state.onlyOpen; save(); render(); });
+document.getElementById("expand").addEventListener("click", () => { GROUPS.forEach((g) => { openState[g.id] = true; }); render(); });
+document.getElementById("collapse").addEventListener("click", () => { GROUPS.forEach((g) => { openState[g.id] = false; }); render(); });
+document.getElementById("reset").addEventListener("click", () => { state.done = {}; save(); render(); });
+
+renderChips();
+render();
+</script>

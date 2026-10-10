@@ -12,15 +12,17 @@ independent and each machine works on its own.
 
 | File | Linked to | What it is |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules (in Spanish): language, disk, edit with Edit/Write, confirm before deleting, interaction, formatting, compaction |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules (in Spanish): bilingual docs, disk, edit with Edit/Write, confirm before deleting, interaction, context and delegation, findings, task artifact, formatting, naming, compaction |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable across Windows/Linux |
 | `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | `PreToolUse` hook that stops what `CLAUDE.md` forbids: it denies write git commands and `prettier --write` with a glob, and asks for confirmation before a recursive delete outside temporary folders. Portable across Windows/Linux |
-| `settings.template.json` | — (template) | Portable base for `settings.json`: `deny`/`ask` for generic secrets + hook registration + `skillOverrides` |
+| `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | `Stop` hook that blocks a reply written in English and asks to redo it in Spanish (ignores code, paths and identifiers). Portable across Windows/Linux |
+| `settings.template.json` | — (template) | Portable base for `settings.json`: `deny`/`ask` for generic secrets + hook registration + output limits (`env`) + `skillOverrides` |
 | `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/hooks and fails if they go over. Run by `tools/check.sh` |
+| `tasks-artifact.template.html` | — (template) | Fixed design of the task artifact that `CLAUDE.md` asks for on multi-block work: Claude copies it, fills in the content and does not redesign it |
 
-`statusline.mjs` and the two hooks are shared with Windows; `check-budget.mjs` and
-`settings.template.json` start from the same base. `CLAUDE.md` shares the core and
+`statusline.mjs`, the three hooks and `tasks-artifact.template.html` are shared with
+Windows; `check-budget.mjs` and `settings.template.json` start from the same base. `CLAUDE.md` shares the core and
 only changes what is specific to Linux: the disk (`~/Dev`, `/tmp` in RAM), deletion (`rm`
 has no recycle bin) and that every command states whether it runs as a regular user or
 with `sudo`.
@@ -35,7 +37,7 @@ with `sudo`.
 
 ## Set up on a new machine
 
-1. `./bootstrap.sh` (or just `./install.sh`): links the 4 files above into `~/.claude/`
+1. `./bootstrap.sh` (or just `./install.sh`): links the 5 files above into `~/.claude/`
    and, if `~/.claude/settings.json` does not exist, creates it from the template with
    your `$HOME` instead of `REEMPLAZA_RUTA_HOME` and with the status line registered. If it
    already exists, it leaves it alone: merge what is missing by hand (the template and
