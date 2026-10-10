@@ -44,6 +44,10 @@ Notable changes to the project. The format follows
   `demo off` brings back the real data.
 - Prompt with `POSH_NAME`, the same as on Windows: it shows that name instead
   of the user name, in the window title too.
+- Global Claude Code hook `block-forbidden-commands`, the same as in
+  dotfiles-windows: it denies write git commands and `prettier --write` with
+  a glob, and asks for confirmation before a recursive delete outside
+  temporary folders.
 - VSCodium formats shell with shfmt and SQL with SQLTools, and reads
   `.editorconfig` (EditorConfig extension).
 

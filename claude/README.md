@@ -15,11 +15,12 @@ independent and each machine works on its own.
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules (in Spanish): language, disk, edit with Edit/Write, confirm before deleting, interaction, formatting, compaction |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable across Windows/Linux |
+| `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | `PreToolUse` hook that stops what `CLAUDE.md` forbids: it denies write git commands and `prettier --write` with a glob, and asks for confirmation before a recursive delete outside temporary folders. Portable across Windows/Linux |
 | `settings.template.json` | — (template) | Portable base for `settings.json`: `deny`/`ask` for generic secrets + hook registration + `skillOverrides` |
-| `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/`hook` and fails if they go over. Run by `tools/check.sh` |
+| `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/hooks and fails if they go over. Run by `tools/check.sh` |
 
-`statusline.mjs`, `hooks/block-shell-edits.mjs`, `check-budget.mjs` and
-`settings.template.json` are identical to the Windows ones. `CLAUDE.md` shares the core and
+`statusline.mjs` and the two hooks are shared with Windows; `check-budget.mjs` and
+`settings.template.json` start from the same base. `CLAUDE.md` shares the core and
 only changes what is specific to Linux: the disk (`~/Dev`, `/tmp` in RAM), deletion (`rm`
 has no recycle bin) and that every command states whether it runs as a regular user or
 with `sudo`.
@@ -34,7 +35,7 @@ with `sudo`.
 
 ## Set up on a new machine
 
-1. `./bootstrap.sh` (or just `./install.sh`): links the 3 files above into `~/.claude/`
+1. `./bootstrap.sh` (or just `./install.sh`): links the 4 files above into `~/.claude/`
    and, if `~/.claude/settings.json` does not exist, creates it from the template with
    your `$HOME` instead of `REEMPLAZA_RUTA_HOME` and with the status line registered. If it
    already exists, it leaves it alone: merge what is missing by hand (the template and

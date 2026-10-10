@@ -43,6 +43,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   falsos; `demo off` vuelve a los reales.
 - Prompt con `POSH_NAME`, igual que en Windows: muestra ese nombre en lugar
   del usuario, también en el título de la ventana.
+- Hook global `block-forbidden-commands` de Claude Code, el mismo que en
+  dotfiles-windows: deniega el git de escritura y `prettier --write` con un
+  glob, y pide confirmación antes de un borrado recursivo fuera de temporales.
 - VSCodium formatea el shell con shfmt y el SQL con SQLTools, y lee
   `.editorconfig` (extensión EditorConfig).
 

@@ -15,11 +15,12 @@ independientes y cada máquina funciona sola.
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: idioma, disco, editar con Edit/Write, confirmar antes de borrar, interacción, formato, compactación |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | Hook `PreToolUse` que impone editar con Edit/Write (bloquea `sed -i`, redirecciones, heredocs… y deja pasar temporales). Portable Windows/Linux |
-| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro del hook + `skillOverrides` |
-| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. Lo ejecuta `tools/check.sh` |
+| `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | Hook `PreToolUse` que corta lo que `CLAUDE.md` prohíbe: deniega el git de escritura y `prettier --write` con un glob, y pide confirmación antes de un borrado recursivo fuera de temporales. Portable Windows/Linux |
+| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro de los hooks + `skillOverrides` |
+| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/hooks y falla si exceden. Lo ejecuta `tools/check.sh` |
 
-`statusline.mjs`, `hooks/block-shell-edits.mjs`, `check-budget.mjs` y
-`settings.template.json` son idénticos a los de Windows. `CLAUDE.md` comparte el núcleo y
+`statusline.mjs` y los dos hooks se comparten con Windows; `check-budget.mjs` y
+`settings.template.json` parten de la misma base. `CLAUDE.md` comparte el núcleo y
 cambia solo lo propio de Linux: el disco (`~/Dev`, `/tmp` en RAM), el borrado (`rm` sin
 papelera) y que cada comando indique si va como usuario normal o con `sudo`.
 
@@ -33,7 +34,7 @@ papelera) y que cada comando indique si va como usuario normal o con `sudo`.
 
 ## Montar en una máquina nueva
 
-1. `./bootstrap.sh` (o solo `./install.sh`): enlaza los 3 archivos de arriba a `~/.claude/`
+1. `./bootstrap.sh` (o solo `./install.sh`): enlaza los 4 archivos de arriba a `~/.claude/`
    y, si `~/.claude/settings.json` no existe, lo crea desde la plantilla con tu `$HOME` en
    lugar de `REEMPLAZA_RUTA_HOME` y con la barra de estado registrada. Si ya existe, no lo
    toca: fusiona a mano lo que falte (la plantilla y `statusLine`).
