@@ -48,6 +48,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- Estilo global de Prettier: los `*.jsonc` se formatean sin coma final
+  (`trailingComma: "none"`), porque varias herramientas no la aceptan en
+  JSONC. Igual que en dotfiles-windows.
 - Guías de `docs/` con nombres en inglés (`getting-started`,
   `customization`, `anonymity`, `keys-and-secrets`) y ejemplos de código con
   placeholders en inglés (`<your-noreply>`, `<user>`), iguales en los dos

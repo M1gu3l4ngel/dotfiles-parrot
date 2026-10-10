@@ -49,6 +49,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Global Prettier style: `*.jsonc` files are formatted without a trailing
+  comma (`trailingComma: "none"`), because several tools do not accept it in
+  JSONC. Same as in dotfiles-windows.
 - `docs/` guides with English names (`getting-started`, `customization`,
   `anonymity`, `keys-and-secrets`) and code examples with English
   placeholders (`<your-noreply>`, `<user>`), the same in both languages.
