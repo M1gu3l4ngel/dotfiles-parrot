@@ -56,6 +56,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- Prompt: el título de la ventana muestra `~` en la carpeta de inicio en
+  lugar de su nombre, para que el título de la pestaña no enseñe el usuario
+  real. Igual que en dotfiles-windows.
 - Estilo global de Prettier: los `*.jsonc` se formatean sin coma final
   (`trailingComma: "none"`), porque varias herramientas no la aceptan en
   JSONC. Igual que en dotfiles-windows.

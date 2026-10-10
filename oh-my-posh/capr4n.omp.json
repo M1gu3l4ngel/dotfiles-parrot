@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-	"console_title_template": "{{if .Root}} ⚡ {{end}}{{ if .Env.POSH_NAME }}{{ .Env.POSH_NAME }}{{ else }}{{ .UserName }}{{ end }} ➔ 📁{{.Folder}}",
+	"console_title_template": "{{if .Root}} ⚡ {{end}}{{ if .Env.POSH_NAME }}{{ .Env.POSH_NAME }}{{ else }}{{ .UserName }}{{ end }} ➔ 📁{{ if eq .PWD \"~\" }}~{{ else }}{{ .Folder }}{{ end }}",
 	"blocks": [
 		{
 			"type": "prompt",

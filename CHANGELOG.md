@@ -58,6 +58,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Prompt: the window title shows `~` in the home folder instead of its name,
+  so the tab title does not reveal the real user name. Same as in
+  dotfiles-windows.
 - Global Prettier style: `*.jsonc` files are formatted without a trailing
   comma (`trailingComma: "none"`), because several tools do not accept it in
   JSONC. Same as in dotfiles-windows.
