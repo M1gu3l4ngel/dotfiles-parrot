@@ -96,6 +96,9 @@ Notable changes to the project. The format follows
 
 ### Fixed
 
+- Boot without errors: `system/setup.sh` (step 10) disables the pentest
+  services that Parrot enables without a configuration (`hostapd-wpe`,
+  `isc-dhcp-server`, `sslh`, `cpupower-gui`), which failed on every boot.
 - `system/README`: the verification block had a `#` comment that zsh rejects
   when pasted (without `interactivecomments`).
 - Claude Code hook: it blocked `$(cmd 2>/dev/null)` because it took the `)`

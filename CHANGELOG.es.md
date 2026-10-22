@@ -95,6 +95,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Corregido
 
+- Arranque sin errores: `system/setup.sh` (paso 10) desactiva los servicios
+  de pentest que Parrot activa sin configuración (`hostapd-wpe`,
+  `isc-dhcp-server`, `sslh`, `cpupower-gui`), que fallaban en cada arranque.
 - `system/README`: el bloque de verificación llevaba un comentario `#` que
   zsh rechaza al pegarlo (sin `interactivecomments`).
 - Hook de Claude Code: bloqueaba `$(cmd 2>/dev/null)` porque tomaba el `)`

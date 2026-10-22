@@ -17,6 +17,7 @@
 #   7. Instala la config de unattended-upgrades (solo parches de seguridad)
 #   8. En VMware: monta la carpeta compartida con el host en /mnt/vmshare
 #   9. Pantalla de login/bloqueo (slick-greeter) con el fondo del escritorio
+#  10. Desactiva los servicios de pentest que Parrot arranca solos y fallan
 #
 # Uso (desde la raíz del repo):
 #   sudo ./system/setup.sh
@@ -56,7 +57,7 @@ trap 'rm -f "$TMP_SUDOERS"' EXIT
 # ----- 1. KILL SWITCH DEL ANONIMATO -----
 # root:root 0755: el usuario puede ejecutarlo (vía sudo) pero no modificarlo.
 # Si pudiera editarlo, la restricción de la regla sudoers no serviría de nada.
-echo "[1/9] Instalando /usr/local/sbin/anon-harden"
+echo "[1/10] Instalando /usr/local/sbin/anon-harden"
 install -m 0755 -o root -g root "$REPO_DIR/sbin/anon-harden" /usr/local/sbin/anon-harden
 
 # ----- 2. SUDOERS DEL TOGGLE DE ANONIMATO -----
@@ -64,7 +65,7 @@ install -m 0755 -o root -g root "$REPO_DIR/sbin/anon-harden" /usr/local/sbin/ano
 # Se valida con visudo sobre una copia temporal ANTES de instalarla: un
 # sudoers con errores de sintaxis en /etc/sudoers.d/ puede dejar sudo
 # inutilizable. 0440 es obligatorio (sudo ignora el archivo con otro modo).
-echo "[2/9] Instalando /etc/sudoers.d/anon_toggle (usuario: $TARGET_USER)"
+echo "[2/10] Instalando /etc/sudoers.d/anon_toggle (usuario: $TARGET_USER)"
 sed "s/__USER__/$TARGET_USER/g" "$REPO_DIR/sudoers.d/anon_toggle" >"$TMP_SUDOERS"
 if ! visudo -c -q -f "$TMP_SUDOERS"; then
   echo "ERROR: la regla sudoers no es válida; no se ha instalado nada."
@@ -86,7 +87,7 @@ install -m 0440 -o root -g root "$TMP_SUDOERS" /etc/sudoers.d/anon_toggle
 # Su salida normal se descarta: ufw repite avisos como "be sure to update your
 # rules accordingly" en cada ejecución aunque no cambie nada. Los errores van
 # a stderr, se siguen viendo, y `set -e` detiene el script.
-echo "[3/9] Aplicando reglas baseline de ufw"
+echo "[3/10] Aplicando reglas baseline de ufw"
 ufw default deny incoming >/dev/null
 ufw default allow outgoing >/dev/null
 ufw allow in on lo >/dev/null
@@ -103,7 +104,7 @@ echo "      Activo: entrada bloqueada salvo loopback y VPN (tun+), IPv4 e IPv6"
 # Una entrada vacía en PATH (`::`) equivale al directorio actual: ejecutar
 # `ls` dentro de una carpeta con un `ls` malicioso lo lanzaría a él. Se
 # restaura la versión del paquete base-files, dejando copia de la actual.
-echo "[4/9] Revisando PATH de /etc/profile"
+echo "[4/10] Revisando PATH de /etc/profile"
 if grep -qE '^PATH=.*(::|=":|:")' /etc/profile; then
   BACKUP="/etc/profile.bak-$(date +%Y%m%d%H%M%S)"
   cp -p /etc/profile "$BACKUP"
@@ -118,7 +119,7 @@ fi
 # daemon no está instalado (p. ej. se usa podman, que no necesita grupo), no
 # aporta nada y es un riesgo latente: se quita. Si Docker está instalado solo
 # se avisa, para no romper un flujo de trabajo que lo use.
-echo "[5/9] Revisando pertenencia al grupo docker"
+echo "[5/10] Revisando pertenencia al grupo docker"
 if id -nG "$TARGET_USER" | tr ' ' '\n' | grep -qx docker; then
   if command -v dockerd >/dev/null; then
     echo "      AVISO: $TARGET_USER está en el grupo docker (equivale a root)."
@@ -136,7 +137,7 @@ fi
 # Si existe un perfil *.pentest (creado con `firefox -CreateProfile pentest`)
 # se le copia el user.js endurecido. Si no existe aún, se indica cómo crearlo;
 # no es un error fatal.
-echo "[6/9] Firefox: user.js del perfil pentest"
+echo "[6/10] Firefox: user.js del perfil pentest"
 USERJS_SRC="$REPO_DIR/firefox/pentest.user.js"
 # Glob en vez de parsear `ls`: soporta rutas con espacios o caracteres raros.
 PENTEST_PROFILE=""
@@ -160,7 +161,7 @@ fi
 # 52parrot-hardening.conf: qué se auto-instala (solo parrot-security) y qué no.
 # 20auto-upgrades: activa la ejecución diaria. Solo se crea si falta, para
 # respetar un valor que el usuario haya cambiado a propósito.
-echo "[7/9] Configurando unattended-upgrades"
+echo "[7/10] Configurando unattended-upgrades"
 if ! command -v unattended-upgrade >/dev/null; then
   echo "      INFO: 'unattended-upgrades' no está instalado."
   echo "      Instálalo con: sudo apt install unattended-upgrades"
@@ -190,7 +191,7 @@ fi
 #   umask=077                    -> nadie más que ese usuario puede leerlos.
 SHARE_NAME="VMShare"
 SHARE_MNT="/mnt/vmshare"
-echo "[8/9] Carpeta compartida de VMware"
+echo "[8/10] Carpeta compartida de VMware"
 if [ "$(systemd-detect-virt 2>/dev/null || true)" != "vmware" ]; then
   echo "      No es una VM de VMware; se omite"
 elif ! command -v vmhgfs-fuse >/dev/null; then
@@ -227,7 +228,7 @@ fi
 # home. La config de Parrot se guarda una sola vez en .parrot: al repetir el
 # script no se sobrescribe con la nuestra.
 GREETER_CONF=/etc/lightdm/slick-greeter.conf
-echo "[9/9] Pantalla de login y bloqueo"
+echo "[9/10] Pantalla de login y bloqueo"
 if ! command -v slick-greeter >/dev/null; then
   echo "      slick-greeter no está instalado; se omite"
 else
@@ -240,6 +241,28 @@ else
   install -m 0644 -o root -g root "$REPO_DIR/lightdm/slick-greeter.conf" "$GREETER_CONF"
   echo "      Fondo del escritorio aplicado (se ve en el próximo login o bloqueo)"
 fi
+
+# ----- 10. SERVICIOS DE PENTEST QUE ARRANCAN SOLOS -----
+# Parrot los deja activados en el arranque sin configuración, así que fallan
+# en cada inicio (las líneas rojas tras el logo) y lo alargan. Además, un
+# punto de acceso falso o un servidor DHCP no deben levantarse sin pedirlo.
+# cpupower-gui falla porque en la VM no hay control de frecuencia de CPU.
+# Se desactivan, no se enmascaran: siguen disponibles con
+# `sudo systemctl start <servicio>` cuando hagan falta, y apt respeta el
+# estado desactivado al actualizar el paquete.
+echo "[10/10] Servicios de pentest que arrancan solos"
+for svc in hostapd-wpe isc-dhcp-server sslh cpupower-gui; do
+  if ! systemctl cat "$svc.service" >/dev/null 2>&1; then
+    continue
+  fi
+  if systemctl --quiet is-enabled "$svc.service" 2>/dev/null; then
+    systemctl --quiet disable --now "$svc.service"
+    systemctl reset-failed "$svc.service" 2>/dev/null || true
+    echo "      $svc desactivado"
+  else
+    echo "      $svc ya estaba desactivado"
+  fi
+done
 
 echo
 echo "Setup completo. Verificar con:"

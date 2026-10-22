@@ -57,6 +57,11 @@ El script:
 9. Copia el fondo a `/usr/share/backgrounds/dotfiles-wallpaper.jpg` e instala
    `lightdm/slick-greeter.conf`. La config original de Parrot se guarda una
    vez en `/etc/lightdm/slick-greeter.conf.parrot`.
+10. Desactiva los servicios de pentest que Parrot arranca sin configuración
+    (`hostapd-wpe`, `isc-dhcp-server`, `sslh`, `cpupower-gui`): fallan en
+    cada arranque (las líneas rojas tras el logo) y lo alargan. Se
+    desactivan, no se enmascaran: `sudo systemctl start <servicio>` los
+    sigue arrancando cuando hacen falta.
 
 Es **idempotente**: se puede ejecutar varias veces sin efectos colaterales.
 
