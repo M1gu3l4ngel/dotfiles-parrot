@@ -8,6 +8,12 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [2.0.0] - 2026-11-25
+
+Los componentes pasan a carpetas numeradas, así que las rutas de un clon de la
+1.0.0 cambian: tras `git pull`, ejecuta `./install.sh` una vez para volver a
+enlazarlas.
+
 ### Añadido
 
 - Cabecera del README con el logo de Dotfiles Parrot (tema claro y oscuro),
@@ -224,5 +230,6 @@ Primera versión publicada.
   el historial.
 - Documentación en `docs/` y reglas para Claude Code en `.claude/rules/`.
 
-[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...HEAD
+[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/releases/tag/v1.0.0

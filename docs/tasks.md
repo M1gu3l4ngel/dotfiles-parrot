@@ -150,15 +150,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
 
-# Cierre — Instalación desde cero
-
-## Publicar la versión
-
-**Plataforma:** Repositorio.
-**Requiere:** nada.
-
-- [ ] Publicar la versión en `CHANGELOG` con su etiqueta firmada (`git tag -s`)
-
 ---
 
 # Aplazado — cada uno con el evento que lo dispara

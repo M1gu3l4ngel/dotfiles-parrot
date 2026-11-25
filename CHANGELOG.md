@@ -8,6 +8,11 @@ Notable changes to the project. The format follows
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-25
+
+The components moved into numbered folders, so the paths of a 1.0.0 clone
+change: after `git pull`, run `./install.sh` once to relink them.
+
 ### Added
 
 - README header with the Dotfiles Parrot logo (light and dark theme),
@@ -230,5 +235,6 @@ First published version.
   the whole history.
 - Documentation in `docs/` and rules for Claude Code in `.claude/rules/`.
 
-[Unreleased]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/releases/tag/v1.0.0
