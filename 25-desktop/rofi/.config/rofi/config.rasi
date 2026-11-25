@@ -1,7 +1,8 @@
 /*
- * rofi's global configuration: the theme for every mode (run, drun, window). The themes live in
- * ~/.config/rofi/themes/; to switch, change the @theme line. To try one without touching this file:
- *   rofi -show run -theme ~/.config/rofi/themes/<name>.rasi
+ * rofi's global configuration: the theme for every mode (run, drun, window). Ours is
+ * themes/monokai-soda.rasi; rofi's own live in /usr/share/rofi/themes/ and load by name. To switch,
+ * change the @theme line. To try one without touching this file:
+ *   rofi -show drun -theme <name>
  */
 
 // Each application shows the icon of the system's theme (GTK): the app is recognized before its

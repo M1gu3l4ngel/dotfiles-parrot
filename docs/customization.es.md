@@ -130,13 +130,25 @@ Para volver a la paleta original: `git checkout 25-desktop/polybar/.config/polyb
 
 ## Tema de rofi
 
-El tema activo es `monokai-soda`, con la paleta del resto del escritorio. Hay
-otros 25 en `25-desktop/rofi/.config/rofi/themes/`. En `25-desktop/rofi/.config/rofi/config.rasi`,
-comenta la línea `@theme` activa (con `//` delante) y descomenta o escribe la
-del tema que quieras:
+El tema activo es `monokai-soda`
+(`25-desktop/rofi/.config/rofi/themes/monokai-soda.rasi`), con la paleta del
+resto del escritorio. rofi trae otros 30 propios, instalados con el paquete:
+
+```bash
+ls /usr/share/rofi/themes/
+```
+
+Para probar uno sin cambiar nada, por su nombre sin `.rasi`:
+
+```bash
+rofi -show drun -theme Arc-Dark
+```
+
+Para quedártelo, cambia la línea `@theme` de
+`25-desktop/rofi/.config/rofi/config.rasi` por ese nombre:
 
 ```
-@theme "themes/nord"
+@theme "Arc-Dark"
 ```
 
 El cambio se ve al abrir rofi (`Super+D`). Si el tema pide una fuente que no

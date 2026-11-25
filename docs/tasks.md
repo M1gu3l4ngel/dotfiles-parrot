@@ -10,6 +10,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Solo el tema de rofi en uso
+
+**Plataforma:** Escritorio.
+
+- [ ] [Esta PC] `Super+D` y el botón de apagado de polybar abren rofi con el aspecto de siempre (Monokai Soda)
+- [ ] [Esta PC] `rofi -show drun -theme Arc-Dark` abre rofi con un tema del sistema, y al cerrarlo `Super+D` sigue con el de siempre
+
 ## Guía de firma GPG y SSH
 
 **Plataforma:** Repositorio.
@@ -183,19 +190,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 - [ ] Separar lo esencial de lo opcional (pentesting) en dos listas si `bootstrap.sh` gana una opción para omitir lo opcional
 
 
-
-# Fase 8 — Limpieza
-
-## Temas de rofi sin uso
-
-**Plataforma:** Escritorio.
-**Prioridad:** Mejora.
-**Requiere:** nada.
-
-`config.rasi` solo usa `monokai-soda`. Los otros 26 temas son de terceros (con autor en la
-cabecera) y el repo no incluye su licencia.
-
-- [ ] Borrar los temas sin uso, o conservarlos con la licencia de su origen en `rofi/.config/rofi/themes/`
 
 # Cierre — Instalación desde cero
 
