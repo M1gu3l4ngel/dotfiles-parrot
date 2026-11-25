@@ -53,6 +53,16 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Carpetas numeradas por capa
+
+**Plataforma:** Escritorio, Shell.
+
+- [ ] [Esta PC] Tras `exec zsh`, el prompt de oh-my-posh sale igual que antes
+- [ ] [Esta PC] `Super+Alt+R` recarga bspwm y polybar sin errores, con los módulos y colores de siempre
+- [ ] [Esta PC] kitty (`Ctrl+Shift+F5`), rofi, dunst (`notify-send "Prueba" "Texto"`), Neovim y VSCodium abren con su configuración
+- [ ] [Esta PC] Caps Lock se apaga al pulsarlo (keymap `capsfix` desde `25-desktop/xkb`)
+- [ ] [PC nueva] En un clon anterior a este cambio, tras `git pull` el hook `post-merge` rehace los enlaces sin copias de seguridad, y `./install.sh --check` sale en verde
+
 ## Copia claude/ quitada y check de docs compartido
 
 **Plataforma:** Repositorio.
@@ -98,28 +108,12 @@ en esta máquina.
 
 # Fase 4 — Carpetas numeradas por capa
 
-## Reorganizar en carpetas numeradas
-
-**Plataforma:** Repositorio, Instalación.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-Propuesta: `10-shell/` (zsh, oh-my-posh), `15-git/` (gitconfig, gnupg), `20-terminal/` (kitty),
-`25-desktop/` (bspwm, sxhkd, polybar, picom, rofi, dunst, gtk, xkb, scripts), `30-editor/`
-(nvim, vscodium), `40-format/`, `60-apps/` (lista de apt) y `70-system/` (system). Los enlaces
-instalados quedan en `stale` y `install.sh` los rehace solos; en otras PC, el `post-merge`.
-
-- [ ] `git mv` de cada carpeta y `lib/links.sh` actualizado en el mismo commit
-- [ ] Antes del commit, `./install.sh --dry-run` muestra solo enlaces `stale` que se rehacen, sin backups
-- [ ] Rutas internas actualizadas: `bspwmrc`, `polybar/launch.sh`, `.zshrc` (tema de oh-my-posh), `tools/check.sh`, `.shellcheckrc`, `.prettierignore`, `.editorconfig` y `.claude/rules/shell.md` (`paths:`)
-- [ ] La lista de apt pasa de `bootstrap.sh` a `60-apps/` y `bootstrap.sh` la lee
-
 ## Configuración de git versionada
 
 **Plataforma:** Shell, Instalación.
 **Prioridad:** P2.
-**Requiere:** «Reorganizar en carpetas numeradas».
+**Requiere:** nada.
+**Estado:** en curso.
 
 `~/.gitconfig` es un archivo real sin versionar. Windows versiona la parte pública en `15-git/` y
 deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
@@ -127,6 +121,18 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 - [ ] `15-git/gitconfig` (nombre, email noreply, firma de commits y etiquetas) enlazado en `~/.gitconfig`, que incluye `~/.gitconfig.local`
 - [ ] Mover `user.signingkey` de esta máquina a `~/.gitconfig.local` antes de enlazar (hoy no nombra ninguna organización)
 - [ ] Los pasos manuales de `bootstrap.sh` dejan de imprimir `git config --global user.email` y los de firma: la identidad viene del enlace, y solo queda escribir la clave en `~/.gitconfig.local`, como en el paso 6 de `bootstrap.ps1`
+
+## Lista de paquetes en 60-apps
+
+**Plataforma:** Instalación.
+**Prioridad:** P2.
+**Requiere:** nada.
+
+Windows tiene `60-apps/essential.json` y `optional.json`; aquí la lista vive en `APT_PACKAGES` de
+`bootstrap.sh`.
+
+- [ ] `60-apps/apt.txt` (un paquete por línea, comentarios con `#`, como `extensions.txt`) y `bootstrap.sh` la lee
+- [ ] Separar lo esencial de lo opcional (pentesting, VMware) si `bootstrap.sh` gana una opción para omitirlo
 
 # Fase 5 — Calidad y CI
 
@@ -179,7 +185,7 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Regla de idioma del código en el repo», «Reorganizar en carpetas numeradas».
+**Requiere:** «Regla de idioma del código en el repo».
 
 Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-windows `87a6791`) encuentra hoy 454 en español y ningún nombre de test, porque el repo no tiene tests todavía.
 
@@ -194,7 +200,7 @@ Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-wi
 
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Reorganizar en carpetas numeradas».
+**Requiere:** nada.
 
 - [ ] Badges de CI y licencia, tabla de carpetas numeradas con enlace a su README y tabla de recargas (hoy solo en `CLAUDE.md`)
 - [ ] Diagrama Mermaid: `bootstrap.sh` → apt, fuentes, Neovim, oh-my-posh, Node → `install.sh` → enlaces → programas, la capa de Claude desde dotfiles-windows y `git pull` → `post-merge`
@@ -204,7 +210,7 @@ Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-wi
 
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Reorganizar en carpetas numeradas».
+**Requiere:** nada.
 
 - [ ] Un README en pareja por carpeta numerada: qué contiene, adónde se enlaza cada archivo, cómo se recarga y qué no tocar (hoy solo `system/` y `claude/`)
 

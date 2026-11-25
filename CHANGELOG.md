@@ -66,6 +66,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The configs live in numbered layers, as in dotfiles-windows: `10-shell`,
+  `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format` and
+  `70-system`. `install.sh` (or the `post-merge` hook) relinks the old paths
+  without backups.
 - The Claude Code layer comes from `50-claude/` of the dotfiles-windows clone
   (`links.json`), and `install.sh` merges `~/.claude/settings.json` with its
   `install-settings.mjs` instead of copying a template.
