@@ -1,27 +1,15 @@
 /*
- * ~/.config/rofi/config.rasi
- * Configuración global de rofi. Lo único que se hace aquí es cargar el tema
- * que se aplica a todos los modos (run, drun, window, etc.).
- *
- * Los temas viven en ~/.config/rofi/themes/ (más de 25 disponibles). Cambiar
- * de tema = comentar la línea activa y descomentar la del tema deseado.
- *
- * Para probar un tema sin tocar este archivo:
- *   rofi -show run -theme ~/.config/rofi/themes/<nombre>.rasi
+ * rofi's global configuration: the theme for every mode (run, drun, window). The themes live in
+ * ~/.config/rofi/themes/; to switch, change the @theme line. To try one without touching this file:
+ *   rofi -show run -theme ~/.config/rofi/themes/<name>.rasi
  */
 
-// ----- COMPORTAMIENTO -----
-// Iconos junto a cada aplicación, del mismo tema que usa el sistema (GTK):
-// se reconoce la app antes de terminar de leer su nombre.
+// Each application shows the icon of the system's theme (GTK): the app is recognized before its
+// name is read.
 configuration {
     show-icons:     true;
     icon-theme:     "Flat-Remix-Green-Dark";
 }
 
-// ----- TEMA -----
-// Tema anterior (queda comentado por si se quiere volver a él rápido).
-//@theme "themes/squared-nord"
-
-// Tema activo. Rutas relativas al directorio del config (~/.config/rofi/),
-// para que el repo sea portable entre máquinas con distinto $HOME.
+// Relative to the config folder (~/.config/rofi/), so it works with any $HOME.
 @theme "themes/monokai-soda"

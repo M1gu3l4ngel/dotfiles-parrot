@@ -1,20 +1,13 @@
-// ~/.config/xkb/symbols/capsfix
-// Corrige el comportamiento de Caps Lock en X11 para que se apague AL PULSAR,
-// como en Windows/macOS. Lo incluye keymap.xkb como `capsfix(press)` y bspwmrc
-// lo carga con xkbcomp al iniciar sesión.
-// Para recargar: Super+Alt+R (reinicia bspwm, que vuelve a cargar el keymap).
+// Makes Caps Lock turn off on press, as on Windows and macOS. keymap.xkb includes it as
+// `capsfix(press)` and bspwmrc loads it with xkbcomp at login. Reload: Super+Alt+R.
 //
-// ----- EL PROBLEMA -----
-// El Caps Lock estándar de XKB usa LockMods, que desbloquea la mayúscula al
-// SOLTAR la tecla. Escribiendo rápido (Caps, S, Caps, i) la "i" se pulsa antes
-// de soltar Caps y sale "SI" en lugar de "Si".
+// XKB's standard Caps Lock uses LockMods, which unlocks the capitals on release: typing fast (Caps,
+// S, Caps, i) presses the "i" before Caps is released, and "SI" comes out instead of "Si".
 //
-// ----- LA SOLUCIÓN -----
-// La tecla pasa a tener dos niveles (tipo ALPHABETIC): con Caps inactivo se usa
-// el nivel 1 (bloqueo normal); con Caps activo se usa el nivel 2, cuya acción
-// aplica Shift+Lock al pulsar. Shift + Lock anula la mayúscula en las letras
-// de inmediato, y `affect=unlock` hace que solo desbloquee, nunca bloquee.
-// `repeat = No` evita que mantener la tecla la haga alternar sin control.
+// Here the key has two levels (ALPHABETIC type): with Caps off it uses level 1 (the usual lock);
+// with Caps on, level 2, whose action applies Shift+Lock on press. Shift + Lock cancels the capitals
+// at once, and `affect=unlock` makes it only unlock, never lock. `repeat = No` keeps a held key from
+// toggling out of control.
 
 default partial modifier_keys
 xkb_symbols "press" {

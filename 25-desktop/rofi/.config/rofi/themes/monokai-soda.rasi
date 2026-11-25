@@ -1,14 +1,10 @@
 /*
- * ~/.config/rofi/themes/monokai-soda.rasi
- * Tema del lanzador con la paleta Monokai Soda de kitty y polybar: misma
- * superficie, mismo marco de 1 px, mismo radio de 8 px que las barras.
- * Lo carga config.rasi con `@theme`. Se aplica al abrir rofi de nuevo.
- *
- * Escala de espaciado 4/8/12: 12 px de margen interior, 8 px entre elementos.
+ * The launcher theme with kitty and polybar's Monokai Soda palette: the same surface, 1 px frame
+ * and 8 px radius as the bars. config.rasi loads it with `@theme`; it applies the next time rofi
+ * opens. Spacing scale 4/8/12: 12 px inner margin, 8 px between items.
  */
 
-// ----- PALETA -----
-// Mismos valores que ~/.config/scripts/palette.sh.
+// The same values as ~/.config/scripts/palette.sh.
 * {
     font:   "CaskaydiaCove Nerd Font 12";
 
@@ -28,9 +24,8 @@
     spacing:    0;
 }
 
-// ----- VENTANA -----
-// transparency "real": las esquinas fuera del radio quedan transparentes (lo
-// compone picom). picom excluye a rofi de su redondeo para respetar este radio.
+// transparency "real" leaves the corners outside the radius transparent (picom composes them);
+// picom leaves rofi out of its own rounding so this radius holds.
 window {
     transparency:   "real";
     location:       center;
@@ -47,7 +42,6 @@ mainbox {
     spacing:    8px;
 }
 
-// ----- BÚSQUEDA -----
 inputbar {
     padding:    8px 12px;
     spacing:    8px;
@@ -71,14 +65,13 @@ prompt, entry, element-icon, element-text {
     vertical-align: 0.5;
 }
 
-// Mensajes de error o avisos de rofi.
+// rofi's error and warning messages.
 textbox {
     padding:            8px 12px;
     background-color:   @surface-hi;
     border-radius:      4px;
 }
 
-// ----- RESULTADOS -----
 listview {
     lines:          8;
     columns:        1;
@@ -101,8 +94,8 @@ element normal active, element alternate active {
     text-color: @accent;
 }
 
-// Seleccionado: superficie un tono más clara y texto en el color de foco,
-// la misma convención que el workspace activo en polybar.
+// Selected: a slightly lighter surface and the focus color for the text, the same convention as
+// polybar's active workspace.
 element selected normal, element selected active {
     background-color:   @surface-hi;
     text-color:         @accent;
@@ -113,7 +106,7 @@ element selected urgent {
     text-color:         @surface;
 }
 
-// 24 px: el icono se reconoce de un vistazo sin agrandar cada fila.
+// 24 px: the icon is recognized at a glance without making each row taller.
 element-icon {
     size:   24px;
 }

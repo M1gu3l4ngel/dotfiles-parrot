@@ -1,17 +1,12 @@
-# ~/.config/dunst/dunstrc
-# Notificaciones de escritorio (toasts) con la paleta Monokai Soda de
-# kitty/polybar: fondo #1A1A1A, texto crema, borde gris sutil y rojo solo
-# para las críticas.
-# bspwmrc lanza dunst al iniciar sesión.
-# Para recargar tras editar: `dunstctl reload` (no hace falta reiniciarlo).
-# Para probar el aspecto: notify-send -u low|normal|critical "Título" "Texto"
+# Desktop notifications with kitty and polybar's Monokai Soda palette: #1A1A1A background, cream
+# text, a subtle grey border and red only for critical ones. bspwmrc starts dunst at login.
+# Reload after editing: `dunstctl reload`. Try the look: notify-send -u low|normal|critical "Title"
+# "Text"
 #
-# Decisiones de diseño:
-#   - Abajo a la derecha: polybar ocupa todo el borde superior; abajo los
-#     toasts no tapan ninguna barra.
-#   - Mismo fondo en todas las urgencias; solo cambia el borde. El rojo queda
-#     reservado para errores (critical) y así destaca por ser la excepción.
-#   - Sin iconos de imagen: los scripts ponen un glifo Nerd Font en el título.
+# - Bottom right: polybar takes the whole top edge, and down here the toasts cover no bar.
+# - The same background for every urgency, only the border changes: red is kept for errors
+#   (critical), so it stands out as the exception.
+# - No image icons: the scripts put a Nerd Font glyph in the title.
 
 [global]
     monitor = 0
@@ -71,8 +66,8 @@
     title = Dunst
     class = Dunst
 
-    # 8 px, igual que las barras de polybar: la notificación es un elemento
-    # pequeño, un escalón por debajo del radio de las ventanas (10 en picom).
+    # 8 px, like the polybar bars: a notification is a small piece, one step below the windows'
+    # radius (10 in picom).
     corner_radius = 8
     ignore_dbusclose = false
 
@@ -86,8 +81,7 @@
 [experimental]
     per_monitor_dpi = false
 
-# ----- URGENCIAS -----
-# highlight = color de la barra de progreso (ámbar, acento de polybar).
+# highlight is the progress bar color: amber, polybar's accent.
 
 [urgency_low]
     background = "#1A1A1A"
@@ -104,8 +98,8 @@
     timeout = 5
     override_pause_level = 30
 
-# Críticas: borde rojo Monokai y más tiempo en pantalla para que un error no
-# pase desapercibido (0 sería infinito y obligaría a cerrarlas a mano).
+# Critical: Monokai red border and longer on screen, so an error is not missed (0 would be forever
+# and force closing them by hand).
 [urgency_critical]
     background = "#1A1A1A"
     foreground = "#C4C5B5"
