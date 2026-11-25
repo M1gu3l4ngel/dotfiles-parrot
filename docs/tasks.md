@@ -166,20 +166,6 @@ en esta máquina.
 
 - [ ] Decidir si el `UserPromptSubmit` local (recordatorio de español con `printf`) se queda o se borra porque ya lo cubre `reply-in-spanish.mjs`
 
-# Fase 4 — Carpetas numeradas por capa
-
-## Paquetes opcionales en bootstrap.sh
-
-**Plataforma:** Instalación.
-**Prioridad:** Mejora.
-**Requiere:** nada.
-
-Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `60-apps/apt.txt`.
-
-- [ ] Separar lo esencial de lo opcional (pentesting) en dos listas si `bootstrap.sh` gana una opción para omitir lo opcional
-
-
-
 # Cierre — Instalación desde cero
 
 ## Prueba en una PC limpia
@@ -198,6 +184,8 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 - [ ] Corregir los topics de GitHub `neovi` → `neovim` y `ric` → `ricing`
 
 # Aplazado — cada uno con el evento que lo dispara
+
+- [ ] Separar `60-apps/apt.txt` en esencial y opcional (pentesting), como `essential.json` y `optional.json` de Windows — cuando `bootstrap.sh` necesite una opción para omitir lo opcional
 
 - [ ] Estado de `settarget` y del anonimato en `~/.local/state` en vez de `~/.config/bin` (4 scripts, `.zshrc`, `install.sh` y `.gitignore` juntos) — al tocar los scripts de polybar
 - [ ] Medir el arranque de zsh (`zmodload zsh/zprof`) y pasar de nvm a fnm como Windows si nvm es lo lento — cuando se note la espera al abrir kitty
