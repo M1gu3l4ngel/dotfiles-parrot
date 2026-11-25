@@ -17,7 +17,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] Tras el push, en GitHub, Insights → Community muestra todo en verde
 - [ ] Tras el push, el README sale en el orden nuevo en los dos idiomas, y cada enlace de la cabecera lleva a su sección
 - [ ] Tras el push y activar el reporte privado, «New issue» muestra los dos formularios y el enlace «Report a vulnerability», sin opción de issue en blanco
-- [ ] Tras el push, el CI pasa con «check-docs» en verde
 
 ## Estado del target en ~/.local/state
 
