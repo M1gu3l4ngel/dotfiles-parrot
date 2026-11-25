@@ -106,6 +106,13 @@ check_prerequisites() {
   if [ "$EUID" -eq 0 ]; then
     die "Run it as your user, not as root: ./bootstrap.sh (it asks for sudo)"
   fi
+  # Neovim and oh-my-posh are pinned to their x86_64 release and hash. Stopping here, before any
+  # change, beats a half install that leaves NvChad without its Neovim.
+  local arch
+  arch=$(uname -m)
+  if [ "$arch" != "x86_64" ]; then
+    die "Only x86_64 is supported (found: $arch): Neovim and oh-my-posh are pinned to x86_64 builds"
+  fi
   # shellcheck source=/dev/null
   . /etc/os-release
   if [ "${ID:-}" != "parrot" ]; then

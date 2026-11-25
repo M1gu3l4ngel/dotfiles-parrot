@@ -21,7 +21,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Repositorio.
 
-- [ ] [PC nueva] En la PC de la oficina (Windows), quitar el UID con el email personal de su clave GPG (`gpg --edit-key`, como en `docs/gpg-signing` de dotfiles-windows), borrar la entrada vieja en GitHub y subirla de nuevo; comprobar con `curl -fsS https://github.com/M1gu3l4ngel.gpg | gpg --show-keys` que solo queda el noreply
 - [ ] [PC nueva] Seguir la sección GPG de `docs/keys-and-secrets` con una clave nueva: el primer commit sale `G` y «Verified» en GitHub
 
 ## README de cada carpeta
@@ -153,16 +152,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
 - [ ] Tras el push, el CI pasa con el paso «LF line endings» en verde
-
-# Fase 2 — Instalador sin pérdidas
-
-## Arquitecturas distintas de x86_64
-
-**Plataforma:** Instalación.
-**Prioridad:** Mejora.
-**Requiere:** nada.
-
-- [ ] Neovim (`nvim-linux-x86_64`) y oh-my-posh (`posh-linux-amd64`) solo se descargan para x86_64: detectar `uname -m` y fijar el SHA-256 de arm64, o salir con un mensaje claro
 
 # Fase 3 — Capa de Claude desde dotfiles-windows
 

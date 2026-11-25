@@ -59,6 +59,9 @@ Then reboot and pick the `bspwm` session on the login screen.
 ## Requirements
 
 - Parrot OS 7 (based on Debian 13). `anonsurf` only exists on Parrot.
+- An x86_64 (amd64) machine: Neovim and oh-my-posh are pinned to their x86_64
+  builds, and `bootstrap.sh` stops on any other architecture before changing
+  anything.
 - A user with sudo rights and an internet connection.
 - An X11 session: bspwm does not run on Wayland.
 - On VMware: "Accelerate 3D graphics" enabled and 2 GB or more of graphics
