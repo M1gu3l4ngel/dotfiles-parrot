@@ -111,7 +111,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Repositorio.
 
-- [ ] Tras el push, el CI de GitHub pasa en verde, con los pasos en inglés y las líneas «panel/check» y «test-install» en `✓`
 - [ ] Al mes del push, Dependabot abre un único PR `chore(ci)` con las acciones que tengan versión nueva (o ninguno si están al día)
 
 ## Cabecera del README con los logos de Parrot
@@ -126,7 +125,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Shell.
 
-- [ ] [Esta PC] `git -C ~/dotfiles log -1 --format='%G? %an'` muestra `G M1gu3l4ngel` en el próximo commit
 - [ ] [PC nueva] Tras `./bootstrap.sh` y crear la clave GPG, `git config --file ~/.gitconfig.local user.signingkey <fingerprint>` basta para que los commits salgan firmados
 
 ## Carpetas numeradas por capa
@@ -138,12 +136,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [Esta PC] kitty (`Ctrl+Shift+F5`), rofi, dunst (`notify-send "Prueba" "Texto"`), Neovim y VSCodium abren con su configuración
 - [ ] [Esta PC] Caps Lock se apaga al pulsarlo (keymap `capsfix` desde `25-desktop/xkb`)
 - [ ] [PC nueva] En un clon anterior a este cambio, tras `git pull` el hook `post-merge` rehace los enlaces sin copias de seguridad, y `./install.sh --check` sale en verde
-
-## Copia claude/ quitada y check de docs compartido
-
-**Plataforma:** Repositorio.
-
-- [ ] Tras el push, el CI pasa con el paso «Descargar la capa de Claude Code (dotfiles-windows)» y «Documentación bilingüe» en verde (no «omitida»)
 
 ## Versiones fijadas de pnpm y Claude Code, y gh
 
@@ -157,7 +149,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 **Plataforma:** Repositorio.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
-- [ ] Tras el push, el CI pasa con el paso «LF line endings» en verde
 
 # Cierre — Instalación desde cero
 
@@ -171,14 +162,8 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 ---
 
-# Lo hace el dueño
-
-- [ ] Crear en GitHub el ruleset de `main` sin borrado ni push forzado (`deletion` y `non_fast_forward`, como `protect-main.json` de dotfiles-windows): hoy el repo no tiene ninguno
-- [ ] Corregir los topics de GitHub `neovi` → `neovim` y `ric` → `ricing`
-
 # Aplazado — cada uno con el evento que lo dispara
 
 - [ ] Separar `60-apps/apt.txt` en esencial y opcional (pentesting), como `essential.json` y `optional.json` de Windows — cuando `bootstrap.sh` necesite una opción para omitir lo opcional
-
 - [ ] Estado de `settarget` y del anonimato en `~/.local/state` en vez de `~/.config/bin` (4 scripts, `.zshrc`, `install.sh` y `.gitignore` juntos) — al tocar los scripts de polybar
 - [ ] Medir el arranque de zsh (`zmodload zsh/zprof`) y pasar de nvm a fnm como Windows si nvm es lo lento — cuando se note la espera al abrir kitty
