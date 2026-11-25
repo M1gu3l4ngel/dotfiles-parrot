@@ -28,7 +28,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Escritorio.
 
-- [ ] [Esta PC] `sudo ./70-system/setup.sh` desde `~/dotfiles`, para instalar el `anon-harden` nuevo
 - [ ] [Esta PC] Con Firefox abierto, `Super+A` muestra en rofi «AnonSurf cerrará: firefox-esr»; «Cancelar» no cambia nada
 - [ ] [Esta PC] Con el anonimato activo, `sudo anonsurf stop` en una terminal: el fantasma pasa a gris en un segundo
 - [ ] [Esta PC] Tras apagarlo, `sudo ip6tables -S` muestra las mismas políticas que antes de activarlo
