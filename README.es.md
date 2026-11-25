@@ -80,6 +80,10 @@ Para ver antes qué cambiaría, sin tocar nada, ejecútalo con `--dry-run`. Con
 ruta vieja del repo, `AJENO` un archivo que no es del repo) y de
 `~/.claude/settings.json`, y sale con 1 si algo no está bien.
 
+`install.sh` activa además el hook `githooks/post-merge` (`core.hooksPath`):
+tras cada `git pull` que trae cambios vuelve a ejecutar `install.sh`, así una
+configuración nueva o movida queda enlazada sin ejecutarlo a mano.
+
 Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
 (archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`; si
 después falla el enlace, el original vuelve a su sitio. Un enlace a una ruta
@@ -143,6 +147,7 @@ clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
 | `docs/` | Guías detalladas | No se instala |
+| `githooks/` | `post-merge`: ejecuta `install.sh` tras cada `git pull` con cambios | `core.hooksPath` del clon |
 | `lib/` | Lista de enlaces compartida por `install.sh` y `uninstall.sh` | No se instala |
 | `tools/` | Comprobaciones del repo (`check.sh`) | No se instala |
 

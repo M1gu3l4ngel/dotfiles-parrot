@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Git runs this after each `git pull` that brings changes (install.sh turns it on with
+# core.hooksPath). It runs install.sh again to apply what the pull brought: new or moved links and
+# Claude Code settings. The installer skips what is already done, so a pull with no news changes
+# nothing.
+set -euo pipefail
+
+exec "$(git rev-parse --show-toplevel)/install.sh"

@@ -38,6 +38,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./install.sh` sin `~/dotfiles-windows` avisa de que omite la capa de Claude Code y enlaza el resto
 - [ ] [PC nueva] Con `~/dotfiles-windows` clonado y sin `~/.claude/settings.json`, `./install.sh` lo crea con los hooks, las reglas y la barra de estado
 
+## Hook post-merge que rehace los enlaces
+
+**Plataforma:** Instalación.
+
+- [ ] [Esta PC] El próximo `git pull` con cambios en `~/dotfiles` termina con la salida de `install.sh` («Nada que cambiar» o los enlaces nuevos)
+- [ ] [PC nueva] Tras `./install.sh`, `git -C ~/dotfiles config --get core.hooksPath` devuelve `githooks`
+
 ## Finales de línea en LF en cualquier clon
 
 **Plataforma:** Repositorio.
@@ -47,21 +54,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Fase 2 — Instalador sin pérdidas
 
-## Hook post-merge que rehace los enlaces
-
-**Plataforma:** Instalación.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `githooks/post-merge` que ejecuta `install.sh` tras cada `git pull` con cambios
-- [ ] `install.sh` activa `core.hooksPath=githooks` la primera vez y `--check` lo comprueba
-
 ## Modo de prueba en bootstrap.sh
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `./bootstrap.sh --dry-run`: cada paso dice qué instalaría o cambiaría, sin `sudo` ni descargas
 - [ ] `usage` sin `sed -n '2,22p'` (números de línea fijos que se desfasan al editar la cabecera)
@@ -126,7 +124,7 @@ en esta máquina.
 
 **Plataforma:** Repositorio, Instalación.
 **Prioridad:** P2.
-**Requiere:** «Hook post-merge que rehace los enlaces», «Quitar la copia claude/ del repo».
+**Requiere:** «Quitar la copia claude/ del repo».
 
 Propuesta: `10-shell/` (zsh, oh-my-posh), `15-git/` (gitconfig, gnupg), `20-terminal/` (kitty),
 `25-desktop/` (bspwm, sxhkd, polybar, picom, rofi, dunst, gtk, xkb, scripts), `30-editor/`

@@ -81,6 +81,10 @@ To see first what it would change, without changing anything, run it with
 missing, `RUTA VIEJA` old repo path, `AJENO` someone else's file) and of
 `~/.claude/settings.json`, and exits with 1 if something is not right.
 
+`install.sh` also turns on the `githooks/post-merge` hook (`core.hooksPath`):
+after each `git pull` that brings changes, it runs `install.sh` again, so a
+new or moved config is linked without running it by hand.
+
 Before creating each link, `install.sh` renames whatever is at the target
 (file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix; if the
 link then fails, the original goes back. A link to an old path inside the repo
@@ -144,6 +148,7 @@ they come from `50-claude/links.json` of the
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |
 | `docs/` | Detailed guides | Not installed |
+| `githooks/` | `post-merge`: runs `install.sh` after each `git pull` with changes | `core.hooksPath` of the clone |
 | `lib/` | Link list shared by `install.sh` and `uninstall.sh` | Not installed |
 | `tools/` | Repo checks (`check.sh`) | Not installed |
 

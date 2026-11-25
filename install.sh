@@ -146,6 +146,12 @@ check_installation() {
     [ "$state" = ok ] || bad=$((bad + 1))
     printf '  %-11s %s\n' "${labels[$state]}" "$(short "${link#*|}")"
   done
+  if [ "$(git -C "$DOTFILES_DIR" config --get core.hooksPath)" = githooks ]; then
+    printf '  %-11s %s\n' ok "git post-merge activo"
+  else
+    printf '  %-11s %s\n' FALTA "git post-merge (core.hooksPath)"
+    bad=$((bad + 1))
+  fi
   if [ "$LAYER" = yes ]; then
     node "$SETTINGS_TOOL" --check || bad=$((bad + 1))
   else
@@ -198,6 +204,13 @@ if [ "$LAYER" = yes ]; then
   else
     node "$SETTINGS_TOOL"
   fi
+fi
+
+# githooks/post-merge runs this script after every pull with changes, so a moved or new file is
+# linked without remembering to run it. Only in a clone: a copied folder has no git config.
+if [ -d "$DOTFILES_DIR/.git" ] && [ "$(git -C "$DOTFILES_DIR" config --get core.hooksPath)" != githooks ]; then
+  change "Activado git post-merge: cada git pull vuelve a ejecutar install.sh" \
+    git -C "$DOTFILES_DIR" config core.hooksPath githooks
 fi
 
 # libadwaita (Nautilus) takes dark mode from this setting, stored in dconf, not in a file to link:
