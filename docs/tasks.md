@@ -53,6 +53,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Versiones fijadas de pnpm y Claude Code, y gh
+
+**Plataforma:** Instalación.
+
+- [ ] [Esta PC] `./bootstrap.sh` desde `~/dotfiles`, como usuario normal (pide sudo una vez), instala solo `gh` y termina sin errores; `gh --version` responde
+- [ ] [PC nueva] Tras `./bootstrap.sh`, `pnpm --version` dice `12.8.1` y `claude --version` dice `2.1.332` o una posterior (Claude Code se actualiza solo)
+
 ## Finales de línea en LF en cualquier clon
 
 **Plataforma:** Repositorio.
@@ -61,17 +68,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] Tras el push, el CI pasa con el paso «LF line endings» en verde
 
 # Fase 2 — Instalador sin pérdidas
-
-## Versiones fijadas en bootstrap.sh
-
-**Plataforma:** Instalación.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `pnpm` y `@anthropic-ai/claude-code` se instalan sin versión: fijarlas como Neovim y oh-my-posh
-- [ ] Instalar `gh` (repositorio de Parrot o release verificado por SHA-256): hoy no está y lo piden el skill `new-repo` y el ruleset de `main`
-- [ ] Paso de identidad de git como el paso 6 de `bootstrap.ps1`, en vez de imprimir los `git config --global` al final
 
 ## Arquitecturas distintas de x86_64
 
@@ -99,6 +95,7 @@ en esta máquina.
 **Plataforma:** Claude Code, Repositorio.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `git rm` de `claude/` (incluida `tasks-artifact.template.html`, que el panel sustituye) tras comprobar `./install.sh --check` en verde
 - [ ] `.prettierignore` deja de listar `claude/`; `tools/check.sh` ya no llama a `claude/check-budget.mjs`
@@ -134,6 +131,7 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 
 - [ ] `15-git/gitconfig` (nombre, email noreply, firma de commits y etiquetas) enlazado en `~/.gitconfig`, que incluye `~/.gitconfig.local`
 - [ ] Mover `user.signingkey` de esta máquina a `~/.gitconfig.local` antes de enlazar (hoy no nombra ninguna organización)
+- [ ] Los pasos manuales de `bootstrap.sh` dejan de imprimir `git config --global user.email` y los de firma: la identidad viene del enlace, y solo queda escribir la clave en `~/.gitconfig.local`, como en el paso 6 de `bootstrap.ps1`
 
 # Fase 5 — Calidad y CI
 

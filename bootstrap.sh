@@ -43,6 +43,10 @@ OMP_SHA256="28ba5d5ec77fbcd6d2681674f6dd92760e07c5f4eb58927b6f9b03d1dd039fd4"
 # version, so it gets that line's security patches.
 NVM_VERSION="v0.40.8"
 NODE_MAJOR="24"
+# npm globals, checked by npm against the registry's integrity hash. Installed at this version
+# only when missing: Claude Code updates itself, and forcing the pin on every run would undo that.
+PNPM_VERSION="12.8.1"
+CLAUDE_CODE_VERSION="2.1.332"
 
 # The Claude Code layer: dotfiles-windows is its single source on every machine, next to this
 # repo as Windows keeps ~\dotfiles-parrot.
@@ -58,9 +62,10 @@ APT_PACKAGES=(
   # Shell and terminal tools.
   zsh zsh-autosuggestions zsh-syntax-highlighting
   bat lsd fzf tmux ripgrep jq xclip
-  # Development: git, shell script checks, what Mason (nvim) needs to fetch LSPs and formatters,
-  # and VSCodium (VS Code without telemetry, from Parrot's repository).
-  git shellcheck shfmt curl wget unzip xz-utils tar codium
+  # Development: git, the GitHub CLI (rulesets, topics and the new-repo skill), shell script
+  # checks, what Mason (nvim) needs to fetch LSPs and formatters, and VSCodium (VS Code without
+  # telemetry, from Parrot's repository).
+  git gh shellcheck shfmt curl wget unzip xz-utils tar codium
   # Security: firewall, anonymity, automatic patches, keys and secrets.
   ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
   # Pentesting: the labs' VPN (HTB, THM), whose tun0 interface polybar's VPN module shows, and
@@ -278,7 +283,7 @@ install_node_toolchain() {
       if compgen -G "$NVM_DIR/versions/node/v$NODE_MAJOR.*/bin/$tool" >/dev/null; then
         ok "$tool"
       else
-        planned "Instalaría $tool con npm"
+        planned "Instalaría $tool con npm, en la versión fijada"
       fi
     done
     return
@@ -302,8 +307,8 @@ install_node_toolchain() {
   set -u
   ok "Node $(node --version)"
   # npm globals inside nvm's Node: no sudo needed.
-  command -v pnpm >/dev/null || npm install -g --silent pnpm
-  command -v claude >/dev/null || npm install -g --silent @anthropic-ai/claude-code
+  command -v pnpm >/dev/null || npm install -g --silent "pnpm@$PNPM_VERSION"
+  command -v claude >/dev/null || npm install -g --silent "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
   ok "pnpm $(pnpm --version), Claude Code $(claude --version 2>/dev/null | cut -d' ' -f1)"
 }
 
