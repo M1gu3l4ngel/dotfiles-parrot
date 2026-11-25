@@ -18,6 +18,9 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
 3. Copia tu dirección `<id>+<user>@users.noreply.github.com`. En esta guía
    aparece como `<your-noreply>`; `<user>` es tu usuario de GitHub.
 
+El commit y el UID de la clave GPG tienen que usar los dos `<your-noreply>`
+para que GitHub muestre "Verified".
+
 ## SSH
 
 1. Crear la clave. Acepta la ruta por defecto (`~/.ssh/id_ed25519`) y pon una
@@ -70,56 +73,123 @@ Cada commit publica el email del autor. En GitHub, Settings -> Emails:
 
 ## GPG
 
-`15-git/gnupg/.gnupg/gpg-agent.conf` (enlazado por `install.sh`) configura el agente
-para pedir la passphrase en un diálogo gráfico (en la terminal si no hay sesión
-gráfica, p. ej. por SSH) y recordarla 10 minutos desde el último uso, 2 horas
-como máximo: los mismos valores que en Windows.
+La clave firma cada commit y etiqueta (integridad, y la insignia "Verified" en
+GitHub) y cifra los secretos de `pass`. Su fingerprint es la línea de 40
+caracteres bajo `sec` en `gpg --list-secret-keys`; el Key ID que a veces
+muestran GitHub y git son sus últimos 16 caracteres, la misma clave. En esta
+guía aparece como `<fingerprint>`, y `<name>` es el nombre que quieres en la
+clave.
 
-1. Crear la clave (ed25519 para firmar y cv25519 para cifrar, caduca en 2
-   años). Pedirá la passphrase en un diálogo:
+### 1. La clave
+
+**Caso A, una clave nueva (lo recomendado).** Se crea solo con la dirección
+noreply, así que nunca lleva tu email personal: ed25519 para firmar y cv25519
+para cifrar, con caducidad a 2 años. Pedirá la passphrase en un diálogo:
+
+```bash
+gpg --quick-generate-key "<name> <your-noreply>" default default 2y
+```
+
+Guarda la passphrase en tu lugar seguro.
+
+**Caso B, una clave que ya tienes con tu email personal.** Añádele el UID
+noreply:
+
+```bash
+gpg --quick-add-uid <fingerprint> "<name> <your-noreply>"
+```
+
+Después deja el email personal fuera de la clave pública: borra su UID
+([Quitar el email personal de la clave](#quitar-el-email-personal-de-la-clave))
+o fíltralo en cada exportación (paso 3).
+
+### 2. Configurar git para firmar
+
+El nombre, el email noreply y la firma de cada commit y etiqueta ya vienen de
+`15-git/gitconfig`, enlazado como `~/.gitconfig`. La clave es de esta máquina,
+así que va en `~/.gitconfig.local`, fuera del repo. Nunca uses
+`git config --global`, que la escribiría en el repo público a través del
+enlace:
+
+```bash
+git config --file ~/.gitconfig.local user.signingkey <fingerprint>
+```
+
+### 3. Subir la clave pública a GitHub
+
+1. Comprobar que el único `uid` de la clave es el noreply:
 
     ```bash
-    gpg --quick-generate-key "<name> <your-noreply>" default default 2y
+    gpg --list-keys <fingerprint>
     ```
 
-    Guarda la passphrase en tu lugar seguro.
-
-2. Ver el fingerprint (la línea larga de 40 caracteres bajo `sec`). En esta
-   guía aparece como `<fingerprint>`:
-
-    ```bash
-    gpg --list-secret-keys
-    ```
-
-3. Decirle a git qué clave firma. El nombre, el email noreply y la firma de
-   cada commit y etiqueta ya vienen de `15-git/gitconfig`, enlazado como
-   `~/.gitconfig`. La clave es de esta máquina, así que va en
-   `~/.gitconfig.local`, fuera del repo; nunca uses `git config --global`,
-   que la escribiría en el repo público a través del enlace:
-
-    ```bash
-    git config --file ~/.gitconfig.local user.signingkey <fingerprint>
-    ```
-
-4. Copiar la clave pública al portapapeles. Comprueba antes con
-   `gpg --list-keys <fingerprint>` que su único `uid` es el noreply; si
-   también aparece tu email personal, sigue antes
-   [Quitar el email personal de la clave](#quitar-el-email-personal-de-la-clave):
+2. Copiar la clave pública al portapapeles:
 
     ```bash
     gpg --armor --export <fingerprint> | xclip -selection clipboard
     ```
 
-5. En GitHub, Settings -> SSH and GPG keys -> New GPG key: pega el bloque
-   (`Ctrl+V`) y guarda.
-
-6. Hacer un commit y comprobar la firma (`G` = firma válida):
+    Si la clave aún tiene tu email personal (caso B con el filtro), exporta en
+    su lugar solo el UID noreply:
 
     ```bash
-    git log -1 --format='%G? %GK %s'
+    gpg --armor --export --export-filter keep-uid='mbox = <your-noreply>' <fingerprint> | xclip -selection clipboard
     ```
 
-    En GitHub, el commit aparece como "Verified".
+3. En GitHub, Settings -> SSH and GPG keys. Si ya hay una versión anterior de
+   esta clave (mismo Key ID), bórrala antes: GitHub rechaza dos claves con el
+   mismo fingerprint. Después New GPG key: pega el bloque (`Ctrl+V`) y guarda.
+
+### 4. Verificar
+
+Haz un commit y comprueba la firma (`G` = firma válida):
+
+```bash
+git log -1 --format='%G? %GK %s'
+```
+
+En GitHub, el commit aparece como "Verified". Los commits anteriores a
+configurar la clave siguen sin firmar.
+
+### Verificar commits hechos en otra máquina
+
+Un commit firmado en otra máquina (Windows) sale con `E` hasta que importas la
+clave pública de esa máquina. GitHub publica todas las claves públicas de una
+cuenta en `github.com/<user>.gpg`:
+
+```bash
+curl -fsS https://github.com/<user>.gpg | gpg --import
+```
+
+```bash
+git log -1 --format='%G? %GK %s' <commit>
+```
+
+`U` significa una firma válida de una clave que no has certificado tú. Para
+marcarla como tuya (una firma local que nunca se publica):
+
+```bash
+gpg --quick-lsign-key <fingerprint-of-the-other-key>
+```
+
+A partir de ahí el mismo `git log` muestra `G`.
+
+### La caché de la passphrase
+
+`15-git/gnupg/.gnupg/gpg-agent.conf`, enlazado por `install.sh`, configura el
+agente ([15-git/README.es.md](../15-git/README.es.md)):
+
+- `pinentry-gnome3` pide la passphrase en un diálogo gráfico, y en la
+  terminal si no hay sesión gráfica (por SSH).
+- `default-cache-ttl 600`: 10 minutos desde el último uso; cada firma
+  reinicia la cuenta.
+- `max-cache-ttl 7200`: 2 horas desde que la escribiste, aunque se siga usando.
+
+Los mismos valores que en Windows. Tras editar el archivo, recarga el agente:
+
+```bash
+gpg-connect-agent reloadagent /bye
+```
 
 ### Copia de seguridad (obligatoria)
 
@@ -163,14 +233,14 @@ gpg --quick-set-expire <fingerprint> 2y
 gpg --quick-set-expire <fingerprint> 2y '*'
 ```
 
-Después, vuelve a exportarla (paso 4) y reemplázala en GitHub.
+Después, vuelve a subirla ([paso 3](#3-subir-la-clave-pública-a-github)).
 
 ### Quitar el email personal de la clave
 
 Si la clave tiene también un UID con tu email personal, GitHub lo publica en
-`github.com/<user>.gpg`. Lo recomendado es borrar ese UID: la clave queda
-limpia para siempre y la firma no cambia (los commits siguen "Verified"
-porque usan el noreply). Como usuario normal, en cualquier directorio:
+`github.com/<user>.gpg`. Borrar ese UID deja la clave limpia para siempre, y
+la firma no cambia (los commits siguen "Verified" porque usan el noreply).
+Como usuario normal, en cualquier directorio:
 
 1. Hacer antes la [copia de seguridad](#copia-de-seguridad-obligatoria).
 2. Abrir el editor de la clave:
@@ -189,18 +259,19 @@ porque usan el noreply). Como usuario normal, en cualquier directorio:
     ```
 
 5. Rehacer la copia de seguridad (la anterior aún tiene el UID personal) y
-   reemplazar la clave en GitHub: borra la entrada antigua (GitHub rechaza dos
-   claves con el mismo fingerprint) y sube la nueva (pasos 4 y 5).
+   volver a subir la clave ([paso 3](#3-subir-la-clave-pública-a-github)).
 
 Borrar el UID solo afecta a tu copia y a lo que vuelvas a publicar: si la
 clave ya estaba en un servidor de claves público, allí sigue con el UID.
 
-Alternativa sin modificar la clave: exportar filtrando el UID. Hay que
-recordar el filtro en cada exportación; si se olvida, se publica el email:
+### Solución de problemas
 
-```bash
-gpg --armor --export --export-filter keep-uid='mbox = <your-noreply>' <fingerprint>
-```
+| Síntoma | Causa | Solución |
+|---|---|---|
+| GitHub muestra "Unverified: the email in this signature doesn't match the committer email" | La clave no tiene un UID con `<your-noreply>` | Añádelo (caso B) y vuelve a subir la clave |
+| `gpg failed to sign the data` por SSH | `GPG_TTY` no está definido, y el agente no sabe en qué terminal preguntar | `.zshrc` lo define: abre de nuevo la shell con `exec zsh` |
+| Pide la passphrase en cada commit | El agente no lee `gpg-agent.conf` | `gpg-connect-agent reloadagent /bye`, y `./install.sh --check` para ver el enlace |
+| `git log` muestra `E` en un commit de otra máquina | Su clave pública no está importada | [Verificar commits hechos en otra máquina](#verificar-commits-hechos-en-otra-máquina) |
 
 ## pass (gestor de secretos)
 

@@ -10,6 +10,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Guía de firma GPG y SSH
+
+**Plataforma:** Repositorio.
+
+- [ ] [Esta PC] Quitar de GitHub la clave GPG antigua que publica el email personal, y comprobar con `curl -fsS https://github.com/M1gu3l4ngel.gpg | gpg --show-keys` que solo queda el noreply
+- [ ] [PC nueva] Seguir la sección GPG de `docs/keys-and-secrets` con una clave nueva: el primer commit sale `G` y «Verified» en GitHub
+
 ## README de cada carpeta
 
 **Plataforma:** Repositorio.
@@ -175,18 +182,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 - [ ] Separar lo esencial de lo opcional (pentesting) en dos listas si `bootstrap.sh` gana una opción para omitir lo opcional
 
-
-
-# Fase 7 — Documentación
-
-## Guía de firma GPG y SSH
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** «Configuración de git versionada».
-
-- [ ] `docs/keys-and-secrets` con la estructura de `docs/gpg-signing` de Windows: email noreply, clave nueva o UID añadido, `~/.gitconfig.local`, subir la clave filtrando UIDs, verificar «Verified», caché del agente y backup
-- [ ] Importar la clave pública de Windows para que `git log --show-signature` verifique los commits hechos allí (hoy `8b1869f` sale `E`)
 
 
 # Fase 8 — Limpieza
