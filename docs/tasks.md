@@ -195,15 +195,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 - [ ] `docs/keys-and-secrets` con la estructura de `docs/gpg-signing` de Windows: email noreply, clave nueva o UID añadido, `~/.gitconfig.local`, subir la clave filtrando UIDs, verificar «Verified», caché del agente y backup
 - [ ] Importar la clave pública de Windows para que `git log --show-signature` verifique los commits hechos allí (hoy `8b1869f` sale `E`)
 
-## Documentos desfasados
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `CONTRIBUTING`: commits en una línea y en español; el modelo pide título en inglés en imperativo y cuerpo con un guion por cambio
-- [ ] `docs/README` indexa `docs/contributing/comments.md`
 
 # Fase 8 — Limpieza
 
