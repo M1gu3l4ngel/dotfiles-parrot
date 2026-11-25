@@ -13,6 +13,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - `install.sh --dry-run` muestra qué enlazaría, respaldaría o cambiaría sin
   tocar nada; `install.sh --check` informa del estado de cada enlace y de
   `~/.claude/settings.json` y sale con 1 si algo está mal.
+- `15-git/gitconfig`, enlazado como `~/.gitconfig`: identidad y firma
+  compartidas con Windows. `install.sh` pasa la clave de firma que ya hubiera
+  a `~/.gitconfig.local` antes de enlazar.
 - `githooks/post-merge`: cada `git pull` con cambios vuelve a ejecutar `install.sh`.
 - `bootstrap.sh --dry-run`, un paso que clona dotfiles-windows, `gh` desde apt,
   y pnpm y Claude Code en versiones fijadas.

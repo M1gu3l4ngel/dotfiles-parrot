@@ -1,0 +1,16 @@
+# Linked as ~/.gitconfig by install.sh. The public identity, the same as dotfiles-windows, so
+# commits from both machines carry one name. The signing key (`user.signingkey`) belongs to each
+# machine: it goes in ~/.gitconfig.local.
+[user]
+	name = M1gu3l4ngel
+	email = 88590762+M1gu3l4ngel@users.noreply.github.com
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+# What does not belong in a public repo (the signing key, any organization or work account)
+# lives in this machine-local file, outside the repo. If it does not exist, git ignores it.
+[include]
+	path = ~/.gitconfig.local

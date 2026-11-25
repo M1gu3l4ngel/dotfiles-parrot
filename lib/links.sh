@@ -8,6 +8,7 @@
 # shellcheck disable=SC2034 # LINKS is used by the scripts that source this file.
 LINKS=(
   "$DOTFILES_DIR/10-shell/zsh/.zshrc|$HOME/.zshrc"
+  "$DOTFILES_DIR/15-git/gitconfig|$HOME/.gitconfig"
   # Only the file: ~/.gnupg holds the private keys and must stay a real 700 folder outside any
   # repo (install.sh creates it that way before linking).
   "$DOTFILES_DIR/15-git/gnupg/.gnupg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"

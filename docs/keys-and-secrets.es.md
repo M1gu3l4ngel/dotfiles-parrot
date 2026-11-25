@@ -91,22 +91,14 @@ como máximo: los mismos valores que en Windows.
     gpg --list-secret-keys
     ```
 
-3. Configurar git para firmar siempre:
+3. Decirle a git qué clave firma. El nombre, el email noreply y la firma de
+   cada commit y etiqueta ya vienen de `15-git/gitconfig`, enlazado como
+   `~/.gitconfig`. La clave es de esta máquina, así que va en
+   `~/.gitconfig.local`, fuera del repo; nunca uses `git config --global`,
+   que la escribiría en el repo público a través del enlace:
 
     ```bash
-    git config --global user.email "<your-noreply>"
-    ```
-
-    ```bash
-    git config --global user.signingkey <fingerprint>
-    ```
-
-    ```bash
-    git config --global commit.gpgsign true
-    ```
-
-    ```bash
-    git config --global tag.gpgsign true
+    git config --file ~/.gitconfig.local user.signingkey <fingerprint>
     ```
 
 4. Copiar la clave pública al portapapeles. Comprueba antes con

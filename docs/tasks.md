@@ -53,6 +53,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Configuración de git versionada
+
+**Plataforma:** Shell.
+
+- [ ] [Esta PC] `git -C ~/dotfiles log -1 --format='%G? %an'` muestra `G M1gu3l4ngel` en el próximo commit
+- [ ] [PC nueva] Tras `./bootstrap.sh` y crear la clave GPG, `git config --file ~/.gitconfig.local user.signingkey <fingerprint>` basta para que los commits salgan firmados
+
 ## Carpetas numeradas por capa
 
 **Plataforma:** Escritorio, Shell.
@@ -108,19 +115,19 @@ en esta máquina.
 
 # Fase 4 — Carpetas numeradas por capa
 
-## Configuración de git versionada
+## Cabecera del README con los logos de Parrot
 
-**Plataforma:** Shell, Instalación.
-**Prioridad:** P2.
+**Plataforma:** Repositorio.
+**Prioridad:** P1.
 **Requiere:** nada.
 **Estado:** en curso.
 
-`~/.gitconfig` es un archivo real sin versionar. Windows versiona la parte pública en `15-git/` y
-deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
+La receta de la cabecera es la del skill `new-repo`: se copia de `README.md` de dotfiles-windows
+(hasta la raya `---`), no se hace de memoria.
 
-- [ ] `15-git/gitconfig` (nombre, email noreply, firma de commits y etiquetas) enlazado en `~/.gitconfig`, que incluye `~/.gitconfig.local`
-- [ ] Mover `user.signingkey` de esta máquina a `~/.gitconfig.local` antes de enlazar (hoy no nombra ninguna organización)
-- [ ] Los pasos manuales de `bootstrap.sh` dejan de imprimir `git config --global user.email` y los de firma: la identidad viene del enlace, y solo queda escribir la clave en `~/.gitconfig.local`, como en el paso 6 de `bootstrap.ps1`
+- [ ] `assets/dotfiles-parrot-lockup-dark.svg` y `-white.svg`, revisados: solo formas, sin `<script>` ni enlaces externos
+- [ ] Cabecera de `README.md` y `README.es.md`: logo en `<picture>` (dark por defecto, white con `prefers-color-scheme: dark`, alt «Dotfiles Parrot»), sin título `#`, descripción centrada en dos líneas, fila de enlaces a las secciones de cada idioma, badges (CI, Parrot OS, bspwm, zsh, licencia), raya y `preview.png`
+- [ ] `check-docs.mjs` en verde, que ahora valida también `href`, `src` y `srcset`
 
 ## Lista de paquetes en 60-apps
 

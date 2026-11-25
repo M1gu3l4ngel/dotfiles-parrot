@@ -136,6 +136,7 @@ cada una, cada componente mantiene su estructura `<componente>/.config/<componen
 |---|---|---|
 | `10-shell/zsh/` | Shell | `~/.zshrc` |
 | `10-shell/oh-my-posh/` | Tema del prompt, idéntico al de Windows | Se lee desde el repo |
+| `15-git/gitconfig` | Identidad de git y firma de commits; la clave va en `~/.gitconfig.local` | `~/.gitconfig` |
 | `15-git/gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `20-terminal/kitty/` | Terminal | `~/.config/kitty/` |
 | `25-desktop/bspwm/` | Gestor de ventanas y script de redimensionado | `~/.config/bspwm/` |

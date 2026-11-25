@@ -178,6 +178,19 @@ elif [ "$(stat -c %a "$HOME/.gnupg")" != 700 ]; then
   change "Permisos 700 en ~/.gnupg" chmod 700 "$HOME/.gnupg"
 fi
 
+# ~/.gitconfig becomes a link to the public 15-git/gitconfig, which has no signing key. A key set
+# in the old real file is carried to ~/.gitconfig.local first, or commits would stop being signed
+# right after the install. The old file itself is kept as the usual .pre-dotfiles.bak.
+signing_key=""
+if [ -f "$HOME/.gitconfig" ] && [ ! -L "$HOME/.gitconfig" ]; then
+  signing_key=$(git config --file "$HOME/.gitconfig" --get user.signingkey || true)
+fi
+if [ -n "$signing_key" ] &&
+  [ -z "$(git config --file "$HOME/.gitconfig.local" --get user.signingkey 2>/dev/null || true)" ]; then
+  change "Clave de firma de git copiada a ~/.gitconfig.local" \
+    git config --file "$HOME/.gitconfig.local" user.signingkey "$signing_key"
+fi
+
 for link in "${LINKS[@]}"; do
   create_symlink "${link%%|*}" "${link#*|}"
 done

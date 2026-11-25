@@ -411,10 +411,9 @@ print_next_steps() {
 
     3. Clave GPG (firma de commits y cifrado de pass):
          gpg --quick-generate-key "<nombre> <tu-noreply>@users.noreply.github.com" default default 2y
-         git config --global user.email "<tu-noreply>@users.noreply.github.com"
-         git config --global user.signingkey <fingerprint>
-         git config --global commit.gpgsign true
-         git config --global tag.gpgsign true
+         git config --file ~/.gitconfig.local user.signingkey <fingerprint>
+       El nombre, el email noreply y la firma ya vienen de 15-git/gitconfig.
+       Nunca git config --global: escribiría en el repo a través del enlace.
        Guarda la passphrase y un backup de la clave privada en tu lugar seguro.
 
     4. pass (gestor de secretos):

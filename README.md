@@ -136,6 +136,7 @@ each one, every component keeps its `<component>/.config/<component>/` layout.
 |---|---|---|
 | `10-shell/zsh/` | Shell | `~/.zshrc` |
 | `10-shell/oh-my-posh/` | Prompt theme, identical to Windows | Read from the repo |
+| `15-git/gitconfig` | git identity and commit signing; the key goes in `~/.gitconfig.local` | `~/.gitconfig` |
 | `15-git/gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
 | `20-terminal/kitty/` | Terminal | `~/.config/kitty/` |
 | `25-desktop/bspwm/` | Window manager and resize script | `~/.config/bspwm/` |

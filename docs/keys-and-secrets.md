@@ -91,22 +91,14 @@ last use, 2 hours at most: the same values as on Windows.
     gpg --list-secret-keys
     ```
 
-3. Set up git to always sign:
+3. Tell git which key signs. The name, the noreply email and signing on every
+   commit and tag already come from `15-git/gitconfig`, linked as
+   `~/.gitconfig`. The key belongs to this machine, so it goes in
+   `~/.gitconfig.local`, outside the repo; never use `git config --global`,
+   which would write it into the public repo through the link:
 
     ```bash
-    git config --global user.email "<your-noreply>"
-    ```
-
-    ```bash
-    git config --global user.signingkey <fingerprint>
-    ```
-
-    ```bash
-    git config --global commit.gpgsign true
-    ```
-
-    ```bash
-    git config --global tag.gpgsign true
+    git config --file ~/.gitconfig.local user.signingkey <fingerprint>
     ```
 
 4. Copy the public key to the clipboard. First check with

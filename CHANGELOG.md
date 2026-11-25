@@ -13,6 +13,9 @@ Notable changes to the project. The format follows
 - `install.sh --dry-run` shows what it would link, back up or change without
   touching anything; `install.sh --check` reports the state of every link and
   of `~/.claude/settings.json` and exits with 1 if something is wrong.
+- `15-git/gitconfig`, linked as `~/.gitconfig`: identity and signing shared
+  with Windows. `install.sh` carries an existing signing key to
+  `~/.gitconfig.local` before linking.
 - `githooks/post-merge`: each `git pull` with changes runs `install.sh` again.
 - `bootstrap.sh --dry-run`, a step that clones dotfiles-windows, `gh` from apt,
   and pnpm and Claude Code at pinned versions.
