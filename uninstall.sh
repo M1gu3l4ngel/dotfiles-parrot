@@ -39,7 +39,14 @@ die() {
 short() { echo "${1/#"$HOME"/\~}"; }
 
 usage() {
-  sed -n '2,/^$/{s/^# \{0,1\}//;p}' "${BASH_SOURCE[0]}"
+  cat <<'EOF'
+Uso: ./uninstall.sh [--dry-run]
+
+  (sin opción)  quita los enlaces de este repo y de la capa de Claude Code y
+                restaura las copias .pre-dotfiles.bak
+  --dry-run     muestra qué haría, sin tocar nada
+  -h, --help    esta ayuda
+EOF
   exit 0
 }
 

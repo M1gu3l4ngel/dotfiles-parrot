@@ -76,6 +76,11 @@ If the environment is already installed and you only want these configs, from
 ./install.sh
 ```
 
+To see first what it would change, without changing anything, run it with
+`--dry-run`. With `--check` it lists the state of every link (`ok`, `FALTA`
+missing, `RUTA VIEJA` old repo path, `AJENO` someone else's file) and of
+`~/.claude/settings.json`, and exits with 1 if something is not right.
+
 Before creating each link, `install.sh` renames whatever is at the target
 (file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix; if the
 link then fails, the original goes back. A link to an old path inside the repo
@@ -134,7 +139,7 @@ they come from `50-claude/links.json` of the
 | `gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Default Prettier and EditorConfig style for projects | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Prompt theme | Read from the repo |
-| `claude/` | Former copy of the Claude Code layer ([claude/README.md](claude/README.md)); the layer now comes from dotfiles-windows | Not linked (only its `settings.json` template, if the file is missing) |
+| `claude/` | Former copy of the Claude Code layer ([claude/README.md](claude/README.md)); the layer now comes from dotfiles-windows | Not used |
 | `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |

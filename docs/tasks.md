@@ -31,9 +31,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Instalación.
 
-- [ ] [Esta PC] `./install.sh` desde `~/dotfiles` dice «Las 29 configuraciones ya estaban enlazadas» y el escritorio, zsh y Claude Code siguen igual
+- [ ] [Esta PC] `./install.sh --check` desde `~/dotfiles` lista los 29 enlaces en `ok`, los hooks y las reglas de Claude, y acaba en «Todo instalado»
+- [ ] [Esta PC] `./install.sh --dry-run` dice «0 cambios por hacer» sin tocar nada
+- [ ] [Esta PC] `./install.sh` dice «Nada que cambiar» y el escritorio, zsh y Claude Code siguen igual
 - [ ] [Esta PC] `./uninstall.sh --dry-run` lista 30 enlaces y las copias que restauraría, sin tocar nada
 - [ ] [PC nueva] `./install.sh` sin `~/dotfiles-windows` avisa de que omite la capa de Claude Code y enlaza el resto
+- [ ] [PC nueva] Con `~/dotfiles-windows` clonado y sin `~/.claude/settings.json`, `./install.sh` lo crea con los hooks, las reglas y la barra de estado
 
 ## Finales de línea en LF en cualquier clon
 
@@ -44,22 +47,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Fase 2 — Instalador sin pérdidas
 
-## Modo de prueba y modo de comprobar en install.sh
-
-**Plataforma:** Instalación.
-**Prioridad:** P1.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `./install.sh --dry-run`: dice qué enlazaría, qué respaldaría y qué rehace, sin tocar nada
-- [ ] `./install.sh --check`: una línea por enlace (`ok`, `FALTA`, `RUTA VIEJA`, `AJENO`), los hooks de Claude registrados, las reglas `deny`/`ask` de la plantilla y `core.hooksPath`; sale con 1 si algo falla
-- [ ] `--help` sin `sed -n '2,/^$/'` sobre el propio archivo: un texto de ayuda en una variable
-
 ## Hook post-merge que rehace los enlaces
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
-**Requiere:** «Modo de prueba y modo de comprobar en install.sh».
+**Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `githooks/post-merge` que ejecuta `install.sh` tras cada `git pull` con cambios
 - [ ] `install.sh` activa `core.hooksPath=githooks` la primera vez y `--check` lo comprueba
@@ -68,7 +61,7 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
-**Requiere:** «Modo de prueba y modo de comprobar en install.sh».
+**Requiere:** nada.
 
 - [ ] `./bootstrap.sh --dry-run`: cada paso dice qué instalaría o cambiaría, sin `sudo` ni descargas
 - [ ] `usage` sin `sed -n '2,22p'` (números de línea fijos que se desfasan al editar la cabecera)
@@ -105,23 +98,22 @@ dotfiles-windows, sección «Setting up a new machine».
 
 - [ ] `bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` (al lado, como Windows tiene `~\dotfiles-parrot`) antes de llamar a `install.sh`, y `install.sh` falla en vez de avisar si no está
 
-## Fusión de settings.json en install.sh
+## Recordatorio de español local en settings.json
 
 **Plataforma:** Claude Code.
-**Prioridad:** P1.
-**Requiere:** «Enlazar 50-claude desde el clon de dotfiles-windows».
+**Prioridad:** P2.
+**Requiere:** nada.
 
-En esta máquina ya está fusionado (`install-settings.mjs --check` en `ok`); falta que lo haga
-`install.sh`.
+`install.sh` ya fusiona `settings.json` con `install-settings.mjs`. Queda un hook que solo existe
+en esta máquina.
 
-- [ ] `install.sh` llama a `node ~/.claude/tools/install-settings.mjs` y `--check` a su `--check`
 - [ ] Decidir si el `UserPromptSubmit` local (recordatorio de español con `printf`) se queda o se borra porque ya lo cubre `reply-in-spanish.mjs`
 
 ## Quitar la copia claude/ del repo
 
 **Plataforma:** Claude Code, Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Fusión de settings.json en install.sh».
+**Requiere:** nada.
 
 - [ ] `git rm` de `claude/` (incluida `tasks-artifact.template.html`, que el panel sustituye) tras comprobar `./install.sh --check` en verde
 - [ ] `.prettierignore` deja de listar `claude/`; `tools/check.sh` ya no llama a `claude/check-budget.mjs`
@@ -176,9 +168,9 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 
 **Plataforma:** Instalación, Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Modo de prueba y modo de comprobar en install.sh».
+**Requiere:** nada.
 
-- [ ] `tools/test-install.sh`: ejecuta `install.sh` y `uninstall.sh` con un `HOME` temporal y comprueba los cuatro estados, el backup, la restauración tras un fallo y que una segunda ejecución no cambia nada
+- [ ] `tools/test-install.sh`: ejecuta `install.sh` y `uninstall.sh` con un `HOME` temporal y comprueba los cuatro estados, el backup, la restauración tras un fallo y que una segunda ejecución no cambia nada (hay un borrador con 19 casos en el scratchpad de la sesión que se puede partir)
 - [ ] `tools/check.sh` y el CI lo ejecutan
 
 ## Recarga de polybar sin killall

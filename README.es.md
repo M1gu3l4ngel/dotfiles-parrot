@@ -75,6 +75,11 @@ Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
 ./install.sh
 ```
 
+Para ver antes qué cambiaría, sin tocar nada, ejecútalo con `--dry-run`. Con
+`--check` lista el estado de cada enlace (`ok`, `FALTA`, `RUTA VIEJA` a una
+ruta vieja del repo, `AJENO` un archivo que no es del repo) y de
+`~/.claude/settings.json`, y sale con 1 si algo no está bien.
+
 Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
 (archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`; si
 después falla el enlace, el original vuelve a su sitio. Un enlace a una ruta
@@ -133,7 +138,7 @@ clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Estilo por defecto de Prettier y EditorConfig para proyectos | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `claude/` | Antigua copia de la capa de Claude Code ([claude/README.es.md](claude/README.es.md)); la capa sale ahora de dotfiles-windows | No se enlaza (solo su plantilla de `settings.json`, si falta el archivo) |
+| `claude/` | Antigua copia de la capa de Claude Code ([claude/README.es.md](claude/README.es.md)); la capa sale ahora de dotfiles-windows | No se usa |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |

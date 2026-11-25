@@ -4,8 +4,9 @@
 
 > This copy is no longer linked: `install.sh` links the layer from
 > `50-claude/` of the [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows)
-> clone in `~/dotfiles-windows`, following its `links.json`. Only
-> `settings.template.json` is still used, when `~/.claude/settings.json` is missing.
+> clone in `~/dotfiles-windows`, following its `links.json`, and merges
+> `~/.claude/settings.json` with its `tools/install-settings.mjs`. Nothing in this
+> folder is used any more; it will be removed.
 
 **Universal** Claude Code behavior, the same on every project, machine and operating
 system. What is specific to a project lives in that project's repo; what is specific to a

@@ -4,8 +4,9 @@
 
 > Esta copia ya no se enlaza: `install.sh` enlaza la capa desde `50-claude/` del
 > clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
-> `~/dotfiles-windows`, según su `links.json`. Solo se sigue usando
-> `settings.template.json`, cuando falta `~/.claude/settings.json`.
+> `~/dotfiles-windows`, según su `links.json`, y fusiona `~/.claude/settings.json`
+> con su `tools/install-settings.mjs`. Ya no se usa nada de esta carpeta; se
+> eliminará.
 
 Comportamiento **universal** de Claude Code, igual en cualquier proyecto, máquina y sistema
 operativo. Lo específico de un proyecto vive en el repo de ese proyecto; lo específico de una
