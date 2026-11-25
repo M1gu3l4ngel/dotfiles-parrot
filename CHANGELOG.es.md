@@ -46,6 +46,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - El fantasma de polybar leía un archivo de estado que sobrevivía a un
   reinicio o a un `sudo anonsurf stop` manual, así que podía quedarse verde sin
   anonimato. Ahora lee de systemd el estado de `anonsurfd`.
+- `bootstrap.sh --dry-run` dejaba archivos en `~`: arrancar `codium` para
+  listar sus extensiones creaba el perfil, la caché y un ID de dispositivo de
+  VSCodium, y `nvim --version` un log. Ahora lee el registro de extensiones de
+  VSCodium y manda el log de Neovim a `/dev/null`, así que un modo de prueba no
+  crea nada.
 
 ## [2.0.0] - 2026-11-25
 

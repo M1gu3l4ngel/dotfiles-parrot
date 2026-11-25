@@ -10,18 +10,11 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
-## Estándar de documentación
-
-**Plataforma:** Repositorio.
-
-- [ ] Tras el push, en GitHub, Insights → Community muestra todo en verde
-- [ ] Tras el push, el README sale en el orden nuevo en los dos idiomas, y cada enlace de la cabecera lleva a su sección
-- [ ] Tras el push y activar el reporte privado, «New issue» muestra los dos formularios y el enlace «Report a vulnerability», sin opción de issue en blanco
-
 ## Identidad de git fuera del repo
 
 **Plataforma:** Shell.
 
+- [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada no deja `~/.vscode-oss`, `~/.config/VSCodium` ni `~/.local/state/nvim`
 - [ ] [PC nueva] `./bootstrap.sh` sin argumentos deja el nombre y el email noreply del dueño en `~/.gitconfig.local`, y con `--git-name` y `--git-email` deja los que se pasan
 
 ## Estado del target en ~/.local/state
@@ -37,7 +30,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] [Esta PC] `sudo ./70-system/setup.sh` desde `~/dotfiles`, para instalar el `anon-harden` nuevo
 - [ ] [Esta PC] Con Firefox abierto, `Super+A` muestra en rofi «AnonSurf cerrará: firefox-esr»; «Cancelar» no cambia nada
-- [ ] [Esta PC] `Super+A` y «Cerrar y continuar»: el fantasma pasa a naranja y luego a verde con «Anonimato ON · verificado»
 - [ ] [Esta PC] Con el anonimato activo, `sudo anonsurf stop` en una terminal: el fantasma pasa a gris en un segundo
 - [ ] [Esta PC] Tras apagarlo, `sudo ip6tables -S` muestra las mismas políticas que antes de activarlo
 - [ ] [Esta PC] Guardar las reglas con el anonimato activo (`sudo iptables-save`, `sudo ip6tables -S`) para comprobar si anonsurf bloquea el UDP y el ICMP fuera de Tor

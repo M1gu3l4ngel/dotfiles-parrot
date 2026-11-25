@@ -222,7 +222,10 @@ install_fonts() {
 install_neovim() {
   step "Neovim $NVIM_VERSION"
   local prefix=/opt/nvim-linux-x86_64 archive="$TMP_DIR/nvim.tar.gz"
-  if "$prefix/bin/nvim" --version 2>/dev/null | head -1 | grep -q "NVIM $NVIM_VERSION$"; then
+  # NVIM_LOG_FILE: even --version creates ~/.local/state/nvim/nvim.log, and a dry run creates
+  # nothing.
+  if NVIM_LOG_FILE=/dev/null "$prefix/bin/nvim" --version 2>/dev/null | head -1 |
+    grep -q "NVIM $NVIM_VERSION$"; then
     ok "Already installed"
   elif [ "$DRY_RUN" -eq 1 ]; then
     planned "Would download Neovim $NVIM_VERSION and install it to $prefix (sudo)"
@@ -367,12 +370,15 @@ install_vscodium_extensions() {
     warn "VSCodium is not installed; extensions skipped"
     return
   fi
-  # One query for the installed ones; codium lists them in lower case.
+  # The installed ones come from VSCodium's own registry, the file `codium --list-extensions`
+  # reads. Starting codium for the query created its profile, its cache and a device ID in ~, even
+  # in a dry run. No file means none installed.
+  local registry="$HOME/.vscode-oss/extensions/extensions.json"
   local -A installed=()
   local id
   while read -r id; do
     installed[${id,,}]=1
-  done < <(codium --list-extensions 2>/dev/null)
+  done < <(grep -o '"identifier":{"id":"[^"]*"' "$registry" 2>/dev/null | sed 's/.*"id":"//; s/"$//')
   local wanted=() args=()
   while read -r id; do
     id=${id%%#*}

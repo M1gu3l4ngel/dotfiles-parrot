@@ -46,6 +46,10 @@ Notable changes to the project. The format follows
 - polybar's ghost read a state file that outlived a reboot or a manual
   `sudo anonsurf stop`, so it could stay green with no anonymity. It now reads
   `anonsurfd`'s state from systemd.
+- `bootstrap.sh --dry-run` left files in `~`: starting `codium` to list its
+  extensions created VSCodium's profile, cache and a device ID, and
+  `nvim --version` a log. It now reads VSCodium's extension registry and sends
+  Neovim's log to `/dev/null`, so a dry run creates nothing.
 
 ## [2.0.0] - 2026-11-25
 
