@@ -1,24 +1,22 @@
-// ~/.config/Visual Studio Code/User/keybindings.json
-// Atajos de VSCodium, los mismos que VS Code en Windows (dotfiles-windows).
-// install.sh enlaza este archivo. Los cambios se aplican al guardar.
+// VSCodium's shortcuts, the same as VS Code on Windows (dotfiles-windows). install.sh links this
+// file; changes apply on save.
 [
-  // Comentar un bloque con Ctrl + "/" del teclado numérico.
+  // Block comment with the numeric keypad's Ctrl + "/".
   {
     "key": "ctrl+numpad_divide",
     "command": "editor.action.blockComment",
     "when": "editorTextFocus && !editorReadonly"
   },
-  // Se quita el atajo por defecto (Shift+Alt+A) para que el de arriba sea el
-  // único y no choque con otros usos de esa combinación.
+  // The default shortcut (Shift+Alt+A) goes, so the one above is the only one and does not clash
+  // with other uses of that combination.
   {
     "key": "shift+alt+a",
     "command": "-editor.action.blockComment",
     "when": "editorTextFocus && !editorReadonly"
   },
-  // Terminal integrada: Ctrl+Shift+←/→ selecciona palabra a palabra, como en
-  // kitty. VSCodium se quedaba esas teclas y no llegaban a zsh; aquí se envía
-  // la misma secuencia que manda kitty (formato xterm), que zsh ya entiende
-  // (ver la selección con Shift en .zshrc). Solo con la terminal enfocada.
+  // Integrated terminal: Ctrl+Shift+Left/Right select word by word, as in kitty. VSCodium kept
+  // those keys and they never reached zsh; this sends kitty's own sequence (xterm format), which
+  // zsh already understands (Shift selection in .zshrc). Only with the terminal focused.
   {
     "key": "ctrl+shift+left",
     "command": "workbench.action.terminal.sendSequence",

@@ -1,12 +1,9 @@
-// ~/.config/Visual Studio Code/User/settings.json
-// Ajustes de VSCodium (la compilación de Parrot los lee de esa carpeta).
-// Base: la configuración de VS Code en Windows, adaptada a Linux (zsh,
-// CaskaydiaCove) y sin lo propio de Windows (PowerShell, rutas C:\).
-// El código se lee con el tema Monokai; la interfaz usa la paleta del
-// escritorio (Monokai Soda) para que encaje con polybar, rofi y Nautilus.
-// install.sh enlaza este archivo. Los cambios se aplican al guardar.
+// VSCodium's settings (Parrot's build reads them from ~/.config/Visual Studio Code/User/). Based on
+// VS Code's settings on Windows, adapted to Linux (zsh, CaskaydiaCove) and without what is Windows
+// only (PowerShell, C:\ paths). Code reads with the Monokai theme; the interface uses the desktop
+// palette (Monokai Soda) to match polybar, rofi and Nautilus. install.sh links this file; changes
+// apply on save.
 {
-  // ----- INTERFAZ -----
   "workbench.colorTheme": "Monokai",
   "workbench.iconTheme": "symbols",
   "workbench.productIconTheme": "fluent-icons",
@@ -15,12 +12,11 @@
   "workbench.editor.tabSizing": "fixed",
   "workbench.editor.tabSizingFixedMaxWidth": 150,
 
-  // Solo la interfaz (fondos, bordes, foco) con la paleta del sistema;
-  // los colores del código siguen siendo los de Monokai. Limitado a ese tema
-  // con "[Monokai]" para que otro tema no herede estos fondos.
+  // Only the interface (backgrounds, borders, focus) takes the system palette; code colors stay
+  // Monokai's. Scoped to "[Monokai]" so another theme does not inherit these backgrounds.
   "workbench.colorCustomizations": {
     "[Monokai]": {
-      // Superficies: el mismo fondo que las barras y Nautilus.
+      // Surfaces: the same background as the bars and Nautilus.
       "editor.background": "#1A1A1A",
       "editorGutter.background": "#1A1A1A",
       "sideBar.background": "#1A1A1A",
@@ -37,7 +33,7 @@
       "panel.background": "#1A1A1A",
       "terminal.background": "#1A1A1A",
       "breadcrumb.background": "#1A1A1A",
-      // Elementos flotantes y entradas, un tono más claro.
+      // Floating items and inputs, one step lighter.
       "editorWidget.background": "#242424",
       "quickInput.background": "#242424",
       "input.background": "#242424",
@@ -46,13 +42,13 @@
       "notifications.background": "#242424",
       "editorHoverWidget.background": "#242424",
       "editorSuggestWidget.background": "#242424",
-      // Línea actual y selección en listas: sutiles, sin competir con el código.
+      // Current line and list selection: subtle, not competing with the code.
       "editor.lineHighlightBackground": "#242424",
       "editor.lineHighlightBorder": "#00000000",
       "list.activeSelectionBackground": "#242424",
       "list.inactiveSelectionBackground": "#242424",
       "list.hoverBackground": "#242424",
-      // Bordes: el mismo gris neutro que las ventanas y las barras.
+      // Borders: the same neutral grey as the windows and bars.
       "sideBar.border": "#343434",
       "activityBar.border": "#343434",
       "titleBar.border": "#343434",
@@ -60,7 +56,7 @@
       "panel.border": "#343434",
       "editorGroup.border": "#343434",
       "tab.border": "#1A1A1A",
-      // Texto de la interfaz: gris cálido; apagado en lo inactivo.
+      // Interface text: warm grey, dimmed when inactive.
       "foreground": "#C4C5B5",
       "statusBar.foreground": "#C4C5B5",
       "titleBar.activeForeground": "#C4C5B5",
@@ -71,9 +67,9 @@
       "tab.inactiveForeground": "#8F8B7A",
       "editorLineNumber.foreground": "#625E4C",
       "editorLineNumber.activeForeground": "#C4C5B5",
-      // Explorador: los mismos colores que Monokai Night en Windows (Monokai
-      // no define los de git y usaba los genéricos, más apagados). Sin cambios
-      // en casi blanco, para que se distingan de los ignorados (gris oscuro).
+      // Explorer: the same colors as Monokai Night on Windows (Monokai defines no git colors and
+      // fell back to duller generic ones). Unchanged files in near white, apart from the ignored
+      // ones (dark grey).
       "sideBar.foreground": "#DDDDDD",
       "gitDecoration.modifiedResourceForeground": "#B3B42B",
       "gitDecoration.untrackedResourceForeground": "#86B42B",
@@ -82,9 +78,8 @@
       "gitDecoration.conflictingResourceForeground": "#FE413F",
       "gitDecoration.ignoredResourceForeground": "#777777",
       "gitDecoration.submoduleResourceForeground": "#2BB3B4",
-      // Foco y elementos activos: el gris neutro del borde de la ventana con
-      // foco en bspwm. Se nota sin distraer; los colores fuertes quedan para
-      // el código. Texto claro (#F6F6EF) donde va encima del gris.
+      // Focus and active items: the neutral grey of bspwm's focused window border. Clear without
+      // distracting; strong colors stay for the code. Light text (#F6F6EF) on top of the grey.
       "focusBorder": "#555555",
       "tab.activeBorderTop": "#555555",
       "tab.activeBorder": "#1A1A1A",
@@ -103,11 +98,9 @@
     "comments": "#9a9c9a"
   },
 
-  // ----- EDITOR -----
   "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
-  // SemiBold: Linux dibuja el trazo más fino que Windows (ClearType) con el
-  // mismo peso, y la familia no tiene Medium (un 500 caería en Regular). Mismo
-  // peso que el texto de polybar.
+  // SemiBold: Linux draws a thinner stroke than Windows (ClearType) at the same weight, and the
+  // family has no Medium (a 500 would fall back to Regular). The same weight as polybar's text.
   "editor.fontWeight": "600",
   "editor.fontLigatures": true,
   "editor.wordWrap": "off",
@@ -127,19 +120,17 @@
   "editor.unicodeHighlight.nonBasicASCII": false,
   "editor.largeFileOptimizations": false,
 
-  // ----- FORMATO -----
-  // El estilo no vive aquí sino en archivos que también lee el CLI de
-  // Prettier: el .prettierrc de cada proyecto o, si no tiene, ~/.prettierrc.json
-  // (40-format/prettierrc.json). Así el editor, la terminal y el CI formatean
-  // igual. Los ajustes "prettier.*" del editor solo se usarían sin ningún
-  // archivo de configuración, y bajo ~ siempre hay uno.
+  // The style does not live here but in files Prettier's CLI reads too: each project's .prettierrc
+  // or, without one, ~/.prettierrc.json (40-format/prettierrc.json). So the editor, the terminal and
+  // CI format alike. The editor's "prettier.*" settings would apply only with no config file, and
+  // under ~ there is always one.
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "html.format.wrapLineLength": 130,
   "css.enabledLanguages": ["html"],
-  // Lo que Prettier no formatea, con su herramienta nativa. shfmt sin flags
-  // lee el .editorconfig del proyecto (sangría y `switch_case_indent`).
+  // What Prettier does not format, with its native tool. shfmt without flags reads the project's
+  // .editorconfig (indentation and `switch_case_indent`).
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
   },
@@ -147,36 +138,29 @@
     "editor.defaultFormatter": "mtxr.sqltools"
   },
 
-  // ----- ARCHIVOS Y EXPLORADOR -----
-  // Guardar al cambiar de pestaña o de ventana, no por tiempo: el formateo al
-  // guardar no se ejecuta en los guardados automáticos por retardo
-  // ("afterDelay"), así que con él los archivos casi nunca se formateaban.
+  // Saves on a tab or window change, not on a timer: format on save does not run for delayed
+  // autosaves ("afterDelay"), so with it files were almost never formatted.
   "files.autoSave": "onFocusChange",
   "files.eol": "\n",
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "symbols.hidesExplorerArrows": false,
 
-  // ----- TERMINAL -----
   "terminal.integrated.defaultProfile.linux": "zsh",
   "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font'",
   "terminal.integrated.initialHint": false,
 
-  // ----- GIT -----
   "git.enableSmartCommit": true,
   "git.autofetch": true,
 
-  // ----- EXTENSIONES -----
   "auto-close-tag.enableAutoCloseTag": true,
   "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"],
   "sqltools.highlightQuery": false,
   "sqltools.results.limit": 100,
   "js/ts.updateImportsOnFileMove.enabled": "always",
 
-  // ----- SEGURIDAD Y PRIVACIDAD -----
-  // Confianza del espacio de trabajo activa (por defecto) y con aviso: al abrir
-  // material de labs o repos descargados, VSCodium lo abre en modo restringido
-  // (sin tareas ni extensiones que ejecuten código) hasta que lo confirmes.
+  // Workspace trust on (the default) and asking: lab material or downloaded repos open in
+  // restricted mode (no tasks or extensions that run code) until you confirm them.
   "security.workspace.trust.enabled": true,
   "telemetry.telemetryLevel": "off"
 }

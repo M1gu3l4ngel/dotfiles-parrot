@@ -1,19 +1,17 @@
-# 30-editor/vscodium/extensions.txt
-# Extensiones de VSCodium, desde Open VSX (el catálogo de VSCodium). Las
-# instala bootstrap.sh (solo las que faltan). Una por línea; # comenta.
-# Para añadir una: búscala en https://open-vsx.org y copia su identificador
-# (editor.nombre).
+# VSCodium's extensions from Open VSX (VSCodium's catalog); bootstrap.sh installs the missing ones.
+# One per line, `#` starts a comment. To add one, find it on https://open-vsx.org and copy its id
+# (publisher.name).
 #
-# No incluidas a propósito: SonarLint (239 MB, trae su propio Java) y Claude
-# Code (107 MB, ya está instalado como CLI); las de licencia exclusiva de VS
-# Code (SQL Server, .NET Runtime) y las de Windows (PowerShell, WSL).
+# Left out on purpose: SonarLint (239 MB, brings its own Java) and Claude Code (107 MB, already
+# installed as a CLI); the ones licensed only for VS Code (SQL Server, .NET Runtime) and the Windows
+# ones (PowerShell, WSL).
 
-# ----- ASPECTO -----
+# Look.
 miguelsolorio.symbols
 miguelsolorio.fluent-icons
 ms-ceintl.vscode-language-pack-es
 
-# ----- WEB Y JS/TS -----
+# Web and JS/TS.
 dbaeumer.vscode-eslint
 esbenp.prettier-vscode
 bradlc.vscode-tailwindcss
@@ -29,20 +27,19 @@ wix.vscode-import-cost
 sainoba.px-to-rem
 naumovs.color-highlight
 
-# ----- FORMATO -----
-# EditorConfig: VSCodium no lee .editorconfig sin ella. shfmt: formatea shell
-# con el binario de apt y el .editorconfig del proyecto.
+# Formatting. VSCodium does not read .editorconfig without the EditorConfig extension; shfmt
+# formats shell with apt's binary and the project's .editorconfig.
 editorconfig.editorconfig
 mkhl.shfmt
 
-# ----- PRODUCTIVIDAD -----
+# Productivity.
 usernamehw.errorlens
 christian-kohler.path-intellisense
 exodiusstudios.comment-anchors
 pflannery.vscode-versionlens
 mhutchie.git-graph
 
-# ----- DATOS Y APIS -----
+# Data and APIs.
 humao.rest-client
 mechatroner.rainbow-csv
 mtxr.sqltools

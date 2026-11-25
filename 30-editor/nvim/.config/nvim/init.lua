@@ -1,22 +1,13 @@
--- ~/.config/nvim/init.lua
--- Entry point de Neovim. Se carga primero al arrancar nvim.
--- Su trabajo es:
---   1. Bootstrap del package manager (lazy.nvim) si no está clonado todavía
---   2. Cargar NvChad como base + los plugins propios definidos en lua/plugins/
---   3. Cargar el tema cacheado (base46) para evitar parpadeos al abrir
---   4. Cargar nuestras opciones, autocmds y mappings (en ese orden)
---
--- Para abrir nvim: `nvim` desde cualquier terminal.
+-- Neovim's entry point. It installs lazy.nvim on the first run, loads NvChad and the plugins in
+-- lua/plugins/, loads the cached theme (base46) to avoid a flash on opening, and then the options,
+-- autocmds and mappings, in that order.
 
--- Ruta donde NvChad cachea los temas compilados (base46 = sistema de highlights).
+-- Where NvChad caches the compiled themes (base46 is its highlight system).
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
--- Tecla líder = barra espaciadora. Se usa como prefijo en casi todos los
--- atajos custom (ej. <leader>f para buscar archivos).
+-- Space is the prefix of almost every custom shortcut (<leader>f finds files).
 vim.g.mapleader = " "
 
--- ----- BOOTSTRAP DE LAZY.NVIM -----
--- Si la primera vez que se abre nvim no existe lazy.nvim, se clona aquí.
--- Después de eso, vim.opt.rtp:prepend lo añade al runtimepath para poder usarlo.
+-- lazy.nvim is cloned the first time nvim opens without it.
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
 if not vim.uv.fs_stat(lazypath) then
@@ -26,12 +17,9 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
--- Config del propio lazy.nvim (lazy-loading, performance, etc.).
 local lazy_config = require "configs.lazy"
 
--- ----- CARGA DE PLUGINS -----
--- NvChad se importa con lazy=false para que sus defaults estén disponibles
--- de inmediato. Después se importan los plugins propios desde lua/plugins/.
+-- NvChad with lazy=false so its defaults are there at once; then the plugins in lua/plugins/.
 require("lazy").setup({
   {
     "NvChad/NvChad",
@@ -43,16 +31,13 @@ require("lazy").setup({
   { import = "plugins" },
 }, lazy_config)
 
--- ----- CARGA DEL TEMA (CACHE BASE46) -----
--- Cargar los archivos pre-compilados evita recompilar highlights en cada
--- arranque. Si se cambia el tema en chadrc.lua, NvChad regenera este cache.
+-- The precompiled highlights avoid compiling them on every start; NvChad regenerates the cache
+-- when chadrc.lua changes the theme.
 dofile(vim.g.base46_cache .. "defaults")
 dofile(vim.g.base46_cache .. "statusline")
 
--- ----- USER CONFIG -----
--- options y autocmds se cargan síncronamente para que estén listos antes de
--- abrir el buffer inicial. mappings se difiere con vim.schedule para evitar
--- bloquear el startup (los keymaps no son críticos en los primeros ms).
+-- Options and autocmds load synchronously, ready before the first buffer; mappings wait for
+-- vim.schedule so they do not hold up the start.
 require "options"
 require "autocmds"
 
