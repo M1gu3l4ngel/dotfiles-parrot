@@ -64,7 +64,7 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 **Plataforma:** Escritorio.
 
 - [ ] [Esta PC] Cerrar sesión y volver a entrar en bspwm: aparecen las 7 barras una sola vez
-- [ ] [Esta PC] Después, `Super+Alt+R` recarga las barras sin duplicarlas y sin el aviso «hay barras sin IPC»
+- [ ] [Esta PC] Después, `Super+Alt+R` recarga las barras sin duplicarlas y sin el aviso «bars without IPC did not close»
 - [ ] [Esta PC] `ls /run/user/$(id -u)/polybar/` muestra un socket por barra
 
 ## CI con tests de instalación y Dependabot
