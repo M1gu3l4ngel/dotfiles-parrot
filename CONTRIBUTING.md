@@ -31,26 +31,33 @@ its pair in the same commit. `./tools/check.sh` fails if they do not share
 the same structure (sections, tables, lists, links) or if their code blocks
 differ: commands are not translated.
 
-Code comments, commit messages and the rules in `.claude/rules/` are written
-in Spanish only.
+Code comments, script output, CI step and test names and commit messages are
+written in English only, following
+[docs/contributing/comments.md](docs/contributing/comments.md). The rules in
+`.claude/rules/` and `CLAUDE.md` are in Spanish only.
 
 ## Commits
 
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format,
-on a single line of at most 72 characters, with the description in Spanish:
+in English and in the imperative: a title of at most 72 characters, a blank
+line and a body with one dash per concrete change.
 
 ```
-type(scope): descripción en español
+type(scope): summary in the imperative
+
+- One line per concrete change.
 ```
 
-- `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `type`: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
 - Optional `scope`: the affected component (`polybar`, `zsh`, `system`...).
 - One commit per logical change, even if it touches several files.
 
 Example:
 
 ```
-fix(polybar): esperar a que se cierren las barras antes de relanzarlas
+refactor(polybar): close the bars over IPC instead of killall
+
+- Every bar sets enable-ipc so launch.sh can close it with polybar-msg.
 ```
 
 The repo is public and every commit publishes the author's email: use your
@@ -65,7 +72,8 @@ the same for people and for Claude Code, which loads them automatically.
 | File | What it defines |
 |---|---|
 | [security.md](.claude/rules/security.md) | Personal data and secrets, verified downloads, least privilege |
-| [style.md](.claude/rules/style.md) | Spanish comments that explain the why, indentation per format |
+| [style.md](.claude/rules/style.md) | English comments that explain the why, indentation per format |
+| [git.md](.claude/rules/git.md) | Commit format and which git commands never run |
 | [shell.md](.claude/rules/shell.md) | Shell and zsh scripts |
 | [documentation.md](.claude/rules/documentation.md) | Documentation style and the two-language rule |
 | [file-edits.md](.claude/rules/file-edits.md) | Nerd Font icons and protected files |

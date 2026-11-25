@@ -14,3 +14,4 @@ principal.
 | [keys-and-secrets.es.md](keys-and-secrets.es.md) | Claves SSH y GPG, firma de commits, copias de seguridad y `pass` |
 | [vmware.es.md](vmware.es.md) | Aceleración gráfica, sesión X11 y carpeta compartida con el host |
 | [customization.es.md](customization.es.md) | Fondo, prompt, temas, fuentes, notificaciones y atajos |
+| [contributing/comments.es.md](contributing/comments.es.md) | Cómo se escriben los comentarios del código, y qué texto sigue en español |

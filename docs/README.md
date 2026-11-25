@@ -14,3 +14,4 @@ Detailed guides for the setup. Installation is covered in the main
 | [keys-and-secrets.md](keys-and-secrets.md) | SSH and GPG keys, commit signing, backups and `pass` |
 | [vmware.md](vmware.md) | Graphics acceleration, X11 session and folder shared with the host |
 | [customization.md](customization.md) | Wallpaper, prompt, themes, fonts, notifications and shortcuts |
+| [contributing/comments.md](contributing/comments.md) | How code comments are written, and which text stays in Spanish |

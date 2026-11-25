@@ -9,6 +9,15 @@ Los componentes van en carpetas numeradas por capa, como en dotfiles-windows:
 `<capa>/<componente>/.config/<componente>/`, que `install.sh` enlaza en
 `~/.config/` según `lib/links.sh`. `70-system/` se instala como copias con root.
 
+## Idioma del código: inglés
+
+En este repo los **comentarios de código, las salidas de los scripts, los nombres de los pasos
+del CI y los nombres de los tests van en inglés**, con la forma de
+`docs/contributing/comments.md`, como dice también la regla global de `~/.claude/CLAUDE.md`.
+Siguen en español: los `.es.md`, este archivo, `.claude/rules/`, `docs/tasks.md`,
+`docs/backlog.md` y los textos que ve el usuario en el escritorio (notificaciones, menús de
+rofi). `./tools/check.sh` falla ante un comentario en español.
+
 ## Reglas
 
 Las reglas detalladas están en `.claude/rules/` y se cargan solas:

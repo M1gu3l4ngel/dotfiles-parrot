@@ -76,6 +76,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Code comments, script output, CI step and test names and commit messages
+  are now English, following the new `docs/contributing/comments.md`; the
+  text the desktop shows stays Spanish. `.claude/comments.json` tells the
+  shared check which files it cannot classify alone.
 - polybar: `launch.sh` closes the bars over IPC (`polybar-msg cmd quit`,
   `enable-ipc` on every bar) instead of `killall`, and waits at most 5 s: a
   bar without IPC left over from an older config stops it with a warning

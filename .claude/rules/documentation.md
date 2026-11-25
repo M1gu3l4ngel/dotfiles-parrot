@@ -28,8 +28,9 @@ español) ni a `30-editor/nvim/.config/nvim/README.md` (protegido).
   `tools/check.sh` (`check-docs.mjs` de dotfiles-windows) falla si falta una pareja o un
   selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
   o bloques de código, o si hay enlaces o anclas rotos.
-- Solo en español: comentarios de código, mensajes de commit y la salida de
-  los scripts.
+- Fuera de la documentación: comentarios de código, salida de los scripts,
+  nombres de los pasos del CI y de los tests, y mensajes de commit, solo en
+  inglés (ver `style.md` y `git.md`).
 
 ## Estilo
 

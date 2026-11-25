@@ -75,6 +75,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- Los comentarios del código, la salida de los scripts, los nombres de los
+  pasos del CI y de los tests y los mensajes de commit pasan a inglés, según
+  la nueva `docs/contributing/comments.es.md`; el texto que muestra el
+  escritorio sigue en español. `.claude/comments.json` dice al check
+  compartido qué archivos no sabe clasificar solo.
 - polybar: `launch.sh` cierra las barras por IPC (`polybar-msg cmd quit`,
   `enable-ipc` en cada barra) en vez de con `killall`, y espera como mucho
   5 s: una barra sin IPC que quede de una config anterior lo para con un

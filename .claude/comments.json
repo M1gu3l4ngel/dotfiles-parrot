@@ -1,0 +1,9 @@
+{
+  "styles": {
+    "hash": ["(^|/)\\.shellcheckrc$", "(^|/)dunstrc$", "\\.txt$", "(^|/)sudoers\\.d/"],
+    "slash": ["(^|/)xkb/symbols/", "(^|/)70-system/apt/"]
+  },
+  "exemptions": [
+    "Text the desktop shows (notifications, rofi menus, polybar labels) stays Spanish: it is the interface its user reads."
+  ]
+}

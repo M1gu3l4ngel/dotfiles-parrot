@@ -32,26 +32,33 @@ también su pareja en el mismo commit. `./tools/check.sh` falla si no tienen
 la misma estructura (secciones, tablas, listas, enlaces) o si sus bloques de
 código difieren: los comandos no se traducen.
 
-Los comentarios del código, los commits y las reglas de `.claude/rules/` se
-escriben solo en español.
+Los comentarios del código, la salida de los scripts, los nombres de los pasos
+del CI y de los tests y los mensajes de commit se escriben solo en inglés,
+según [docs/contributing/comments.es.md](docs/contributing/comments.es.md). Las
+reglas de `.claude/rules/` y `CLAUDE.md` van solo en español.
 
 ## Commits
 
-Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)
-en una sola línea de 72 caracteres como máximo, con la descripción en español:
+Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/),
+en inglés y en imperativo: un título de 72 caracteres como máximo, una línea en
+blanco y un cuerpo con un guion por cambio concreto.
 
 ```
-type(scope): descripción en español
+type(scope): summary in the imperative
+
+- One line per concrete change.
 ```
 
-- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `type`: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
 - `scope` opcional: el componente afectado (`polybar`, `zsh`, `system`...).
 - Un commit por cambio lógico, aunque toque varios archivos.
 
 Ejemplo:
 
 ```
-fix(polybar): esperar a que se cierren las barras antes de relanzarlas
+refactor(polybar): close the bars over IPC instead of killall
+
+- Every bar sets enable-ipc so launch.sh can close it with polybar-msg.
 ```
 
 El repo es público y cada commit publica el email del autor: usa el email
@@ -66,7 +73,8 @@ para Claude Code, que las carga automáticamente.
 | Archivo | Qué define |
 |---|---|
 | [security.md](.claude/rules/security.md) | Datos personales y secretos, descargas verificadas, mínimo privilegio |
-| [style.md](.claude/rules/style.md) | Comentarios en español que explican el porqué, indentación por formato |
+| [style.md](.claude/rules/style.md) | Comentarios en inglés que explican el porqué, indentación por formato |
+| [git.md](.claude/rules/git.md) | Formato de los commits y qué comandos de git no se ejecutan nunca |
 | [shell.md](.claude/rules/shell.md) | Scripts de shell y zsh |
 | [documentation.md](.claude/rules/documentation.md) | Estilo de la documentación y la regla de los dos idiomas |
 | [file-edits.md](.claude/rules/file-edits.md) | Iconos Nerd Font y archivos protegidos |
