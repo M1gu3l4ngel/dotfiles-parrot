@@ -27,6 +27,14 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [Esta PC] Claude escribe en inglés los comentarios nuevos y responde en español
 - [ ] [Esta PC] `/new-repo` aparece entre los skills
 
+## Instalador que distingue cada enlace
+
+**Plataforma:** Instalación.
+
+- [ ] [Esta PC] `./install.sh` desde `~/dotfiles` dice «Las 29 configuraciones ya estaban enlazadas» y el escritorio, zsh y Claude Code siguen igual
+- [ ] [Esta PC] `./uninstall.sh --dry-run` lista 30 enlaces y las copias que restauraría, sin tocar nada
+- [ ] [PC nueva] `./install.sh` sin `~/dotfiles-windows` avisa de que omite la capa de Claude Code y enlaza el resto
+
 ## Finales de línea en LF en cualquier clon
 
 **Plataforma:** Repositorio.
@@ -36,28 +44,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Fase 2 — Instalador sin pérdidas
 
-## Estado exacto de cada enlace en install.sh y uninstall.sh
+## Modo de prueba y modo de comprobar en install.sh
 
 **Plataforma:** Instalación.
 **Prioridad:** P1.
 **Requiere:** nada.
 **Estado:** en curso.
-
-`install.sh` y `uninstall.sh` dan por bueno cualquier enlace cuyo destino empiece por
-`$DOTFILES_DIR`: un enlace a `~/dotfiles-windows/...` cuenta como «ya enlazado» (prefijo sin `/`),
-y un enlace a una ruta vieja del repo no se rehace. Además, si `ln -s` falla tras mover el
-original a `.bak`, el original no vuelve.
-
-- [ ] Función `link_state` en `lib/links.sh` con los cuatro estados de `lib/links.ps1`: `ok` (enlace exacto), `missing`, `stale` (enlace a otra ruta del repo: se rehace sin backup) y `foreign` (archivo real o enlace ajeno: backup)
-- [ ] Comparar rutas completas (`readlink -f` sobre el repo con `/` final), no un prefijo
-- [ ] Si falla `ln -s`, devolver el `.bak` a su sitio antes de salir
-- [ ] `uninstall.sh` usa la misma función y solo quita enlaces en estado `ok` o `stale`
-
-## Modo de prueba y modo de comprobar en install.sh
-
-**Plataforma:** Instalación.
-**Prioridad:** P1.
-**Requiere:** «Estado exacto de cada enlace en install.sh y uninstall.sh».
 
 - [ ] `./install.sh --dry-run`: dice qué enlazaría, qué respaldaría y qué rehace, sin tocar nada
 - [ ] `./install.sh --check`: una línea por enlace (`ok`, `FALTA`, `RUTA VIEJA`, `AJENO`), los hooks de Claude registrados, las reglas `deny`/`ask` de la plantilla y `core.hooksPath`; sale con 1 si algo falla
@@ -105,15 +97,13 @@ original a `.bak`, el original no vuelve.
 
 **Plataforma:** Claude Code, Instalación.
 **Prioridad:** P1.
-**Requiere:** «Estado exacto de cada enlace en install.sh y uninstall.sh».
+**Requiere:** nada.
 
-En esta máquina los 10 enlaces de `links.json` ya apuntan a `~/dotfiles-windows/50-claude/`
-(hechos a mano el 2026-11-25); falta que `install.sh` lo haga solo en cualquier PC. El contrato
-está en `50-claude/README.md` de dotfiles-windows, sección «Setting up a new machine».
+`install.sh` ya enlaza la capa desde `50-claude/links.json` del clon `~/dotfiles-windows` y, si
+falta el clon o node, la omite con un aviso. El contrato está en `50-claude/README.md` de
+dotfiles-windows, sección «Setting up a new machine».
 
-- [ ] `bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` (al lado, como Windows tiene `~\dotfiles-parrot`) y `install.sh` falla con un mensaje claro si no está
-- [ ] `lib/links.sh` lee `50-claude/links.json` con `node` (source relativo a `50-claude/`, target a `~/.claude/`) en vez de listar `claude/`
-- [ ] Probar con un `HOME` temporal que `install.sh` crea los 10 enlaces de la capa, y con `./install.sh --check` que en esta máquina salen todos `ok`
+- [ ] `bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` (al lado, como Windows tiene `~\dotfiles-parrot`) antes de llamar a `install.sh`, y `install.sh` falla en vez de avisar si no está
 
 ## Fusión de settings.json en install.sh
 

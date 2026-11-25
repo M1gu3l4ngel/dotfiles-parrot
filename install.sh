@@ -49,47 +49,46 @@ short() { echo "${1/#"$HOME"/\~}"; }
 LINKED=0
 ALREADY=0
 
-# ----- LÓGICA DE BACKUP -----
-# Decide qué hacer con el archivo que está en la ruta destino antes de
-# crear el symlink nuevo. Devuelve 0 si la ruta quedó libre para enlazar,
-# o 1 si ya estaba enlazada al lugar correcto y no hay nada que hacer.
-backup_if_exists() {
-  local target="$1"
-  # Symlink a este repo: ya está instalado, no hay nada que hacer.
-  if [ -L "$target" ] && [[ "$(readlink "$target")" == "$DOTFILES_DIR"* ]]; then
-    ALREADY=$((ALREADY + 1))
-    return 1
-  fi
-  # Cualquier otra cosa (archivo, carpeta o un enlace propio a otro sitio) se
-  # mueve a .bak para no perderla: uninstall.sh la devuelve a su sitio. -L
-  # cubre también los enlaces rotos, que -e no detecta.
-  if [ -e "$target" ] || [ -L "$target" ]; then
-    # Si ya hay un .bak de una ejecución anterior, se añade la fecha en vez de
-    # sobrescribirlo: esa copia puede ser la única de la config original.
-    local backup="${target}${BACKUP_SUFFIX}"
-    if [ -e "$backup" ] || [ -L "$backup" ]; then
-      backup="${backup}.$(date +%Y%m%d%H%M%S)"
-    fi
-    local detail=""
-    [ -L "$target" ] && detail=" (enlace a $(readlink "$target"))"
-    warn "Copia de seguridad: $(short "$target")$detail -> $(short "$backup")"
-    mv "$target" "$backup"
-  fi
-  return 0
-}
-
-# ----- CREACIÓN DE SYMLINKS -----
-# Crea el enlace simbólico del repo al sistema, asegurándose primero de que
-# el directorio padre exista (por ejemplo ~/.config/bspwm/).
+# Links source at target according to link_state (lib/links.sh). A foreign file is moved to
+# .pre-dotfiles.bak first, with a date when a backup already exists: an older one may be the only
+# copy of the original. If ln fails, the backup goes back, so the user never loses the file.
 create_symlink() {
-  local source="$1"
-  local target="$2"
-  if backup_if_exists "$target"; then
-    mkdir -p "$(dirname "$target")"
-    ln -s "$source" "$target"
-    ok "Enlazado: $(short "$target")"
-    LINKED=$((LINKED + 1))
+  local source=$1 target=$2 state backup="" detail=""
+  if [ ! -e "$source" ]; then
+    warn "No existe en el repo, se omite: $(short "$source")"
+    return 0
   fi
+  state=$(link_state "$source" "$target")
+  case "$state" in
+    ok)
+      ALREADY=$((ALREADY + 1))
+      return 0
+      ;;
+    stale)
+      # No trailing slash: rm removes the link itself, never what a folder link points to.
+      warn "Enlace a una ruta vieja, se rehace: $(short "$target") (era $(short "$(readlink -- "$target")"))"
+      rm -- "$target"
+      ;;
+    foreign)
+      backup="${target}${BACKUP_SUFFIX}"
+      if [ -e "$backup" ] || [ -L "$backup" ]; then
+        backup="${backup}.$(date +%Y%m%d%H%M%S)"
+      fi
+      [ -L "$target" ] && detail=" (enlace a $(readlink -- "$target"))"
+      warn "Copia de seguridad: $(short "$target")$detail -> $(short "$backup")"
+      mv -- "$target" "$backup"
+      ;;
+  esac
+  mkdir -p "$(dirname "$target")"
+  if ! ln -s -- "$source" "$target"; then
+    if [ -n "$backup" ]; then
+      mv -- "$backup" "$target"
+      warn "Restaurado el original: $(short "$target")"
+    fi
+    die "No se pudo crear el enlace: $(short "$target")"
+  fi
+  ok "Enlazado: $(short "$target")"
+  LINKED=$((LINKED + 1))
 }
 
 # ----- VALIDACIÓN PREVIA -----
@@ -104,6 +103,10 @@ fi
 # config nueva, se suma una línea allí, no aquí.
 # shellcheck source=lib/links.sh
 . "$DOTFILES_DIR/lib/links.sh"
+if ! add_claude_layer_links; then
+  warn "Capa de Claude Code omitida: falta $(short "$CLAUDE_LAYER_DIR")/links.json o node"
+  warn "Clónala con: git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git ~/dotfiles-windows"
+fi
 
 # ~/.gnupg se crea antes que su enlace (gpg-agent.conf) porque create_symlink
 # lo crearía con los permisos por defecto (755), y gpg avisa de "unsafe

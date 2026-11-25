@@ -77,8 +77,10 @@ If the environment is already installed and you only want these configs, from
 ```
 
 Before creating each link, `install.sh` renames whatever is at the target
-(file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix. To go
-back, see [Uninstall](#uninstall).
+(file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix; if the
+link then fails, the original goes back. A link to an old path inside the repo
+(a moved folder) is replaced without a backup. To go back, see
+[Uninstall](#uninstall).
 
 ## Uninstall
 
@@ -108,7 +110,10 @@ Dated copies (`.pre-dotfiles.bak.<date>`), from reinstalls, are not restored:
 the script lists them so you can choose by hand.
 
 The list of links lives in `lib/links.sh` and both scripts share it: to add a
-new config, add one line there.
+new config, add one line there. The Claude Code links are not listed there:
+they come from `50-claude/links.json` of the
+[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) clone in
+`~/dotfiles-windows`.
 
 ## Repository layout
 
@@ -129,7 +134,7 @@ new config, add one line there.
 | `gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Default Prettier and EditorConfig style for projects | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Prompt theme | Read from the repo |
-| `claude/` | Global Claude Code layer ([claude/README.md](claude/README.md)) | `~/.claude/` (and `settings.json` from the template) |
+| `claude/` | Former copy of the Claude Code layer ([claude/README.md](claude/README.md)); the layer now comes from dotfiles-windows | Not linked (only its `settings.json` template, if the file is missing) |
 | `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |

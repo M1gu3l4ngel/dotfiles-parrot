@@ -61,13 +61,10 @@ fi
 # Los mismos que crea install.sh, de la lista compartida.
 # shellcheck source=lib/links.sh
 . "$DOTFILES_DIR/lib/links.sh"
-TARGETS=()
-for link in "${LINKS[@]}"; do
-  TARGETS+=("${link#*|}")
-done
-# El fondo no está en la lista porque install.sh solo lo enlaza si no hay uno
-# propio; si el enlace es del repo, también se quita.
-TARGETS+=("$HOME/.config/wallpaper.jpg")
+add_claude_layer_links || warn "Capa de Claude Code omitida: falta $(short "$CLAUDE_LAYER_DIR")/links.json o node"
+# The wallpaper is not in the map because install.sh only links it when there is no wallpaper of
+# the user's; when the link is the repo's, it goes too.
+LINKS+=("$DOTFILES_DIR/assets/wallpaper.jpg|$HOME/.config/wallpaper.jpg")
 
 # Contadores para el resumen final.
 REMOVED=0
@@ -100,13 +97,14 @@ restore_backup() {
 
 # ----- QUITAR UN ENLACE -----
 unlink_target() {
-  local target="$1"
-  if [ -L "$target" ] && [[ "$(readlink "$target")" == "$DOTFILES_DIR"* ]]; then
+  local source=$1 target=$2 state
+  state=$(link_state "$source" "$target")
+  if [ "$state" = ok ] || [ "$state" = stale ]; then
     act rm -- "$target"
     ok "$([ "$DRY_RUN" -eq 1 ] && echo "Quitaría el enlace" || echo "Enlace quitado"): $(short "$target")"
     REMOVED=$((REMOVED + 1))
     restore_backup "$target"
-  elif [ -e "$target" ] || [ -L "$target" ]; then
+  elif [ "$state" = foreign ]; then
     # Archivo real o enlace a otro sitio: no es de este repo, no se toca.
     warn "No es un enlace de este repo, se deja: $(short "$target")"
   else
@@ -117,8 +115,8 @@ unlink_target() {
 }
 
 [ "$DRY_RUN" -eq 1 ] && echo "    Simulación (--dry-run): no se modifica nada."
-for target in "${TARGETS[@]}"; do
-  unlink_target "$target"
+for link in "${LINKS[@]}"; do
+  unlink_target "${link%%|*}" "${link#*|}"
 done
 
 # ----- RESUMEN -----

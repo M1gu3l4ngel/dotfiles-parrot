@@ -76,8 +76,10 @@ Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
 ```
 
 Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
-(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`. Para
-volver atrás, ver [Desinstalar](#desinstalar).
+(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`; si
+después falla el enlace, el original vuelve a su sitio. Un enlace a una ruta
+vieja del repo (una carpeta movida) se rehace sin copia. Para volver atrás, ver
+[Desinstalar](#desinstalar).
 
 ## Desinstalar
 
@@ -107,7 +109,10 @@ fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
 script las lista para que elijas a mano.
 
 La lista de enlaces vive en `lib/links.sh` y la comparten los dos scripts:
-para añadir una configuración nueva basta con sumar una línea allí.
+para añadir una configuración nueva basta con sumar una línea allí. Los
+enlaces de Claude Code no están en ella: salen de `50-claude/links.json` del
+clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
+`~/dotfiles-windows`.
 
 ## Estructura del repo
 
@@ -128,7 +133,7 @@ para añadir una configuración nueva basta con sumar una línea allí.
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Estilo por defecto de Prettier y EditorConfig para proyectos | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `claude/` | Capa global de Claude Code ([claude/README.es.md](claude/README.es.md)) | `~/.claude/` (y `settings.json` desde la plantilla) |
+| `claude/` | Antigua copia de la capa de Claude Code ([claude/README.es.md](claude/README.es.md)); la capa sale ahora de dotfiles-windows | No se enlaza (solo su plantilla de `settings.json`, si falta el archivo) |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
