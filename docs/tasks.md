@@ -17,6 +17,16 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [Esta PC] En una sesión nueva de Claude Code, pedirle que lea un archivo de `~/.gnupg` o de `~/.password-store` responde «Permission denied»
 - [ ] [Esta PC] Claude Code arranca sin errores de `settings.json` (copia previa en `~/.claude/settings.json.pre-dotfiles.bak.20261125124350`)
 
+## Capa de Claude enlazada desde dotfiles-windows
+
+**Plataforma:** Claude Code.
+
+- [ ] [Esta PC] Al abrir una sesión nueva en `~/dotfiles`, Claude dice si el panel está al día (hook `SessionStart`)
+- [ ] [Esta PC] Editar `docs/tasks.md` hace que Claude avise de regenerar el panel (hook de `Edit|Write`)
+- [ ] [Esta PC] `git push` pregunta en vez de ejecutarse, y `git add -A` se deniega
+- [ ] [Esta PC] Claude escribe en inglés los comentarios nuevos y responde en español
+- [ ] [Esta PC] `/new-repo` aparece entre los skills
+
 ## Finales de línea en LF en cualquier clon
 
 **Plataforma:** Repositorio.
@@ -97,14 +107,13 @@ original a `.bak`, el original no vuelve.
 **Prioridad:** P1.
 **Requiere:** «Estado exacto de cada enlace en install.sh y uninstall.sh».
 
-Hoy `claude/` es una copia que ya se separó del original: 5 de los 10 archivos compartidos
-difieren, y faltan `command-rules.mjs`, el panel, `tools/`, la regla `repo-conventions` y el
-skill `new-repo`. El contrato está en `50-claude/README.md` de dotfiles-windows, sección
-«Setting up a new machine».
+En esta máquina los 10 enlaces de `links.json` ya apuntan a `~/dotfiles-windows/50-claude/`
+(hechos a mano el 2026-11-25); falta que `install.sh` lo haga solo en cualquier PC. El contrato
+está en `50-claude/README.md` de dotfiles-windows, sección «Setting up a new machine».
 
 - [ ] `bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` (al lado, como Windows tiene `~\dotfiles-parrot`) y `install.sh` falla con un mensaje claro si no está
 - [ ] `lib/links.sh` lee `50-claude/links.json` con `node` (source relativo a `50-claude/`, target a `~/.claude/`) en vez de listar `claude/`
-- [ ] Probar con `./install.sh --dry-run` que los enlaces de `~/.claude` pasan de `claude/` a `~/dotfiles-windows/50-claude/` sin backups, y que `panel/`, `tools/`, `skills/new-repo` y `rules/` se crean
+- [ ] Probar con un `HOME` temporal que `install.sh` crea los 10 enlaces de la capa, y con `./install.sh --check` que en esta máquina salen todos `ok`
 
 ## Fusión de settings.json en install.sh
 
@@ -112,11 +121,10 @@ skill `new-repo`. El contrato está en `50-claude/README.md` de dotfiles-windows
 **Prioridad:** P1.
 **Requiere:** «Enlazar 50-claude desde el clon de dotfiles-windows».
 
-Las reglas `deny` de secretos ya están en esta máquina; faltan los hooks, que no se registran
-antes de que existan sus enlaces.
+En esta máquina ya está fusionado (`install-settings.mjs --check` en `ok`); falta que lo haga
+`install.sh`.
 
 - [ ] `install.sh` llama a `node ~/.claude/tools/install-settings.mjs` y `--check` a su `--check`
-- [ ] Quedan registrados los hooks del panel (`SessionStart`, `PostToolUse` de `Artifact` y de `Edit|Write`) y el `PostToolUse` de `reply-in-spanish.mjs`
 - [ ] Decidir si el `UserPromptSubmit` local (recordatorio de español con `printf`) se queda o se borra porque ya lo cubre `reply-in-spanish.mjs`
 
 ## Quitar la copia claude/ del repo
