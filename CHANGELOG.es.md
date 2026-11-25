@@ -72,6 +72,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   hallazgos, artefacto de tareas, nombres).
 - VSCodium formatea el shell con shfmt y el SQL con SQLTools, y lee
   `.editorconfig` (extensión EditorConfig).
+- Un README en pareja en cada carpeta numerada: qué es cada archivo, dónde se
+  enlaza, cómo se recarga y qué no tocar. El README raíz los enlaza y añade un
+  diagrama del montaje, una tabla de recargas y cómo mantener otra PC al día.
+- `bootstrap.sh` se detiene antes de cambiar nada en una arquitectura distinta
+  de x86_64, porque Neovim y oh-my-posh están fijados a builds de x86_64.
 
 ### Cambiado
 
@@ -79,7 +84,15 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   pasos del CI y de los tests y los mensajes de commit pasan a inglés, según
   la nueva `docs/contributing/comments.es.md`; el texto que muestra el
   escritorio sigue en español. `.claude/comments.json` dice al check
-  compartido qué archivos no sabe clasificar solo.
+  compartido qué archivos no sabe clasificar solo, y `tools/check.sh` falla
+  ante un comentario en español. `install.sh --check` etiqueta los enlaces
+  como `ok`, `MISSING`, `STALE` y `FOREIGN`.
+- `docs/getting-started` empieza con un diagrama de los pasos, ejecuta
+  `bootstrap.sh --dry-run` antes de instalar e `install.sh --check` al final,
+  y cubre Parrot sin VMware.
+- `docs/keys-and-secrets` sigue la guía de firma de Windows (clave nueva o UID
+  añadido, subida, verificación, caché, copia de seguridad) y explica cómo
+  verificar commits firmados en otra máquina.
 - polybar: `launch.sh` cierra las barras por IPC (`polybar-msg cmd quit`,
   `enable-ipc` en cada barra) en vez de con `killall`, y espera como mucho
   5 s: una barra sin IPC que quede de una config anterior lo para con un
@@ -156,6 +169,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   comprobaciones viven ya solo en dotfiles-windows.
 - Iosevka: ya no la usa ninguna configuración y `bootstrap.sh` no la descarga.
 - i3lock-fancy e imagemagick: sustituidos por `dm-tool lock`.
+- 26 temas de rofi de terceros sin uso, que venían sin su licencia: solo queda
+  `monokai-soda`, y los temas propios de rofi en `/usr/share/rofi/themes/` se
+  cargan por su nombre.
 
 ## [1.0.0] - 2026-09-30
 

@@ -73,13 +73,27 @@ Notable changes to the project. The format follows
   naming).
 - VSCodium formats shell with shfmt and SQL with SQLTools, and reads
   `.editorconfig` (EditorConfig extension).
+- A README pair in each numbered folder: what each file is, where it is
+  linked, how to reload it and what not to touch. The root README links them
+  and adds a diagram of the setup, a reload table and how to keep another PC
+  up to date.
+- `bootstrap.sh` stops before changing anything on an architecture other
+  than x86_64, since Neovim and oh-my-posh are pinned to x86_64 builds.
 
 ### Changed
 
 - Code comments, script output, CI step and test names and commit messages
   are now English, following the new `docs/contributing/comments.md`; the
   text the desktop shows stays Spanish. `.claude/comments.json` tells the
-  shared check which files it cannot classify alone.
+  shared check which files it cannot classify alone, and `tools/check.sh`
+  fails on a Spanish comment. `install.sh --check` labels the links `ok`,
+  `MISSING`, `STALE` and `FOREIGN`.
+- `docs/getting-started` opens with a diagram of the steps, runs
+  `bootstrap.sh --dry-run` before installing and `install.sh --check` at the
+  end, and covers Parrot without VMware.
+- `docs/keys-and-secrets` follows the Windows signing guide (new key or added
+  UID, upload, verify, cache, backup) and explains how to verify commits signed
+  on another machine.
 - polybar: `launch.sh` closes the bars over IPC (`polybar-msg cmd quit`,
   `enable-ipc` on every bar) instead of `killall`, and waits at most 5 s: a
   bar without IPC left over from an older config stops it with a warning
@@ -157,6 +171,9 @@ Notable changes to the project. The format follows
 - Iosevka: no configuration uses it anymore and `bootstrap.sh` no longer
   downloads it.
 - i3lock-fancy and imagemagick: replaced by `dm-tool lock`.
+- 26 unused third-party rofi themes, shipped without their license: only
+  `monokai-soda` stays, and rofi's own themes in `/usr/share/rofi/themes/` load
+  by name.
 
 ## [1.0.0] - 2026-09-30
 
