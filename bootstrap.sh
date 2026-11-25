@@ -13,7 +13,6 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ==== PINNED VERSIONS ====
 # Everything that does not come from apt is downloaded at a fixed version and checked against the
 # SHA-256 kept here: a corrupt or tampered download stops the install. To update, change version
 # and hash together, taking the hash from the official release.
@@ -57,7 +56,7 @@ CLAUDE_LAYER_CLONE="$HOME/dotfiles-windows"
 # 60-apps/: what is installed changes far more often than how.
 APT_LIST="$DOTFILES_DIR/60-apps/apt.txt"
 
-# ==== HELPERS ====
+# Output in the same style as install.sh and uninstall.sh, so a full run reads as one.
 BOLD='\033[1m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -101,8 +100,7 @@ download_verified() {
   fi
 }
 
-# ==== STEPS ====
-
+# One function per step, run in order at the end of the file.
 check_prerequisites() {
   step "Prerequisites"
   if [ "$EUID" -eq 0 ]; then
@@ -408,7 +406,7 @@ print_next_steps() {
 EOF
 }
 
-# ==== RUN ====
+# Options are read before any step runs, so --dry-run reaches every one of them.
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
