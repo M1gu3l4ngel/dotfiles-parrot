@@ -75,13 +75,12 @@ die() {
 
 usage() {
   cat <<'EOF'
-Uso: ./bootstrap.sh [--dry-run]
+Usage: ./bootstrap.sh [--dry-run]
 
-  (sin opción)  instalación completa: apt, fuentes, Neovim, oh-my-posh, Node,
-                capa de Claude Code, enlaces, extensiones de VSCodium,
-                hardening y zsh
-  --dry-run     muestra qué haría cada paso, sin sudo, descargas ni cambios
-  -h, --help    esta ayuda
+  (no option)  full install: apt, fonts, Neovim, oh-my-posh, Node, Claude Code
+               layer, links, VSCodium extensions, hardening and zsh
+  --dry-run    shows what each step would do, without sudo, downloads or changes
+  -h, --help   this help
 EOF
   exit 0
 }
@@ -98,27 +97,27 @@ download_verified() {
   curl -fL --retry 3 --silent --show-error -o "$dest" "$url"
   if ! echo "$sha  $dest" | sha256sum --check --status; then
     rm -f "$dest"
-    die "SHA-256 incorrecto para $url (descarga corrupta o manipulada)"
+    die "Wrong SHA-256 for $url (corrupt or tampered download)"
   fi
 }
 
 # ==== STEPS ====
 
 check_prerequisites() {
-  step "Comprobaciones previas"
+  step "Prerequisites"
   if [ "$EUID" -eq 0 ]; then
-    die "Ejecútalo como tu usuario, no como root: ./bootstrap.sh (pedirá sudo)"
+    die "Run it as your user, not as root: ./bootstrap.sh (it asks for sudo)"
   fi
   # shellcheck source=/dev/null
   . /etc/os-release
   if [ "${ID:-}" != "parrot" ]; then
-    warn "Pensado para Parrot OS (detectado: ${ID:-desconocido}); anonsurf puede no existir"
+    warn "Meant for Parrot OS (found: ${ID:-unknown}); anonsurf may not exist"
   fi
   if [ "${XDG_SESSION_TYPE:-x11}" = "wayland" ]; then
-    warn "Sesión Wayland detectada: bspwm solo funciona en X11 (elige la sesión 'bspwm' al iniciar)"
+    warn "Wayland session found: bspwm works only on X11 (pick the 'bspwm' session at login)"
   fi
   if [ "$DRY_RUN" -eq 1 ]; then
-    ok "Usuario $USER (simulación: no se pide sudo)"
+    ok "User $USER (dry run: sudo is not asked for)"
     return
   fi
   # The password once, and sudo kept alive while the script runs, so a long step never stops to
@@ -129,12 +128,12 @@ check_prerequisites() {
     sleep 50
     kill -0 "$$" 2>/dev/null || exit
   done 2>/dev/null &
-  ok "Usuario $USER, sudo disponible"
+  ok "User $USER, sudo available"
 }
 
 install_apt_packages() {
-  step "Paquetes del sistema (apt)"
-  [ -f "$APT_LIST" ] || die "No existe la lista de paquetes: $APT_LIST"
+  step "System packages (apt)"
+  [ -f "$APT_LIST" ] || die "The package list does not exist: $APT_LIST"
   local packages=() line
   while IFS= read -r line; do
     line=${line%%#*}
@@ -156,33 +155,33 @@ install_apt_packages() {
     [ -n "${installed[$pkg]:-}" ] || missing+=("$pkg")
   done
   if [ "${#missing[@]}" -eq 0 ]; then
-    ok "Los ${#packages[@]} paquetes ya están instalados"
+    ok "All ${#packages[@]} packages are already installed"
     return
   fi
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Instalaría ${#missing[@]} paquetes: ${missing[*]}"
+    planned "Would install ${#missing[@]} packages: ${missing[*]}"
     return
   fi
-  echo "    Instalando ${#missing[@]} paquetes: ${missing[*]}"
+  echo "    Installing ${#missing[@]} packages: ${missing[*]}"
   sudo apt-get update -qq
   # One apt transaction for all of them: dependencies are resolved once.
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${missing[@]}"
-  ok "${#missing[@]} paquetes instalados"
+  ok "${#missing[@]} packages installed"
 }
 
 install_fonts() {
-  step "Fuentes Nerd Fonts $NERD_FONTS_VERSION"
+  step "Nerd Fonts $NERD_FONTS_VERSION"
   local base="$HOME/.local/share/fonts/NerdFonts" name dest archive changed=false
   for name in "${!FONT_SHA256[@]}"; do
     dest="$base/$name"
     # A .version file per family skips what is installed and reinstalls only when
     # NERD_FONTS_VERSION changes.
     if [ "$(cat "$dest/.version" 2>/dev/null)" = "$NERD_FONTS_VERSION" ]; then
-      ok "$name ya instalada"
+      ok "$name already installed"
       continue
     fi
     if [ "$DRY_RUN" -eq 1 ]; then
-      planned "Descargaría e instalaría $name en $base"
+      planned "Would download and install $name to $base"
       continue
     fi
     archive="$TMP_DIR/$name.tar.xz"
@@ -193,7 +192,7 @@ install_fonts() {
     # Only the family in use plus its license: OFL and MIT require shipping it with the font.
     tar -xJf "$archive" -C "$dest" --wildcards "${FONT_FILES[$name]}" 'LICENSE*'
     echo "$NERD_FONTS_VERSION" >"$dest/.version"
-    ok "$name instalada ($(find "$dest" -name '*.ttf' | wc -l) archivos)"
+    ok "$name installed ($(find "$dest" -name '*.ttf' | wc -l) files)"
     changed=true
   done
   if [ "$changed" = true ]; then
@@ -205,26 +204,26 @@ install_neovim() {
   step "Neovim $NVIM_VERSION"
   local prefix=/opt/nvim-linux-x86_64 archive="$TMP_DIR/nvim.tar.gz"
   if "$prefix/bin/nvim" --version 2>/dev/null | head -1 | grep -q "NVIM $NVIM_VERSION$"; then
-    ok "Ya instalado"
+    ok "Already installed"
   elif [ "$DRY_RUN" -eq 1 ]; then
-    planned "Descargaría Neovim $NVIM_VERSION y lo instalaría en $prefix (sudo)"
+    planned "Would download Neovim $NVIM_VERSION and install it to $prefix (sudo)"
   else
     download_verified \
       "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux-x86_64.tar.gz" \
       "$archive" "$NVIM_SHA256"
     sudo rm -rf "$prefix"
     sudo tar -xzf "$archive" -C /opt
-    ok "Instalado en $prefix"
+    ok "Installed to $prefix"
   fi
   # A link in /usr/local/bin puts nvim on the standard PATH without touching the shell's.
   if [ "$(readlink /usr/local/bin/nvim 2>/dev/null)" = "$prefix/bin/nvim" ]; then
     return
   fi
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Enlazaría /usr/local/bin/nvim (sudo)"
+    planned "Would link /usr/local/bin/nvim (sudo)"
   else
     sudo ln -sfn "$prefix/bin/nvim" /usr/local/bin/nvim
-    ok "Enlazado /usr/local/bin/nvim"
+    ok "Linked /usr/local/bin/nvim"
   fi
 }
 
@@ -232,18 +231,18 @@ install_oh_my_posh() {
   step "oh-my-posh $OMP_VERSION"
   local bin="$HOME/.local/bin/oh-my-posh"
   if [ "$("$bin" version 2>/dev/null)" = "${OMP_VERSION#v}" ]; then
-    ok "Ya instalado"
+    ok "Already installed"
     return
   fi
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Descargaría oh-my-posh $OMP_VERSION en $bin"
+    planned "Would download oh-my-posh $OMP_VERSION to $bin"
     return
   fi
   download_verified \
     "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/$OMP_VERSION/posh-linux-amd64" \
     "$TMP_DIR/oh-my-posh" "$OMP_SHA256"
   install -D -m 0755 "$TMP_DIR/oh-my-posh" "$bin"
-  ok "Instalado en $bin"
+  ok "Installed to $bin"
 }
 
 install_node_toolchain() {
@@ -251,25 +250,25 @@ install_node_toolchain() {
   export NVM_DIR="$HOME/.nvm"
   if [ "$DRY_RUN" -eq 1 ]; then
     if [ ! -d "$NVM_DIR/.git" ]; then
-      planned "Clonaría nvm $NVM_VERSION en $NVM_DIR, e instalaría Node $NODE_MAJOR, pnpm y Claude Code"
+      planned "Would clone nvm $NVM_VERSION to $NVM_DIR and install Node $NODE_MAJOR, pnpm and Claude Code"
       return
     fi
     if [ "$(git -C "$NVM_DIR" describe --tags 2>/dev/null)" = "$NVM_VERSION" ]; then
       ok "nvm $NVM_VERSION"
     else
-      planned "Cambiaría nvm a $NVM_VERSION"
+      planned "Would switch nvm to $NVM_VERSION"
     fi
     if compgen -G "$NVM_DIR/versions/node/v$NODE_MAJOR.*" >/dev/null; then
       ok "Node $NODE_MAJOR"
     else
-      planned "Instalaría Node $NODE_MAJOR"
+      planned "Would install Node $NODE_MAJOR"
     fi
     local tool
     for tool in pnpm claude; do
       if compgen -G "$NVM_DIR/versions/node/v$NODE_MAJOR.*/bin/$tool" >/dev/null; then
         ok "$tool"
       else
-        planned "Instalaría $tool con npm, en la versión fijada"
+        planned "Would install $tool with npm, at the pinned version"
       fi
     done
     return
@@ -285,10 +284,10 @@ install_node_toolchain() {
   set +u
   # shellcheck source=/dev/null
   . "$NVM_DIR/nvm.sh"
-  # nvm writes its progress in English to stderr: dropped, with our own error and the command to
-  # retry by hand if it fails.
+  # nvm's progress goes to stderr and is dropped, with our own error and the command to retry by
+  # hand if it fails.
   nvm install "$NODE_MAJOR" >/dev/null 2>&1 ||
-    die "No se pudo instalar Node $NODE_MAJOR. Prueba a mano: nvm install $NODE_MAJOR"
+    die "Could not install Node $NODE_MAJOR. Try by hand: nvm install $NODE_MAJOR"
   nvm alias default "$NODE_MAJOR" >/dev/null
   set -u
   ok "Node $(node --version)"
@@ -300,21 +299,21 @@ install_node_toolchain() {
 
 # Only cloned when missing: an existing clone is the user's to pull, and may hold work in progress.
 clone_claude_layer() {
-  step "Capa de Claude Code (dotfiles-windows)"
+  step "Claude Code layer (dotfiles-windows)"
   if [ -d "$CLAUDE_LAYER_CLONE/.git" ]; then
-    ok "Ya clonada en ~/dotfiles-windows"
+    ok "Already cloned to ~/dotfiles-windows"
   elif [ -e "$CLAUDE_LAYER_CLONE" ]; then
-    die "Existe ~/dotfiles-windows y no es un clon de git: muévelo y vuelve a ejecutar"
+    die "There is a ~/dotfiles-windows that is not a git clone: move it and run again"
   elif [ "$DRY_RUN" -eq 1 ]; then
-    planned "Clonaría $CLAUDE_LAYER_REPO en ~/dotfiles-windows"
+    planned "Would clone $CLAUDE_LAYER_REPO to ~/dotfiles-windows"
   else
     git clone --quiet "$CLAUDE_LAYER_REPO" "$CLAUDE_LAYER_CLONE"
-    ok "Clonada en ~/dotfiles-windows"
+    ok "Cloned to ~/dotfiles-windows"
   fi
 }
 
 link_dotfiles() {
-  step "Enlaces de configuración (install.sh)"
+  step "Configuration links (install.sh)"
   if [ "$DRY_RUN" -eq 1 ]; then
     "$DOTFILES_DIR/install.sh" --dry-run
   else
@@ -323,10 +322,10 @@ link_dotfiles() {
 }
 
 install_vscodium_extensions() {
-  step "Extensiones de VSCodium"
+  step "VSCodium extensions"
   local list="$DOTFILES_DIR/30-editor/vscodium/extensions.txt"
   if ! command -v codium >/dev/null; then
-    warn "VSCodium no está instalado; se omiten las extensiones"
+    warn "VSCodium is not installed; extensions skipped"
     return
   fi
   # One query for the installed ones; codium lists them in lower case.
@@ -344,68 +343,68 @@ install_vscodium_extensions() {
     [ -n "${installed[${id,,}]:-}" ] || args+=(--install-extension "$id")
   done <"$list"
   if [ "${#args[@]}" -eq 0 ]; then
-    ok "Las ${#wanted[@]} extensiones ya están instaladas"
+    ok "All ${#wanted[@]} extensions are already installed"
     return
   fi
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Instalaría $((${#args[@]} / 2)) extensiones desde Open VSX"
+    planned "Would install $((${#args[@]} / 2)) extensions from Open VSX"
     return
   fi
   # All in one call, so VSCodium starts once and not once per extension. Its CLI prints a Node
   # deprecation notice (internal noise, not a failure) that is filtered; other errors still show.
   codium "${args[@]}" >/dev/null 2> >(grep -v -e DeprecationWarning -e trace-deprecation >&2)
-  ok "$((${#args[@]} / 2)) extensiones instaladas desde Open VSX"
+  ok "$((${#args[@]} / 2)) extensions installed from Open VSX"
 }
 
 harden_system() {
-  step "Hardening del sistema (70-system/setup.sh)"
+  step "System hardening (70-system/setup.sh)"
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Ejecutaría sudo 70-system/setup.sh (idempotente: solo aplica lo que falte)"
+    planned "Would run sudo 70-system/setup.sh (idempotent: applies only what is missing)"
     return
   fi
   sudo "$DOTFILES_DIR/70-system/setup.sh"
 }
 
 set_default_shell() {
-  step "Shell por defecto"
+  step "Default shell"
   local zsh_path
   zsh_path=$(command -v zsh || echo /usr/bin/zsh)
   if [ "$(getent passwd "$USER" | cut -d: -f7)" = "$zsh_path" ]; then
-    ok "zsh ya es la shell por defecto"
+    ok "zsh is already the default shell"
   elif [ "$DRY_RUN" -eq 1 ]; then
-    planned "Cambiaría la shell de $USER a $zsh_path (sudo)"
+    planned "Would change $USER's shell to $zsh_path (sudo)"
   else
     sudo chsh -s "$zsh_path" "$USER"
-    ok "zsh configurada (efectivo al volver a iniciar sesión)"
+    ok "zsh set (takes effect at the next login)"
   fi
 }
 
 print_next_steps() {
   if [ "$DRY_RUN" -eq 1 ]; then
-    step "Simulación terminada: no se cambió nada. Para aplicarlo: ./bootstrap.sh"
+    step "Dry run finished: nothing changed. To apply it: ./bootstrap.sh"
     return
   fi
-  step "Listo. Pasos manuales que no se automatizan (implican secretos)"
+  step "Done. Manual steps left out on purpose (they involve secrets)"
   cat <<'EOF'
-    1. Reinicia y en la pantalla de login elige la sesión "bspwm" (X11).
-       En VMware: activa "Accelerate 3D graphics" en VM Settings -> Display.
+    1. Reboot and pick the "bspwm" session (X11) on the login screen.
+       On VMware: turn on "Accelerate 3D graphics" in VM Settings -> Display.
 
-    2. Clave SSH (autenticación en GitHub):
-         ssh-keygen -t ed25519 -C "<usuario>@<maquina>"
-       Sube ~/.ssh/id_ed25519.pub a GitHub -> Settings -> SSH and GPG keys.
-       Guarda la passphrase en tu lugar seguro.
+    2. SSH key (GitHub authentication):
+         ssh-keygen -t ed25519 -C "<user>@<machine>"
+       Upload ~/.ssh/id_ed25519.pub to GitHub -> Settings -> SSH and GPG keys.
+       Keep the passphrase somewhere safe.
 
-    3. Clave GPG (firma de commits y cifrado de pass):
-         gpg --quick-generate-key "<nombre> <tu-noreply>@users.noreply.github.com" default default 2y
+    3. GPG key (commit signing and pass encryption):
+         gpg --quick-generate-key "<name> <your-noreply>@users.noreply.github.com" default default 2y
          git config --file ~/.gitconfig.local user.signingkey <fingerprint>
-       El nombre, el email noreply y la firma ya vienen de 15-git/gitconfig.
-       Nunca git config --global: escribiría en el repo a través del enlace.
-       Guarda la passphrase y un backup de la clave privada en tu lugar seguro.
+       The name, the noreply email and signing already come from 15-git/gitconfig.
+       Never git config --global: it would write into the repo through the link.
+       Keep the passphrase and a backup of the private key somewhere safe.
 
-    4. pass (gestor de secretos):
+    4. pass (secrets manager):
          pass init <fingerprint> && pass git init
 
-    Detalle de cada paso en README.es.md (en inglés: README.md).
+    Details of each step in README.md (in Spanish: README.es.md).
 EOF
 }
 
@@ -414,7 +413,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     -h | --help) usage ;;
-    *) die "Opción desconocida: $arg (ver --help)" ;;
+    *) die "Unknown option: $arg (see --help)" ;;
   esac
 done
 

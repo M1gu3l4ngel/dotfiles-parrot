@@ -31,10 +31,10 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Instalación.
 
-- [ ] [Esta PC] `./install.sh --check` desde `~/dotfiles` lista los 29 enlaces en `ok`, los hooks y las reglas de Claude, y acaba en «Todo instalado»
-- [ ] [Esta PC] `./install.sh --dry-run` dice «0 cambios por hacer» sin tocar nada
-- [ ] [Esta PC] `./install.sh` dice «Nada que cambiar» y el escritorio, zsh y Claude Code siguen igual
-- [ ] [Esta PC] `./uninstall.sh --dry-run` lista 30 enlaces y las copias que restauraría, sin tocar nada
+- [ ] [Esta PC] `./install.sh --check` desde `~/dotfiles` lista los 30 enlaces en `ok`, los hooks y las reglas de Claude, y acaba en «All installed»
+- [ ] [Esta PC] `./install.sh --dry-run` dice «0 changes to make» sin tocar nada
+- [ ] [Esta PC] `./install.sh` dice «Nothing to change» y el escritorio, zsh y Claude Code siguen igual
+- [ ] [Esta PC] `./uninstall.sh --dry-run` lista 31 enlaces y las copias que restauraría, sin tocar nada
 - [ ] [PC nueva] `./install.sh` sin `~/dotfiles-windows` avisa de que omite la capa de Claude Code y enlaza el resto
 - [ ] [PC nueva] Con `~/dotfiles-windows` clonado y sin `~/.claude/settings.json`, `./install.sh` lo crea con los hooks, las reglas y la barra de estado
 
@@ -42,7 +42,7 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Instalación.
 
-- [ ] [Esta PC] El próximo `git pull` con cambios en `~/dotfiles` termina con la salida de `install.sh` («Nada que cambiar» o los enlaces nuevos)
+- [ ] [Esta PC] El próximo `git pull` con cambios en `~/dotfiles` termina con la salida de `install.sh` («Nothing to change» o los enlaces nuevos)
 - [ ] [PC nueva] Tras `./install.sh`, `git -C ~/dotfiles config --get core.hooksPath` devuelve `githooks`
 
 ## Modo de prueba en bootstrap.sh y clon de dotfiles-windows
@@ -71,7 +71,7 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Repositorio.
 
-- [ ] Tras el push, el CI de GitHub pasa en verde, con los pasos en inglés y las líneas «Formato del panel de tareas» y «Tests de install.sh y uninstall.sh» en `✓`
+- [ ] Tras el push, el CI de GitHub pasa en verde, con los pasos en inglés y las líneas «panel/check» y «test-install» en `✓`
 - [ ] Al mes del push, Dependabot abre un único PR `chore(ci)` con las acciones que tengan versión nueva (o ninguno si están al día)
 
 ## Cabecera del README con los logos de Parrot

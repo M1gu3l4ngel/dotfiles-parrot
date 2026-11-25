@@ -1,26 +1,22 @@
 #!/usr/bin/env bash
-# tools/check.sh
-# Comprobaciones de calidad y seguridad del repo. Las mismas que ejecuta el CI
-# (.github/workflows/ci.yml) en cada push, para poder correrlas en local antes
-# de commitear:
+# The repo's quality and security checks, the same ones CI (.github/workflows/ci.yml) runs on every
+# push, to run locally before a commit: ./tools/check.sh
 #
-#   ./tools/check.sh
+# What it checks:
+#   1. Syntax of every shell script (bash -n, sh -n)
+#   2. shellcheck on those scripts (unquoted variables, bashisms in sh such as the $UID that broke
+#      launch.sh) and shfmt formatting
+#   3. .zshrc syntax (zsh -n)
+#   4. Syntax of Neovim's Lua config
+#   5. Valid JSON (oh-my-posh theme, lazy-lock, VSCodium)
+#   6. The sudoers rule and the XKB keymap (visudo and xkbcomp)
+#   7. Public repo hygiene: no font binaries, /home/<user> paths or CRLF; bilingual docs in sync and
+#      the panel's format (dotfiles-windows tools); install.sh and uninstall.sh tests
+#      (tools/test-install.sh)
+#   8. Secrets in the whole history with gitleaks (if installed)
 #
-# Qué comprueba:
-#   1. Sintaxis de todos los scripts de shell (bash -n / sh -n)
-#   2. shellcheck sobre esos scripts (bugs típicos: variables sin comillas,
-#      bashismos en sh, como el $UID que rompía launch.sh) y formato con shfmt
-#   3. Sintaxis de .zshrc (zsh -n)
-#   4. Sintaxis de la config Lua de Neovim
-#   5. JSON válido (tema de oh-my-posh, lazy-lock)
-#   6. sudoers y keymap XKB (se validan con visudo y xkbcomp)
-#   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>,
-#      documentación bilingüe sincronizada y formato del panel (herramientas de
-#      dotfiles-windows), y tests de install.sh/uninstall.sh (tools/test-install.sh)
-#   8. Secretos en todo el historial con gitleaks (si está instalado)
-#
-# Una herramienta que falte se avisa y se omite (en local); el CI instala todas.
-# Sale con código distinto de 0 si alguna comprobación falla.
+# A missing tool is reported and skipped locally; CI installs all of them. Exits non-zero if any
+# check fails.
 
 set -uo pipefail
 
@@ -40,73 +36,67 @@ fail() {
 }
 have() { command -v "$1" >/dev/null; }
 
-# ----- ARCHIVOS A REVISAR -----
-# Scripts de shell detectados por su shebang (no por extensión: bspwmrc y los
-# scripts de polybar no tienen .sh). zsh se excluye: shellcheck no lo soporta.
+# Shell scripts found by their shebang, not their extension: bspwmrc and polybar's scripts have no
+# .sh. zsh is left out: shellcheck does not support it.
 SH_SCRIPTS=()
 BASH_SCRIPTS=()
 while IFS= read -r file; do
-  # `read` en vez de `$(head -n1 ...)`: con archivos binarios (imágenes,
-  # fuentes) la sustitución de comandos avisa de bytes nulos.
+  # `read` rather than `$(head -n1 ...)`: on binary files (images, fonts) command substitution warns
+  # about null bytes.
   first=""
   IFS= read -r first <"$file" 2>/dev/null
   case "$first" in
     '#!'*bash*) BASH_SCRIPTS+=("$file") ;;
-    # dash es el /bin/sh de Debian: POSIX, se valida igual que sh.
+    # dash is Debian's /bin/sh: POSIX, checked like sh.
     '#!'*/sh | '#!'*'env sh' | '#!'*dash*) SH_SCRIPTS+=("$file") ;;
-    *) ;; # Resto de archivos: no son scripts de shell.
+    *) ;;
   esac
 done < <(git ls-files)
 
-# ----- 1. SINTAXIS DE SHELL -----
 errors=0
 for f in "${BASH_SCRIPTS[@]}"; do
   if ! bash -n "$f"; then
-    fail "sintaxis bash: $f"
+    fail "bash syntax: $f"
     errors=1
   fi
 done
 for f in "${SH_SCRIPTS[@]}"; do
   if ! sh -n "$f"; then
-    fail "sintaxis sh: $f"
+    fail "sh syntax: $f"
     errors=1
   fi
 done
-[ "$errors" -eq 0 ] && pass "Sintaxis de $((${#BASH_SCRIPTS[@]} + ${#SH_SCRIPTS[@]})) scripts de shell"
+[ "$errors" -eq 0 ] && pass "Syntax of $((${#BASH_SCRIPTS[@]} + ${#SH_SCRIPTS[@]})) shell scripts"
 
-# ----- 2. SHELLCHECK -----
 if have shellcheck; then
   if shellcheck "${BASH_SCRIPTS[@]}" "${SH_SCRIPTS[@]}"; then
-    pass "shellcheck sin avisos"
+    pass "shellcheck: no warnings"
   else
-    fail "shellcheck encontró problemas (detalle arriba)"
+    fail "shellcheck found problems (details above)"
   fi
 else
-  skip "shellcheck no instalado (apt install shellcheck)"
+  skip "shellcheck not installed (apt install shellcheck)"
 fi
 
-# ----- 2b. FORMATO (SHFMT) -----
-# Mismas opciones que usa Neovim al formatear (30-editor/nvim/.../configs/conform.lua):
-# 2 espacios e indentación de los `case`. -d muestra la diferencia sin tocar
-# nada; para aplicar el formato: shfmt -i 2 -ci -w <archivo>.
+# The same options Neovim formats with (30-editor/nvim/.../configs/conform.lua): 2 spaces and
+# indented `case` branches. -d shows the difference without touching anything; to apply it:
+# shfmt -i 2 -ci -w <file>.
 if have shfmt; then
   if shfmt -i 2 -ci -d "${BASH_SCRIPTS[@]}" "${SH_SCRIPTS[@]}"; then
-    pass "Formato shfmt correcto"
+    pass "shfmt formatting"
   else
-    fail "Scripts sin formatear (diferencias arriba; aplicar con shfmt -i 2 -ci -w)"
+    fail "Unformatted scripts (differences above; apply with shfmt -i 2 -ci -w)"
   fi
 else
-  skip "shfmt no instalado (apt install shfmt)"
+  skip "shfmt not installed (apt install shfmt)"
 fi
 
-# ----- 3. ZSH -----
 if have zsh; then
-  if zsh -n 10-shell/zsh/.zshrc; then pass "Sintaxis de .zshrc"; else fail "sintaxis zsh: 10-shell/zsh/.zshrc"; fi
+  if zsh -n 10-shell/zsh/.zshrc; then pass ".zshrc syntax"; else fail "zsh syntax: 10-shell/zsh/.zshrc"; fi
 else
-  skip "zsh no instalado"
+  skip "zsh not installed"
 fi
 
-# ----- 4. LUA (NEOVIM) -----
 mapfile -t LUA_FILES < <(git ls-files '*.lua')
 LUAC=""
 for c in luac5.1 luac; do have "$c" && {
@@ -116,27 +106,26 @@ for c in luac5.1 luac; do have "$c" && {
 errors=0
 if [ -n "$LUAC" ]; then
   for f in "${LUA_FILES[@]}"; do "$LUAC" -p "$f" || {
-    fail "sintaxis Lua: $f"
+    fail "Lua syntax: $f"
     errors=1
   }; done
-  [ "$errors" -eq 0 ] && pass "Sintaxis de ${#LUA_FILES[@]} archivos Lua ($LUAC)"
+  [ "$errors" -eq 0 ] && pass "Syntax of ${#LUA_FILES[@]} Lua files ($LUAC)"
 elif have nvim; then
-  # Sin luac, el propio Neovim (LuaJIT) compila cada archivo sin ejecutarlo.
+  # Without luac, Neovim itself (LuaJIT) compiles each file without running it.
   for f in "${LUA_FILES[@]}"; do
     out=$(nvim --headless -u NONE -c "lua local ok, err = loadfile('$f'); if not ok then io.stderr:write(err) end" -c 'qa!' 2>&1)
     [ -n "$out" ] && {
-      fail "sintaxis Lua: $out"
+      fail "Lua syntax: $out"
       errors=1
     }
   done
-  [ "$errors" -eq 0 ] && pass "Sintaxis de ${#LUA_FILES[@]} archivos Lua (nvim)"
+  [ "$errors" -eq 0 ] && pass "Syntax of ${#LUA_FILES[@]} Lua files (nvim)"
 else
-  skip "ni luac ni nvim instalados: se omite Lua"
+  skip "neither luac nor nvim installed: Lua skipped"
 fi
 
-# ----- 5. JSON -----
-# Los ajustes de VSCodium son JSONC (admiten comentarios //): se quitan las
-# líneas de comentario antes de validarlos como JSON.
+# VSCodium's settings are JSONC (they allow // comments): comment lines are removed before parsing
+# them as JSON.
 STRIP_JSONC='import json, re, sys; json.loads(re.sub(r"(?m)^\s*//.*$", "", open(sys.argv[1]).read()))'
 errors=0
 while IFS= read -r f; do
@@ -145,43 +134,40 @@ while IFS= read -r f; do
   else
     python3 -m json.tool "$f" >/dev/null 2>&1
   fi || {
-    fail "JSON inválido: $f"
+    fail "Invalid JSON: $f"
     errors=1
   }
 done < <(git ls-files '*.json')
-[ "$errors" -eq 0 ] && pass "JSON válido"
+[ "$errors" -eq 0 ] && pass "Valid JSON"
 
-# ----- 6. SUDOERS Y XKB -----
 if have visudo || [ -x /usr/sbin/visudo ]; then
   tmp=$(mktemp)
   sed 's/__USER__/root/g' 70-system/sudoers.d/anon_toggle >"$tmp"
-  if PATH="$PATH:/usr/sbin" visudo -c -q -f "$tmp"; then pass "Regla sudoers válida"; else fail "sudoers inválido: 70-system/sudoers.d/anon_toggle"; fi
+  if PATH="$PATH:/usr/sbin" visudo -c -q -f "$tmp"; then pass "Valid sudoers rule"; else fail "Invalid sudoers: 70-system/sudoers.d/anon_toggle"; fi
   rm -f "$tmp"
 else
-  skip "visudo no disponible"
+  skip "visudo not available"
 fi
 if have xkbcomp; then
   tmp=$(mktemp)
   if xkbcomp -w 0 -I"25-desktop/xkb/.config/xkb" 25-desktop/xkb/.config/xkb/keymap.xkb "$tmp" 2>/dev/null; then
-    pass "Keymap XKB compila"
+    pass "XKB keymap compiles"
   else
-    fail "keymap XKB no compila: 25-desktop/xkb/.config/xkb/keymap.xkb"
+    fail "XKB keymap does not compile: 25-desktop/xkb/.config/xkb/keymap.xkb"
   fi
   rm -f "$tmp"
 else
-  skip "xkbcomp no instalado (apt install x11-xkb-utils)"
+  skip "xkbcomp not installed (apt install x11-xkb-utils)"
 fi
 
-# ----- 7. HIGIENE DEL REPO PÚBLICO -----
-# Fuentes: se instalan con bootstrap.sh; versionarlas infla el repo y trae
-# problemas de licencia.
+# Fonts are installed by bootstrap.sh; versioning them bloats the repo and brings license problems.
 fonts=$(git ls-files '*.ttf' '*.otf')
-if [ -z "$fonts" ]; then pass "Sin binarios de fuentes versionados"; else fail "Fuentes versionadas: $fonts"; fi
-# Rutas absolutas a un home concreto: filtran el nombre de usuario y rompen el
-# repo en otras máquinas (usar $HOME o ~).
+if [ -z "$fonts" ]; then pass "No versioned font binaries"; else fail "Versioned fonts: $fonts"; fi
+# Absolute paths to a given home leak the user name and break the repo on other machines (use $HOME
+# or ~).
 paths=$(git grep -nIE '/home/[a-z_][a-z0-9_-]*/' || true)
-if [ -z "$paths" ]; then pass "Sin rutas /home/<usuario> hardcodeadas"; else
-  fail "Rutas de home hardcodeadas:"
+if [ -z "$paths" ]; then pass "No hardcoded /home/<user> paths"; else
+  fail "Hardcoded home paths:"
   echo "$paths"
 fi
 # Both the index and the working tree: .gitattributes fixes new checkouts, but a file committed
@@ -192,7 +178,6 @@ if [ -z "$crlf" ]; then pass "LF line endings"; else
   echo "$crlf"
 fi
 
-# ----- 7b. HERRAMIENTAS DE LA CAPA DE CLAUDE CODE -----
 # The bilingual docs and panel checkers are the ones dotfiles-windows shares with every repo: its
 # clone next to this one, or CLAUDE_LAYER_DIR in CI. The install tests need the layer too.
 LAYER_DIR="${CLAUDE_LAYER_DIR:-$HOME/dotfiles-windows/50-claude}"
@@ -203,7 +188,7 @@ layer_check() {
   local label=$1 out
   shift
   if ! have node || [ ! -f "$LAYER_DIR/links.json" ]; then
-    if [ -n "${CI:-}" ]; then fail "$label: falta node o $LAYER_DIR"; else skip "$label: falta node o $LAYER_DIR"; fi
+    if [ -n "${CI:-}" ]; then fail "$label: node or $LAYER_DIR is missing"; else skip "$label: node or $LAYER_DIR is missing"; fi
   elif out=$("$@" 2>&1); then
     pass "$label: ${out##*$'\n'}"
   else
@@ -214,28 +199,27 @@ layer_check() {
 
 # Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
 # nvim's README is NvChad's, protected and English only.
-layer_check "Documentación bilingüe" \
+layer_check "check-docs" \
   node "$LAYER_DIR/tools/check-docs.mjs" . --exclude 30-editor/nvim/.config/nvim/README.md
 # docs/tasks.md and docs/backlog.md keep the format the task panel reads.
-layer_check "Formato del panel de tareas" node "$LAYER_DIR/panel/check.mjs" .
+layer_check "panel/check" node "$LAYER_DIR/panel/check.mjs" .
 # install.sh and uninstall.sh against a throwaway HOME; the real one is never touched.
-layer_check "Tests de install.sh y uninstall.sh" env CLAUDE_LAYER_DIR="$LAYER_DIR" tools/test-install.sh
+layer_check "test-install" env CLAUDE_LAYER_DIR="$LAYER_DIR" tools/test-install.sh
 
-# ----- 8. SECRETOS -----
 if have gitleaks; then
   if gitleaks git --no-banner --redact --log-level warn .; then
-    pass "gitleaks: sin secretos en todo el historial"
+    pass "gitleaks: no secrets in the whole history"
   else
-    fail "gitleaks encontró posibles secretos (detalle arriba)"
+    fail "gitleaks found possible secrets (details above)"
   fi
 else
-  skip "gitleaks no instalado (el CI lo ejecuta en cada push)"
+  skip "gitleaks not installed (CI runs it on every push)"
 fi
 
 echo
 if [ "$FAILED" -eq 0 ]; then
-  echo -e "${GREEN}Todas las comprobaciones pasaron.${NC}"
+  echo -e "${GREEN}All checks passed.${NC}"
 else
-  echo -e "${RED}Hay comprobaciones fallidas.${NC}"
+  echo -e "${RED}Some checks failed.${NC}"
 fi
 exit "$FAILED"

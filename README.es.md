@@ -105,8 +105,8 @@ Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
 ```
 
 Para ver antes qué cambiaría, sin tocar nada, ejecútalo con `--dry-run`. Con
-`--check` lista el estado de cada enlace (`ok`, `FALTA`, `RUTA VIEJA` a una
-ruta vieja del repo, `AJENO` un archivo que no es del repo) y de
+`--check` lista el estado de cada enlace (`ok`, `MISSING` si falta, `STALE` si
+apunta a una ruta vieja del repo, `FOREIGN` si es un archivo ajeno al repo) y de
 `~/.claude/settings.json`, y sale con 1 si algo no está bien.
 
 `install.sh` activa además el hook `githooks/post-merge` (`core.hooksPath`):

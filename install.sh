@@ -28,15 +28,14 @@ short() { echo "${1/#"$HOME"/\~}"; }
 
 usage() {
   cat <<'EOF'
-Uso: ./install.sh [--dry-run | --check]
+Usage: ./install.sh [--dry-run | --check]
 
-  (sin opción)  enlaza lo que falta, fusiona ~/.claude/settings.json y aplica
-                los ajustes del escritorio
-  --dry-run     muestra qué enlazaría, respaldaría, rehará o ajustaría, sin
-                tocar nada
-  --check       informa del estado de cada enlace y de ~/.claude/settings.json;
-                sale con 1 si algo no está bien
-  -h, --help    esta ayuda
+  (no option)  links what is missing, merges ~/.claude/settings.json and applies
+               the desktop settings
+  --dry-run    shows what it would link, back up, redo or set, changing nothing
+  --check      reports the state of each link and of ~/.claude/settings.json;
+               exits with 1 if something is wrong
+  -h, --help   this help
 EOF
   exit 0
 }
@@ -47,22 +46,22 @@ for arg in "$@"; do
     --dry-run) MODE=dry-run ;;
     --check) MODE=check ;;
     -h | --help) usage ;;
-    *) die "Opción desconocida: $arg (ver --help)" ;;
+    *) die "Unknown option: $arg (see --help)" ;;
   esac
 done
 
 # Copied out of the repo, the sources do not exist: fail with a clear message instead of making
 # broken links.
 if [ ! -f "$DOTFILES_DIR/lib/links.sh" ]; then
-  die "install.sh debe ejecutarse dentro del repo (no existe $DOTFILES_DIR/lib/links.sh)"
+  die "install.sh must run inside the repo ($DOTFILES_DIR/lib/links.sh does not exist)"
 fi
 # shellcheck source=lib/links.sh
 . "$DOTFILES_DIR/lib/links.sh"
 LAYER=yes
 if ! add_claude_layer_links; then
   LAYER=no
-  warn "Capa de Claude Code omitida: falta $(short "$CLAUDE_LAYER_DIR")/links.json o node"
-  warn "Clónala con: git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git ~/dotfiles-windows"
+  warn "Claude Code layer skipped: $(short "$CLAUDE_LAYER_DIR")/links.json or node is missing"
+  warn "Clone it with: git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git ~/dotfiles-windows"
 fi
 SETTINGS_TOOL="$CLAUDE_LAYER_DIR/tools/install-settings.mjs"
 
@@ -76,11 +75,11 @@ change() {
   local what=$1
   shift
   if [ "$MODE" = dry-run ]; then
-    planned "Pendiente: $what"
+    planned "Pending: $what"
   elif "$@" >/dev/null 2>&1; then
     ok "$what"
   else
-    warn "No se pudo: $what"
+    warn "Could not apply: $what"
     return 0
   fi
   CHANGED=$((CHANGED + 1))
@@ -92,7 +91,7 @@ change() {
 create_symlink() {
   local source=$1 target=$2 state backup=""
   if [ ! -e "$source" ]; then
-    warn "No existe en el repo, se omite: $(short "$source")"
+    warn "Missing from the repo, skipped: $(short "$source")"
     return 0
   fi
   state=$(link_state "$source" "$target")
@@ -109,20 +108,20 @@ create_symlink() {
   fi
   if [ "$MODE" = dry-run ]; then
     case "$state" in
-      missing) planned "Enlazaría: $(short "$target")" ;;
-      stale) planned "Rehará el enlace a una ruta vieja: $(short "$target") (era $(short "$(readlink -- "$target")"))" ;;
-      foreign) planned "Respaldaría $(short "$target") en $(short "$backup") y lo enlazaría" ;;
+      missing) planned "Would link: $(short "$target")" ;;
+      stale) planned "Would redo a link to an old path: $(short "$target") (was $(short "$(readlink -- "$target")"))" ;;
+      foreign) planned "Would back up $(short "$target") to $(short "$backup") and link it" ;;
     esac
     return 0
   fi
   case "$state" in
     stale)
       # No trailing slash: rm removes the link itself, never what a folder link points to.
-      warn "Enlace a una ruta vieja, se rehace: $(short "$target") (era $(short "$(readlink -- "$target")"))"
+      warn "Link to an old path, redone: $(short "$target") (was $(short "$(readlink -- "$target")"))"
       rm -- "$target"
       ;;
     foreign)
-      warn "Copia de seguridad: $(short "$target") -> $(short "$backup")"
+      warn "Backup: $(short "$target") -> $(short "$backup")"
       mv -- "$target" "$backup"
       ;;
   esac
@@ -130,52 +129,52 @@ create_symlink() {
   if ! ln -s -- "$source" "$target"; then
     if [ -n "$backup" ]; then
       mv -- "$backup" "$target"
-      warn "Restaurado el original: $(short "$target")"
+      warn "Original restored: $(short "$target")"
     fi
-    die "No se pudo crear el enlace: $(short "$target")"
+    die "Could not create the link: $(short "$target")"
   fi
-  ok "Enlazado: $(short "$target")"
+  ok "Linked: $(short "$target")"
 }
 
 # --check: the same states an install would act on, changing nothing.
 check_installation() {
   local link state bad=0
-  local -A labels=([ok]="ok" [missing]="FALTA" [stale]="RUTA VIEJA" [foreign]="AJENO")
+  local -A labels=([ok]="ok" [missing]="MISSING" [stale]="STALE" [foreign]="FOREIGN")
   for link in "${LINKS[@]}"; do
     state=$(link_state "${link%%|*}" "${link#*|}")
     [ "$state" = ok ] || bad=$((bad + 1))
     printf '  %-11s %s\n' "${labels[$state]}" "$(short "${link#*|}")"
   done
   if [ "$(git -C "$DOTFILES_DIR" config --get core.hooksPath)" = githooks ]; then
-    printf '  %-11s %s\n' ok "git post-merge activo"
+    printf '  %-11s %s\n' ok "git post-merge on"
   else
-    printf '  %-11s %s\n' FALTA "git post-merge (core.hooksPath)"
+    printf '  %-11s %s\n' MISSING "git post-merge (core.hooksPath)"
     bad=$((bad + 1))
   fi
   if [ "$LAYER" = yes ]; then
     node "$SETTINGS_TOOL" --check || bad=$((bad + 1))
   else
-    printf '  %-11s %s\n' FALTA "Capa de Claude Code ($(short "$CLAUDE_LAYER_DIR"))"
+    printf '  %-11s %s\n' MISSING "Claude Code layer ($(short "$CLAUDE_LAYER_DIR"))"
     bad=$((bad + 1))
   fi
   echo
   if [ "$bad" -eq 0 ]; then
-    ok "Todo instalado: ${#LINKS[@]} enlaces y ~/.claude/settings.json"
+    ok "All installed: ${#LINKS[@]} links and ~/.claude/settings.json"
     exit 0
   fi
-  echo -e "    ${RED}✗${NC} $bad comprobaciones fallaron. Para arreglarlas: ./install.sh"
+  echo -e "    ${RED}✗${NC} $bad checks failed. To fix them: ./install.sh"
   exit 1
 }
 
 [ "$MODE" = check ] && check_installation
-[ "$MODE" = dry-run ] && echo "    Simulación (--dry-run): no se modifica nada."
+[ "$MODE" = dry-run ] && echo "    Dry run (--dry-run): nothing is changed."
 
 # ~/.gnupg goes before its gpg-agent.conf link: mkdir -p would create it 755, and gpg warns about
 # "unsafe permissions" on an open home folder.
 if [ ! -d "$HOME/.gnupg" ]; then
-  change "Creado ~/.gnupg con permisos 700" mkdir -m 700 "$HOME/.gnupg"
+  change "Created ~/.gnupg with mode 700" mkdir -m 700 "$HOME/.gnupg"
 elif [ "$(stat -c %a "$HOME/.gnupg")" != 700 ]; then
-  change "Permisos 700 en ~/.gnupg" chmod 700 "$HOME/.gnupg"
+  change "Mode 700 on ~/.gnupg" chmod 700 "$HOME/.gnupg"
 fi
 
 # ~/.gitconfig becomes a link to the public 15-git/gitconfig, which has no signing key. A key set
@@ -187,7 +186,7 @@ if [ -f "$HOME/.gitconfig" ] && [ ! -L "$HOME/.gitconfig" ]; then
 fi
 if [ -n "$signing_key" ] &&
   [ -z "$(git config --file "$HOME/.gitconfig.local" --get user.signingkey 2>/dev/null || true)" ]; then
-  change "Clave de firma de git copiada a ~/.gitconfig.local" \
+  change "Git signing key copied to ~/.gitconfig.local" \
     git config --file "$HOME/.gitconfig.local" user.signingkey "$signing_key"
 fi
 
@@ -198,7 +197,7 @@ done
 # bspwmrc loads ~/.config/wallpaper.jpg. Only linked when there is none, so a wallpaper of the
 # user's survives a second run.
 if [ ! -e "$HOME/.config/wallpaper.jpg" ] && [ ! -L "$HOME/.config/wallpaper.jpg" ]; then
-  change "Fondo de pantalla por defecto: ~/.config/wallpaper.jpg" \
+  change "Default wallpaper: ~/.config/wallpaper.jpg" \
     ln -s "$DOTFILES_DIR/assets/wallpaper.jpg" "$HOME/.config/wallpaper.jpg"
 fi
 
@@ -206,14 +205,14 @@ fi
 # victim_to_hack.sh does not fail when polybar starts before the first settarget.
 create_target_file() { mkdir -p "$HOME/.config/bin" && : >"$HOME/.config/bin/target"; }
 if [ ! -f "$HOME/.config/bin/target" ]; then
-  change "Creado vacío ~/.config/bin/target" create_target_file
+  change "Created an empty ~/.config/bin/target" create_target_file
 fi
 
 # Merged, never linked: it holds this machine's home and what Claude Code writes on it. The tool
 # adds the template's missing hooks, rules and status line with a dated backup.
 if [ "$LAYER" = yes ]; then
   if [ "$MODE" = dry-run ]; then
-    node "$SETTINGS_TOOL" --check >/dev/null || planned "Fusionaría lo que falta en ~/.claude/settings.json (detalle: ./install.sh --check)"
+    node "$SETTINGS_TOOL" --check >/dev/null || planned "Would merge what is missing into ~/.claude/settings.json (details: ./install.sh --check)"
   else
     node "$SETTINGS_TOOL"
   fi
@@ -222,7 +221,7 @@ fi
 # githooks/post-merge runs this script after every pull with changes, so a moved or new file is
 # linked without remembering to run it. Only in a clone: a copied folder has no git config.
 if [ -d "$DOTFILES_DIR/.git" ] && [ "$(git -C "$DOTFILES_DIR" config --get core.hooksPath)" != githooks ]; then
-  change "Activado git post-merge: cada git pull vuelve a ejecutar install.sh" \
+  change "Turned on git post-merge: every git pull runs install.sh again" \
     git -C "$DOTFILES_DIR" config core.hooksPath githooks
 fi
 
@@ -230,7 +229,7 @@ fi
 # without it, Nautilus opens light on a dark desktop.
 if command -v gsettings >/dev/null &&
   [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" != "'prefer-dark'" ]; then
-  change "Modo oscuro activado para las apps GTK4" gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+  change "Dark mode on for GTK4 apps" gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 fi
 
 # Apps that open a folder (Firefox's "Show in folder") use the inode/directory handler, which a
@@ -238,21 +237,21 @@ fi
 FOLDER_APP="org.gnome.Nautilus.desktop"
 if command -v xdg-mime >/dev/null && [ -f "/usr/share/applications/$FOLDER_APP" ] &&
   [ "$(xdg-mime query default inode/directory)" != "$FOLDER_APP" ]; then
-  change "Carpetas asociadas al gestor de archivos (Nautilus)" xdg-mime default "$FOLDER_APP" inode/directory
+  change "Folders open in the file manager (Nautilus)" xdg-mime default "$FOLDER_APP" inode/directory
 fi
 
 # Nautilus pulls in localsearch, which indexes every file in the background (constant CPU and
 # disk). mask keeps it from starting even when Nautilus asks; search still walks the folders.
 if command -v systemctl >/dev/null &&
   [ "$(systemctl --user is-enabled localsearch-3.service 2>/dev/null)" != "masked" ]; then
-  change "Indexador de archivos (localsearch) desactivado" systemctl --user mask --now localsearch-3.service
+  change "File indexer (localsearch) turned off" systemctl --user mask --now localsearch-3.service
 fi
 
 if [ "$MODE" = dry-run ]; then
-  ok "$CHANGED cambios por hacer, $ALREADY enlaces ya estaban bien. Para aplicarlos: ./install.sh"
+  ok "$CHANGED changes to make, $ALREADY links already fine. To apply them: ./install.sh"
 elif [ "$CHANGED" -eq 0 ]; then
-  ok "Nada que cambiar: los $ALREADY enlaces ya estaban bien"
+  ok "Nothing to change: the $ALREADY links were already fine"
 else
-  ok "$CHANGED cambios hechos, $ALREADY enlaces ya estaban bien"
-  echo "    Para cargarlos: exec zsh en cada terminal y Super+Alt+R"
+  ok "$CHANGED changes made, $ALREADY links already fine"
+  echo "    To load them: exec zsh in each terminal and Super+Alt+R"
 fi

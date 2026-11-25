@@ -105,8 +105,8 @@ If the environment is already installed and you only want these configs, from
 ```
 
 To see first what it would change, without changing anything, run it with
-`--dry-run`. With `--check` it lists the state of every link (`ok`, `FALTA`
-missing, `RUTA VIEJA` old repo path, `AJENO` someone else's file) and of
+`--dry-run`. With `--check` it lists the state of every link (`ok`, `MISSING`,
+`STALE` for an old repo path, `FOREIGN` for a file not from the repo) and of
 `~/.claude/settings.json`, and exits with 1 if something is not right.
 
 `install.sh` also turns on the `githooks/post-merge` hook (`core.hooksPath`):

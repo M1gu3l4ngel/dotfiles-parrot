@@ -58,14 +58,14 @@ ln -s "${REPO}-lookalike/CLAUDE.md" "$T/.claude/CLAUDE.md"
 
 run "$REPO/install.sh" --check
 check "check before installing exits 1 and names each state" \
-  '[ $CODE -eq 1 ] && grep -q "RUTA VIEJA" "$OUT" && grep -q "AJENO" "$OUT" && grep -q "FALTA" "$OUT"'
+  '[ $CODE -eq 1 ] && grep -q "STALE" "$OUT" && grep -q "FOREIGN" "$OUT" && grep -q "MISSING" "$OUT"'
 
 run "$REPO/install.sh" --dry-run
 check "dry run exits 0" '[ $CODE -eq 0 ]'
 check "dry run changes nothing" \
   '[ "$(count_links)" -eq 2 ] && [ "$(cat "$T/.zshrc")" = mine ] && [ ! -e "$T/.claude/settings.json" ] && [ ! -d "$T/.gnupg" ]'
 check "dry run names the backup and the relink" \
-  'grep -q "Respaldaría ~/.zshrc" "$OUT" && grep -q "ruta vieja: ~/.config/kitty" "$OUT"'
+  'grep -q "Would back up ~/.zshrc" "$OUT" && grep -q "old path: ~/.config/kitty" "$OUT"'
 
 run "$REPO/install.sh"
 check "install exits 0" '[ $CODE -eq 0 ]'
@@ -83,17 +83,17 @@ check "the GnuPG home is created with mode 700" '[ "$(stat -c %a "$T/.gnupg")" =
 
 run "$REPO/install.sh" --check
 check "check after installing exits 0 with all $expected links" \
-  '[ $CODE -eq 0 ] && grep -q "Todo instalado: $expected enlaces" "$OUT"'
+  '[ $CODE -eq 0 ] && grep -q "All installed: $expected links" "$OUT"'
 
 run "$REPO/install.sh"
 check "a second run changes no link" \
-  'grep -q "$expected enlaces ya estaban bien" "$OUT" && ! grep -qE "Enlazado:|Copia de seguridad:|ruta vieja" "$OUT"'
+  'grep -qE "$expected links (were )?already fine" "$OUT" && ! grep -qE "Linked:|Backup:|old path" "$OUT"'
 
 # ln fails right after the backup: the original has to come back.
 rm "$T/.config/dunst" && echo "my dunst" >"$T/.config/dunst"
 mkdir -p "$WORK/bin" && printf '#!/bin/sh\nexit 1\n' >"$WORK/bin/ln" && chmod +x "$WORK/bin/ln"
 EXTRA_PATH="$WORK/bin:" run "$REPO/install.sh"
-check "a failed ln exits non-zero" '[ $CODE -ne 0 ] && grep -q "No se pudo crear el enlace" "$OUT"'
+check "a failed ln exits non-zero" '[ $CODE -ne 0 ] && grep -q "Could not create the link" "$OUT"'
 check "a failed ln puts the original back" \
   '[ "$(cat "$T/.config/dunst")" = "my dunst" ] && [ ! -e "$T/.config/dunst.pre-dotfiles.bak" ]'
 rm "$T/.config/dunst"
