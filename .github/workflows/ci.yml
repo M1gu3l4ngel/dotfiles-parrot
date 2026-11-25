@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: M1gu3l4ngel/dotfiles-windows
-          ref: 5d88fe9f36f780bab3872a1f6b6b79fcc3b5f605
+          ref: 9517b053008f0e76362ec4ea3427183cfcc80995
           path: .ci/dotfiles-windows
           persist-credentials: false
 
