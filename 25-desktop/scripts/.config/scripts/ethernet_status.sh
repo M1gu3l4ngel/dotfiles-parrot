@@ -16,7 +16,7 @@ ICON=$(printf '\363\260\210\200')
 # `demo on` (a .zshrc function) writes fake values to DEMO_FILE for screenshots and videos; while it
 # exists they replace the real ones. Format: "<ethernet> <vpn> <target_ip> <target_name>
 # <prompt_name>".
-DEMO_FILE="$HOME/.config/bin/demo"
+DEMO_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/demo"
 ip_address=""
 [ -r "$DEMO_FILE" ] && read -r ip_address _ <"$DEMO_FILE"
 

@@ -13,7 +13,7 @@ set -u
 ICON=$(printf '\363\260\206\247')
 
 # With `demo on` (ethernet_status.sh) the fake VPN is the second field.
-DEMO_FILE="$HOME/.config/bin/demo"
+DEMO_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/demo"
 ip_address=""
 [ -r "$DEMO_FILE" ] && read -r _ ip_address _ <"$DEMO_FILE"
 

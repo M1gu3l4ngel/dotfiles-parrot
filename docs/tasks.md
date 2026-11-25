@@ -10,6 +10,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Estado del target en ~/.local/state
+
+**Plataforma:** Shell, Escritorio.
+
+- [ ] [Esta PC] Tras `exec zsh` en cada terminal abierta, `settarget 10.10.11.42 Lame` muestra el target en polybar y `cleartarget` lo quita
+- [ ] [Esta PC] `demo on` cambia polybar y el prompt a los datos falsos y `demo off` los devuelve
+
 ## Anonimato con indicador fiable
 
 **Plataforma:** Escritorio.
@@ -161,13 +168,3 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
 
-# Fase 9 — Anonimato revisado
-
-## Estado de settarget y del modo demo fuera de ~/.config
-
-**Plataforma:** Shell, Escritorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `target` y `demo` pasan de `~/.config/bin` a `~/.local/state/dotfiles` (scripts de polybar, `.zshrc`, `install.sh`, `.gitignore` y `docs/pentesting`), moviendo el target actual

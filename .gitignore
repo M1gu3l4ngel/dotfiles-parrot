@@ -35,7 +35,6 @@ CLAUDE.local.md
 *_dsa
 *_ed25519
 secrets/
-.config/bin/target
 
 # No font binaries: bootstrap.sh downloads them at a pinned version checked by SHA-256, which keeps
 # the repo small and clear of license problems.

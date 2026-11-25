@@ -16,6 +16,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   pone naranja mientras Tor conecta.
 - `anon-harden down` devuelve las políticas de IPv6 que había antes de `up`
   en vez de forzar `ACCEPT`.
+- El target de `settarget` y el modo `demo` viven en `~/.local/state/dotfiles`
+  en vez de `~/.config/bin`: son estado, no configuración. `install.sh` mueve
+  un target existente y borra el `anon_state` que ya no se usa.
 - `docs/anonymity` explica lo que no protege: navegar sin Tor Browser, Tor en
   la misma máquina (Whonix como alternativa) y la MAC tras el NAT de VMware.
 

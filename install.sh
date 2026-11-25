@@ -201,11 +201,44 @@ if [ ! -e "$HOME/.config/wallpaper.jpg" ] && [ ! -L "$HOME/.config/wallpaper.jpg
     ln -s "$DOTFILES_DIR/assets/wallpaper.jpg" "$HOME/.config/wallpaper.jpg"
 fi
 
-# settarget (.zshrc) and polybar's target module share ~/.config/bin/target. Created empty, so
-# victim_to_hack.sh does not fail when polybar starts before the first settarget.
-create_target_file() { mkdir -p "$HOME/.config/bin" && : >"$HOME/.config/bin/target"; }
-if [ ! -f "$HOME/.config/bin/target" ]; then
-  change "Created an empty ~/.config/bin/target" create_target_file
+# settarget and the demo mode (.zshrc) share their state with polybar's modules in STATE_DIR: data
+# that changes, not configuration, so it does not live under ~/.config. The same path is in .zshrc
+# and in the scripts that read it.
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
+# Where version 2.0.0 and earlier kept that state, with anon_state, which the anonymity toggle no
+# longer writes.
+OLD_STATE_DIR="$HOME/.config/bin"
+
+has_old_state() {
+  local f
+  for f in target demo; do
+    [ -f "$OLD_STATE_DIR/$f" ] && [ ! -e "$STATE_DIR/$f" ] && return 0
+  done
+  [ -f "$OLD_STATE_DIR/anon_state" ]
+}
+
+# Moves target and demo without overwriting a newer copy, and removes the folder if it is left empty.
+move_old_state() {
+  local f
+  mkdir -p "$STATE_DIR" || return 1
+  for f in target demo; do
+    if [ -f "$OLD_STATE_DIR/$f" ] && [ ! -e "$STATE_DIR/$f" ]; then
+      mv -- "$OLD_STATE_DIR/$f" "$STATE_DIR/$f" || return 1
+    fi
+  done
+  rm -f -- "$OLD_STATE_DIR/anon_state"
+  rmdir -- "$OLD_STATE_DIR" 2>/dev/null || true
+}
+
+if has_old_state; then
+  change "Moved the target and demo state from ~/.config/bin to ${STATE_DIR/#$HOME/\~}" move_old_state
+fi
+
+# Created empty, so victim_to_hack.sh does not fail when polybar starts before the first settarget.
+# Not while an old target is still in place: the move above brings it (in a dry run it has not yet).
+create_target_file() { mkdir -p "$STATE_DIR" && : >"$STATE_DIR/target"; }
+if [ ! -f "$STATE_DIR/target" ] && [ ! -f "$OLD_STATE_DIR/target" ]; then
+  change "Created an empty ${STATE_DIR/#$HOME/\~}/target" create_target_file
 fi
 
 # Merged, never linked: it holds this machine's home and what Claude Code writes on it. The tool

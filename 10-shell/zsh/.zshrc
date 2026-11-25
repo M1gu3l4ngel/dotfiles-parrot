@@ -161,7 +161,11 @@ LS_COLORS="rs=0:di=34:ln=36:mh=00:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:o
 typeset -U path
 path+=(/usr/local/sbin /usr/sbin /sbin)
 
-# Pentest target: the IP and machine name go to ~/.config/bin/target, which victim_to_hack.sh reads
+# State shared with polybar's modules: data that changes, not configuration. install.sh creates the
+# folder and the scripts that read it use the same path.
+_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
+
+# Pentest target: the IP and machine name go to $_STATE_DIR/target, which victim_to_hack.sh reads
 # to show it in polybar (target_module in the target_to_hack bar).
 settarget() {
   # Validated before writing: a mistyped target in the bar can end in a scan against the wrong,
@@ -178,8 +182,8 @@ settarget() {
     fi
   done
   # install.sh creates the folder too; this covers a manual install.
-  mkdir -p "$HOME/.config/bin"
-  print -r -- "$ip_address $machine_name" > "$HOME/.config/bin/target"
+  mkdir -p "$_STATE_DIR"
+  print -r -- "$ip_address $machine_name" > "$_STATE_DIR/target"
   # A dunst notification, like toggle_anonymity.sh, so it shows even when called from a script.
   # Font Awesome bullseye icon, U+F140.
   notify-send -u normal -t 3000 \
@@ -188,10 +192,10 @@ settarget() {
 }
 
 cleartarget() {
-  mkdir -p "$HOME/.config/bin"
+  mkdir -p "$_STATE_DIR"
   # `: >` leaves the file at 0 bytes, not an empty line: the "no target" state victim_to_hack.sh
   # expects.
-  : > "$HOME/.config/bin/target"
+  : > "$_STATE_DIR/target"
   # Font Awesome eraser icon, U+F12D.
   notify-send -u low -t 3000 \
     $'\xef\x84\xad  Target limpiado' \
@@ -208,7 +212,7 @@ cleartarget() {
 
 # The format the modules read: "<ethernet> <vpn> <target_ip> <target_name> <prompt_name>". The
 # values come from private and lab ranges, not real ones.
-_DEMO_FILE="$HOME/.config/bin/demo"
+_DEMO_FILE="$_STATE_DIR/demo"
 _DEMO_VALUES="192.168.10.100 10.10.14.23 10.10.11.42 Lame pentester"
 typeset -gi _demo_active=0
 

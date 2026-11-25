@@ -7,7 +7,8 @@
 # process: bash's builtin `read`, no cat or awk.
 
 # The state shared by the shell and the bar; settarget and cleartarget in .zshrc use the same path.
-TARGET_FILE="$HOME/.config/bin/target"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
+TARGET_FILE="$STATE_DIR/target"
 
 # nf-md-target (U+F04FE) as a UTF-8 escape: editing tools drop private use glyphs (PUA) written
 # literally.
@@ -22,7 +23,7 @@ ICON=$'\xf3\xb0\x93\xbe'
 ip_address="" machine_name=""
 # With `demo on` (ethernet_status.sh) the fake target is the third and fourth field, and the real
 # one stays untouched.
-DEMO_FILE="$HOME/.config/bin/demo"
+DEMO_FILE="$STATE_DIR/demo"
 if [ -r "$DEMO_FILE" ]; then
   read -r _ _ ip_address machine_name _ <"$DEMO_FILE"
 else

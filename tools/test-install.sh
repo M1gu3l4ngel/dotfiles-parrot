@@ -38,7 +38,7 @@ check() {
 }
 # No session bus and no user systemd: the desktop settings must warn, never reach the real session.
 run() {
-  env -u DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR=/nonexistent HOME="$T" CLAUDE_LAYER_DIR="$LAYER" \
+  env -u DBUS_SESSION_BUS_ADDRESS -u XDG_STATE_HOME XDG_RUNTIME_DIR=/nonexistent HOME="$T" CLAUDE_LAYER_DIR="$LAYER" \
     PATH="${EXTRA_PATH:-}$PATH" "$@" >"$OUT" 2>&1
   CODE=$?
 }
@@ -55,6 +55,10 @@ printf '[user]\n\tsigningkey = ABCDEF0123456789\n' >"$T/.gitconfig"
 ln -s "$REPO/old/kitty" "$T/.config/kitty"
 mkdir -p "$T/.claude"
 ln -s "${REPO}-lookalike/CLAUDE.md" "$T/.claude/CLAUDE.md"
+# The state a 2.0.0 install kept in ~/.config/bin, which install.sh moves.
+mkdir -p "$T/.config/bin"
+echo "10.10.11.42 Lame" >"$T/.config/bin/target"
+echo "on" >"$T/.config/bin/anon_state"
 
 run "$REPO/install.sh" --check
 check "check before installing exits 1 and names each state" \
@@ -80,6 +84,8 @@ check "settings.json is created with the layer hooks" \
 check "the signing key moves to .gitconfig.local" \
   '[ "$(HOME=$T git config --get user.signingkey)" = ABCDEF0123456789 ] && [ "$(HOME=$T git config --get user.name)" = M1gu3l4ngel ] && [ -f "$T/.gitconfig.pre-dotfiles.bak" ]'
 check "the GnuPG home is created with mode 700" '[ "$(stat -c %a "$T/.gnupg")" = 700 ]'
+check "the old target moves to ~/.local/state and ~/.config/bin goes away" \
+  '[ "$(cat "$T/.local/state/dotfiles/target")" = "10.10.11.42 Lame" ] && [ ! -e "$T/.config/bin" ]'
 
 run "$REPO/install.sh" --check
 check "check after installing exits 0 with all $expected links" \

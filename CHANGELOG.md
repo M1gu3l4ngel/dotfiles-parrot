@@ -15,6 +15,9 @@ Notable changes to the project. The format follows
   change at a time. The ghost turns orange while Tor connects.
 - `anon-harden down` puts back the IPv6 policies there were before `up`
   instead of forcing `ACCEPT`.
+- The `settarget` target and the `demo` mode live in `~/.local/state/dotfiles`
+  instead of `~/.config/bin`: they are state, not configuration. `install.sh`
+  moves an existing target and removes the unused `anon_state`.
 - `docs/anonymity` covers what it does not protect: browsing without Tor
   Browser, Tor on the same machine (Whonix as the alternative) and the MAC
   behind VMware's NAT.
