@@ -10,6 +10,8 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- README header with the Dotfiles Parrot logo (light and dark theme),
+  section links and badges, following the same recipe as dotfiles-windows.
 - `install.sh --dry-run` shows what it would link, back up or change without
   touching anything; `install.sh --check` reports the state of every link and
   of `~/.claude/settings.json` and exits with 1 if something is wrong.

@@ -10,6 +10,8 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- Cabecera del README con el logo de Dotfiles Parrot (tema claro y oscuro),
+  enlaces a las secciones y badges, con la misma receta que dotfiles-windows.
 - `install.sh --dry-run` muestra qué enlazaría, respaldaría o cambiaría sin
   tocar nada; `install.sh --check` informa del estado de cada enlace y de
   `~/.claude/settings.json` y sale con 1 si algo está mal.

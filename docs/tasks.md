@@ -53,6 +53,14 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Cabecera del README con los logos de Parrot
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, ver `README.md` en GitHub con tema claro: logo con texto oscuro, descripción, enlaces y badges centrados
+- [ ] Tras el push, ver `README.md` en GitHub con tema oscuro: logo con texto blanco
+- [ ] Tras el push, lo mismo en `README.es.md` con los dos temas, y que cada enlace de la fila lleva a su sección en español
+
 ## Configuración de git versionada
 
 **Plataforma:** Shell.
@@ -115,25 +123,12 @@ en esta máquina.
 
 # Fase 4 — Carpetas numeradas por capa
 
-## Cabecera del README con los logos de Parrot
-
-**Plataforma:** Repositorio.
-**Prioridad:** P1.
-**Requiere:** nada.
-**Estado:** en curso.
-
-La receta de la cabecera es la del skill `new-repo`: se copia de `README.md` de dotfiles-windows
-(hasta la raya `---`), no se hace de memoria.
-
-- [ ] `assets/dotfiles-parrot-lockup-dark.svg` y `-white.svg`, revisados: solo formas, sin `<script>` ni enlaces externos
-- [ ] Cabecera de `README.md` y `README.es.md`: logo en `<picture>` (dark por defecto, white con `prefers-color-scheme: dark`, alt «Dotfiles Parrot»), sin título `#`, descripción centrada en dos líneas, fila de enlaces a las secciones de cada idioma, badges (CI, Parrot OS, bspwm, zsh, licencia), raya y `preview.png`
-- [ ] `check-docs.mjs` en verde, que ahora valida también `href`, `src` y `srcset`
-
 ## Lista de paquetes en 60-apps
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 Windows tiene `60-apps/essential.json` y `optional.json`; aquí la lista vive en `APT_PACKAGES` de
 `bootstrap.sh`.

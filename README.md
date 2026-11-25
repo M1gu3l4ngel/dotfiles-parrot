@@ -1,9 +1,35 @@
 **English** | [Español](README.es.md)
 
-# dotfiles-parrot
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/dotfiles-parrot-lockup-white.svg">
+    <img src="assets/dotfiles-parrot-lockup-dark.svg" alt="Dotfiles Parrot" width="360">
+  </picture>
+</p>
 
-A pentesting workstation on Parrot OS: bspwm, polybar, kitty, zsh and Neovim,
-with system hardening and a one-command install.
+<p align="center">
+  A pentesting workstation on Parrot OS in one command.<br>
+  bspwm, polybar, kitty, zsh with oh-my-posh and Neovim, with system hardening, a global Claude
+  Code layer and verified downloads.
+</p>
+
+<p align="center">
+  <a href="#one-command-setup">Install</a> ·
+  <a href="#repository-layout">Structure</a> ·
+  <a href="#shortcuts">Shortcuts</a> ·
+  <a href="docs/README.md">Documentation</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/M1gu3l4ngel/dotfiles-parrot/actions/workflows/ci.yml"><img src="https://github.com/M1gu3l4ngel/dotfiles-parrot/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Parrot_OS-7-15E0ED?logo=parrotsecurity&logoColor=white" alt="Parrot OS 7">
+  <img src="https://img.shields.io/badge/bspwm-0.9-2E3440" alt="bspwm 0.9">
+  <img src="https://img.shields.io/badge/zsh-5.9-F15A24?logo=zsh&logoColor=white" alt="zsh 5.9">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
+</p>
+
+---
 
 ![Desktop](assets/preview.png)
 
