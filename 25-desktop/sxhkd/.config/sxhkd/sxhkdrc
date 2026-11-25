@@ -1,220 +1,136 @@
-# ~/.config/sxhkd/sxhkdrc
-# Definición de todos los atajos de teclado del entorno.
-# sxhkd (Simple X Hotkey Daemon) corre en background — bspwm lo lanza al
-# iniciar — y traduce cada combinación de teclas en el comando indicado.
-# Para recargar este archivo sin reiniciar la sesión: Super+Escape.
+# Every keyboard shortcut of the desktop. sxhkd runs in the background, started by bspwm, and turns
+# each key combination into its command.
+# Reload without restarting the session: Super+Escape.
 
-# =============================================================================
-# ATAJOS INDEPENDIENTES DEL WINDOW MANAGER
-# =============================================================================
-# Acciones que no dependen de bspwm: lanzar terminal, lanzar menús, etc.
-
-# ----- TERMINAL -----
-# Abre kitty (terminal por defecto). Se usa el paquete de apt en vez de una
-# instalación manual en /opt: así recibe parches de seguridad junto con el
-# resto del sistema vía unattended-upgrades, sin mantenimiento a mano. La ruta
-# absoluta evita que un binario homónimo antes en el $PATH se ejecute en su lugar.
+# kitty from apt rather than a manual install in /opt, so unattended-upgrades patches it with the
+# rest of the system. The absolute path keeps a same-named binary earlier in $PATH from running.
 super + Return
 	/usr/bin/kitty
 
-# ----- LANZADOR DE PROGRAMAS -----
-# Abre rofi en modo "drun": aplicaciones instaladas con su nombre e icono.
-# Ctrl+Tab cambia al modo "run" (cualquier ejecutable del $PATH), para las
-# herramientas de terminal que no tienen entrada de menú.
+# Applications with their name and icon; Ctrl+Tab switches to any executable in $PATH, for terminal
+# tools with no menu entry.
 super + d
 	/usr/bin/rofi -show drun -modes drun,run
 
-# ----- GESTOR DE ARCHIVOS -----
-# Nautilus en la carpeta personal, como Win+E en Windows. --new-window abre
-# siempre una ventana nueva aunque ya haya otra abierta en otro workspace.
-# También se abre con click en el logo de Parrot (polybar).
+# Nautilus in the home folder, like Win+E on Windows; --new-window opens one even if another
+# workspace already has one. A click on the Parrot logo in polybar opens it too.
 super + e
 	/usr/bin/nautilus --new-window
 
-# ----- RECARGAR SXHKD -----
-# Envía la señal USR1 al daemon, que lo obliga a releer este archivo.
-# Útil cuando se añade un nuevo binding y no se quiere cerrar sesión.
+# USR1 makes the daemon read this file again: a new binding without logging out. A signal to
+# sxhkd itself, not a way to stop it.
 super + Escape
 	pkill -USR1 -x sxhkd
 
-# =============================================================================
-# ATAJOS DE BSPWM
-# =============================================================================
-# Controlan el window manager directamente vía el cliente `bspc`.
-
-# ----- SALIR / REINICIAR BSPWM -----
-# Super+Alt+Q cierra bspwm (cierra la sesión X);
-# Super+Alt+R reinicia bspwm en caliente (recarga bspwmrc sin perder ventanas).
-# Van con Alt y no con Shift porque Super+Shift+Q ya mata la ventana enfocada:
-# compartir la combinación hacía ambiguo si se cerraba una ventana o la sesión.
+# Super+Alt+Q quits bspwm (and the X session); Super+Alt+R restarts it in place, reading bspwmrc
+# again without losing windows. Alt and not Shift: Super+Shift+Q already kills the focused window,
+# and sharing it made it unclear whether a window or the session would close.
 super + alt + {q,r}
 	bspc {quit,wm -r}
 
-# ----- CERRAR / MATAR VENTANA -----
-# Super+Q cierra la ventana enfocada de forma "amable" (manda WM_DELETE);
-# Super+Shift+Q la mata a la fuerza (SIGKILL al proceso). Usar -k si la app no responde.
+# Super+Q asks the focused window to close (WM_DELETE); Super+Shift+Q kills it, for an app that
+# does not respond.
 super + {_,shift + }q
 	bspc node -{c,k}
 
-# ----- ALTERNAR LAYOUT TILED / MONOCLE -----
-# Monocle = una sola ventana visible a pantalla completa, las demás ocultas.
-# Útil para concentrarse en una tarea sin cerrar las otras ventanas.
+# Monocle shows one window full screen and hides the others, without closing them.
 super + m
 	bspc desktop -l next
 
-# ----- MOVER NODO MARCADO AL PRESELECCIONADO -----
-# Workflow avanzado: marcar una ventana con Super+Ctrl+M, preseleccionar
-# una posición con Super+Ctrl+Alt+<dir>, y pegarla allí con esta tecla.
+# Moves the marked window (Super+Ctrl+M) to the preselected spot (Super+Ctrl+Alt+arrow).
 super + y
 	bspc node newest.marked.local -n newest.!automatic.local
 
-# ----- INTERCAMBIAR CON LA VENTANA MÁS GRANDE -----
-# Pone la ventana actual en el lugar de la más grande del workspace.
-# Atajo rápido para "promover" la ventana sin tener que moverse direccionalmente.
+# Swaps the current window with the biggest one of the workspace.
 super + g
 	bspc node -s biggest.window
 
-# =============================================================================
-# ESTADO Y FLAGS DE VENTANA
-# =============================================================================
-
-# ----- CAMBIAR ESTADO DE LA VENTANA -----
-# T = tiled (normal, parte del layout);
-# Shift+T = pseudo_tiled (centrada con bordes pero respeta gaps);
-# S = floating (libre, arrastrable con el ratón);
-# F = fullscreen (sin barra, sin gaps, sobre todo).
+# Window state: tiled, pseudo-tiled (centered, keeps the gaps), floating (free, dragged with the
+# mouse) and fullscreen.
 super + {t,shift + t,s,f}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-# ----- FLAGS DEL NODO -----
-# marked: lo marca para operaciones posteriores (ver Super+Y arriba);
-# locked: lo protege para no cerrarlo con Super+Q por accidente;
-# sticky: la ventana sigue visible al cambiar de workspace;
-# private: prefiere mantener su tamaño cuando aparecen otras ventanas.
+# Node flags: marked (for Super+Y), locked (Super+Q cannot close it by accident), sticky (stays on
+# every workspace) and private (keeps its size when other windows appear).
 super + ctrl + {m,x,y,z}
 	bspc node -g {marked,locked,sticky,private}
 
-# =============================================================================
-# FOCO Y MOVIMIENTO ENTRE VENTANAS
-# =============================================================================
-
-# ----- MOVER FOCO / INTERCAMBIAR VENTANAS POR DIRECCIÓN -----
-# Solo flechas = mover el foco;
-# Shift + flechas = intercambiar la ventana enfocada con la vecina en esa dirección.
+# Arrows move the focus; with Shift they swap the focused window with its neighbor.
 super + {_,shift + }{Left,Down,Up,Right}
 	bspc node -{f,s} {west,south,north,east}
 
-# ----- NAVEGACIÓN POR EL ÁRBOL DEL LAYOUT -----
-# bspwm organiza las ventanas en un árbol binario. Estos atajos saltan
-# entre padres, hermanos y primeros/segundos hijos del árbol.
+# bspwm keeps the windows in a binary tree: these jump to the parent, the sibling or a child.
 super + {p,b,comma,period}
 	bspc node -f @{parent,brother,first,second}
 
-# ----- SIGUIENTE / ANTERIOR VENTANA DEL WORKSPACE -----
-# Ciclo lineal entre ventanas visibles del escritorio actual.
 super + {_,shift + }c
 	bspc node -f {next,prev}.local.!hidden.window
 
-# ----- SIGUIENTE / ANTERIOR ESCRITORIO -----
-# Mismo monitor. Los corchetes [ y ] están al lado de la P y son cómodos
-# para cambiar rápido sin tener que usar números.
+# Previous and next desktop of the same monitor; [ and ] sit next to P, handier than numbers.
 super + bracket{left,right}
 	bspc desktop -f {prev,next}.local
 
-# ----- ÚLTIMO NODO / ESCRITORIO VISITADO -----
-# Super+` (grave): vuelve a la ventana anterior (estilo Alt+Tab de un solo paso);
-# Super+Tab: vuelve al escritorio anterior.
+# Super+` goes back to the previous window, Super+Tab to the previous desktop.
 super + {grave,Tab}
 	bspc {node,desktop} -f last
 
-# ----- HISTORIAL DE FOCO -----
-# Navega por el historial de ventanas enfocadas. Se desactiva temporalmente
-# la grabación del historial (-h off) para que este propio salto no se grabe.
+# Walks the focus history. Recording stops for the jump (-h off) so the jump itself is not saved.
 super + {o,i}
 	bspc wm -h off; \
 	bspc node {older,newer} -f; \
 	bspc wm -h on
 
-# ----- IR A / ENVIAR AL ESCRITORIO -----
-# Super+N = saltar al escritorio N;
-# Super+Shift+N = enviar la ventana actual al escritorio N.
-# El 0 representa el escritorio 10.
+# Super+N goes to desktop N and Super+Shift+N sends the window there; 0 is desktop 10.
 super + {_,shift + }{1-9,0}
 	bspc {desktop -f,node -d} '^{1-9,10}'
 
-# =============================================================================
-# PRESELECCIÓN
-# =============================================================================
-# La preselección reserva un "hueco" para la próxima ventana que se abra.
-
-# ----- PRESELECCIONAR DIRECCIÓN -----
-# Marca el lado del nodo donde aparecerá la próxima ventana nueva.
+# Preselection keeps a spot for the next window that opens: the side of the node.
 super + ctrl + alt + {Left,Down,Up,Right}
 	bspc node -p {west,south,north,east}
 
-# ----- PRESELECCIONAR RATIO -----
-# Define qué porcentaje del nodo ocupará la nueva ventana (0.1 a 0.9).
+# The share of the node the new window takes, 0.1 to 0.9.
 super + ctrl + {1-9}
 	bspc node -o 0.{1-9}
 
-# ----- CANCELAR PRESELECCIÓN -----
-# Solo en el nodo enfocado.
+# Cancels the preselection of the focused node.
 super + ctrl + alt + space
 	bspc node -p cancel
 
-# ----- CANCELAR TODA PRESELECCIÓN DEL DESKTOP -----
-# Recorre todos los nodos del escritorio actual y borra cualquier preselección.
+# Cancels every preselection of the current desktop.
 super + ctrl + shift + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-# =============================================================================
-# MOVER Y REDIMENSIONAR
-# =============================================================================
-
-# ----- MOVER VENTANA FLOTANTE -----
-# Solo aplica a ventanas en estado floating. El desplazamiento es de 20px.
-# Va con Ctrl porque Super+Shift+flechas ya intercambia ventanas tiled: con la
-# misma combinación en dos bindings, sxhkd solo ejecutaba uno de los dos.
+# Moves a floating window 20 px. Ctrl because Super+Shift+arrows already swaps tiled windows: with
+# the same combination in two bindings, sxhkd ran only one.
 super + ctrl + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 
-# ----- REDIMENSIONAR (script personalizado) -----
-# El script auxiliar decide si crecer o encoger según el borde más cercano
-# en esa dirección, evitando tener que pensar en "expand/contract" manualmente.
+# The script grows or shrinks the window by the nearest edge in that direction, so there is no
+# expand or contract to think about.
 super + alt + {Left,Down,Up,Right}
 	~/.config/bspwm/scripts/bspwm_resize {west,south,north,east}
 
-# =============================================================================
-# APLICACIONES DIRECTAS
-# =============================================================================
-
-# ----- FIREFOX (perfiles separados) -----
-# Personal (Gmail, GitHub personal): perfil default-esr, sin cambios propios.
-# Pentest (engagements, targets, lab): perfil pentest + user.js endurecido
-# (sin fugas de targets a terceros, sin precargas, WebRTC off, todo se borra
-# al cerrar; ver system/firefox/pentest.user.js y docs/firefox.md).
-# TZ=UTC en el perfil pentest es un respaldo: hoy la zona horaria ya la oculta
-# privacy.resistFingerprinting, que Parrot activa para todo el sistema; si esa
-# protección se desactivara, TZ=UTC seguiría evitando revelar la hora local.
-# --no-remote permite tener ambos perfiles abiertos a la vez; sin el flag
-# Firefox abriría una pestaña en la instancia ya existente en vez de lanzar
-# la segunda con el otro perfil.
+# Firefox with separate profiles. Personal (mail, personal GitHub): the default-esr profile,
+# unchanged. Pentest (engagements, targets, labs): the pentest profile with a hardened user.js (no
+# target leaks to third parties, no preloading, no WebRTC, everything cleared on close; see
+# 70-system/firefox/pentest.user.js and docs/firefox.md).
+# TZ=UTC is a fallback: privacy.resistFingerprinting, which Parrot turns on system-wide, already
+# hides the time zone, and TZ=UTC keeps hiding the local time if that protection goes off.
+# --no-remote lets both profiles be open at once; without it Firefox opens a tab in the running
+# instance instead of starting the other profile.
 super + shift + f
 	/usr/bin/firefox -P default-esr --no-remote
 
 super + shift + p
 	TZ=UTC /usr/bin/firefox -P pentest --no-remote
 
-# ----- BLOQUEAR PANTALLA -----
-# Bloquea con la pantalla de login de LightDM (slick-greeter): el mismo diseño
-# que al arrancar, sin paquetes extra y al instante (sin capturas ni blur). La
-# contraseña la valida el gestor de sesión; al desbloquear vuelve la sesión
-# tal como estaba.
+# Locks with LightDM's login screen (slick-greeter): the same look as at boot, no extra packages
+# and instant (no screenshot, no blur). The session manager checks the password, and the session
+# comes back as it was.
 super + shift + x
 	/usr/bin/dm-tool lock
 
-# ----- TOGGLE ANONIMATO (Tor + anonsurf) -----
-# Activa/desactiva el routing onion con notificación + indicador en polybar.
-# Mismo efecto que click izquierdo en el módulo "anon_status" de polybar.
+# Turns onion routing on or off, with a notification and the polybar indicator; the same as a left
+# click on polybar's anonymity module.
 super + a
 	~/.config/scripts/toggle_anonymity.sh

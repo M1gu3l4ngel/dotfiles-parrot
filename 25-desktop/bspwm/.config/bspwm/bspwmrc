@@ -1,89 +1,61 @@
 #! /bin/sh
-# ~/.config/bspwm/bspwmrc
-# Archivo principal de configuración de bspwm (tiling window manager).
-# Se ejecuta automáticamente cuando bspwm arranca la sesión.
-# Para recargar en caliente: Super+Alt+R (definido en sxhkdrc).
+# bspwm's startup script: it runs when bspwm starts the session, and again in full on every restart.
+# Reload: Super+Alt+R (sxhkdrc).
 
-# ----- DAEMONS Y TECLADO -----
-# bspwmrc se vuelve a ejecutar entero en cada Super+Alt+R. run_once lanza un
-# daemon solo si no está corriendo ya; sin esto cada recarga intentaría abrir
-# una segunda instancia (que falla con error o, peor, queda duplicada).
+# The script runs again on every Super+Alt+R: run_once starts a daemon only if it is not running,
+# or each reload would try a second instance (which fails, or worse, stays duplicated).
 run_once() {
   pgrep -x "$1" >/dev/null || "$@" &
 }
 
-# sxhkd es el daemon que escucha atajos de teclado; sin él no funciona ningún
-# binding (Super+Enter, Super+D, etc).
 run_once sxhkd
-# Keymap de la sesión (~/.config/xkb/keymap.xkb): layouts us + latam
-# intercambiables con Alt+Shift, y Caps Lock corregido para que se apague al
-# pulsar y no al soltar (con el comportamiento estándar de X11, escribir rápido
-# "Caps S Caps i" produce "SI"). Se usa xkbcomp y no setxkbmap porque
-# setxkbmap no puede incluir símbolos propios como capsfix.
-# Se ejecuta en primer plano (sin &) para que el keymap esté listo antes que
-# el resto de la sesión.
+# The session keymap: us and latam layouts swapped with Alt+Shift, and Caps Lock fixed to turn off
+# on press rather than on release (with X11's standard behavior, typing "Caps S Caps i" fast gives
+# "SI"). xkbcomp and not setxkbmap, which cannot include custom symbols such as capsfix. In the
+# foreground (no &) so the keymap is ready before the rest of the session.
 xkbcomp -w 0 -I"$HOME/.config/xkb" "$HOME/.config/xkb/keymap.xkb" "$DISPLAY"
-# Autorepetición al mantener una tecla: empieza a los 300 ms y repite 40 veces
-# por segundo. El default de X11 (660 ms / 25 por segundo) hace que mantener
-# Backspace o las flechas se sienta lento.
+# Key repeat starts at 300 ms and repeats 40 times a second: X11's default (660 ms, 25 a second)
+# makes holding Backspace or the arrows feel slow.
 xset r rate 300 40
-# Desactiva el timbre de X11. Herramientas antiguas lo disparan sin que sea un
-# error real, y en una VM el beep suena como un fallo del sistema.
+# Old tools ring X11's bell for things that are not errors, and in a VM the beep sounds like a
+# system failure.
 xset b off
 
-# ----- WORKSPACES -----
-# Diez escritorios virtuales numerados en romanos (I..X), uno por monitor
-# por defecto. Se cambia entre ellos con Super+<número> desde sxhkd.
 bspc monitor -d I II III IV V VI VII VIII IX X
 
-# ----- BORDES Y GAPS -----
-# Borde de 1 px para saber qué ventana tiene el foco sin tener que escribir en
-# ella. Grises neutros: el foco se nota pero no compite con el contenido; el
-# naranja queda para acentos puntuales. Neutro y no el gris cálido de la
-# paleta: en un marco fino ese matiz se percibe amarillento.
-# focused: ventana con foco. normal/active: el resto, casi fundidas con el
-# fondo (active = la última con foco en otro monitor).
+# A 1 px border shows which window has the focus without typing in it. Neutral greys: the focus is
+# clear without competing with the content, and orange stays for accents. Neutral and not the
+# palette's warm grey, which looks yellowish in a thin frame. The unfocused windows (normal, and
+# active: the last focused one on another monitor) almost blend with the background.
 bspc config border_width 1
 bspc config focused_border_color '#555555'
 bspc config normal_border_color '#242424'
 bspc config active_border_color '#242424'
-# Separación entre ventanas en píxeles. Mientras más alto, más "aire" entre
-# las ventanas (estética tipo rice).
+# 12 px, the same spacing as the polybar bars: windows and bars sit on one grid.
 bspc config window_gap 12
 
-# ----- LAYOUT -----
-# Proporción inicial al hacer split: 52% para la ventana principal.
 bspc config split_ratio 0.52
-# En modo monocle (una sola ventana visible) no se dibujan bordes ni gaps,
-# para aprovechar toda la pantalla.
+# Monocle shows one window: no border or gaps, to use the whole screen.
 bspc config borderless_monocle true
 bspc config gapless_monocle true
 
-# ----- REGLAS DE VENTANAS -----
-# Cada regla dice "cuando aparezca una ventana de esta app, hazle esto".
-# Útil para forzar workspace, modo floating, foco, etc.
 bspc rule -a Gimp desktop='^8' state=floating follow=on
 bspc rule -a Chromium desktop='^2'
 bspc rule -a mplayer2 state=floating
 bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 
-# ----- AUTOSTART -----
-# Integración con VMware (portapapeles, resolución automática). Solo si
-# open-vm-tools está instalado: en un host real el comando no existe. No
-# necesita run_once: el propio vmware-user no abre una segunda instancia.
+# VMware integration (clipboard, automatic resolution), only where open-vm-tools is installed: on
+# real hardware the command does not exist. No run_once: vmware-user never opens a second instance.
 command -v vmware-user >/dev/null && vmware-user &
-# Wallpaper de fondo. install.sh enlaza ~/.config/wallpaper.jpg al wallpaper
-# por defecto del repo (assets/wallpaper.jpg) la primera vez. Para usar tu
-# propio fondo: sobrescribe ese archivo o cambia esta ruta.
-# El `|| true` evita que un wallpaper faltante rompa el inicio de bspwm.
+# install.sh links ~/.config/wallpaper.jpg to the repo's assets/wallpaper.jpg the first time; for
+# your own wallpaper, replace that file or change this path. A missing wallpaper must not break the
+# session start.
 /bin/feh --bg-fill ~/.config/wallpaper.jpg 2>/dev/null || true
-# Notificaciones de escritorio. Sus cambios de config se aplican con
-# `dunstctl reload`, no reiniciándolo.
+# Its config changes apply with `dunstctl reload`, not a restart.
 run_once dunst
-# Barra de estado (polybar). Sin run_once a propósito: launch.sh ya mata las
-# barras viejas y las relanza, así Super+Alt+R también recarga polybar.
+# No run_once on purpose: launch.sh closes the old bars and starts them again, so Super+Alt+R
+# reloads polybar too.
 ~/.config/polybar/launch.sh &
-# Compositor: sombras, transparencias y blur. Sin él las ventanas se ven
-# planas. Relee picom.conf solo al guardarlo, no hace falta reiniciarlo.
+# picom reads picom.conf again whenever it is saved; it never needs a restart.
 run_once picom

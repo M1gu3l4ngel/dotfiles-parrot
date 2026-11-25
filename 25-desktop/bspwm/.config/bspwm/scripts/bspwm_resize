@@ -1,17 +1,14 @@
 #!/bin/sh
-# ~/.config/bspwm/scripts/bspwm_resize
-# Redimensiona la ventana enfocada hacia una dirección. Lo invoca sxhkd con
-# Super+Alt+Flechas (bspwm_resize west|east|north|south).
+# Resizes the focused window in one direction; sxhkd runs it with Super+Alt+arrows
+# (bspwm_resize west|east|north|south).
 #
-# Con una sola tecla por dirección, la ventana crece o encoge según dónde esté:
-# primero intenta mover el borde derecho (o superior); si esa ventana no tiene
-# borde movible en ese lado, mueve el opuesto. Así no hace falta pensar en
-# "expandir" o "contraer".
+# One key per direction grows or shrinks the window depending on where it is: it first tries to
+# move the right (or top) edge, and if that side cannot move, the opposite one. So there is no
+# expand or contract to think about.
 
 set -eu
 
-# Paso en píxeles: fino en ventanas flotantes, grande en mosaico, donde se
-# redimensiona respecto a las vecinas.
+# Fine steps for floating windows, big ones in tiling, where the size is shared with the neighbors.
 if bspc query -N -n focused.floating >/dev/null; then
   step=20
 else
@@ -32,7 +29,7 @@ case "${1:-}" in
     dir=top falldir=bottom x=0 y="$step"
     ;;
   *)
-    echo "Uso: $0 west|east|north|south" >&2
+    echo "Usage: $0 west|east|north|south" >&2
     exit 2
     ;;
 esac
