@@ -152,12 +152,11 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Cierre — Instalación desde cero
 
-## Prueba en una PC limpia
+## Publicar la versión
 
-**Plataforma:** Instalación.
+**Plataforma:** Repositorio.
 **Requiere:** nada.
 
-- [ ] Seguir `docs/getting-started` en un Parrot recién instalado y anotar cada paso que falte o falle
 - [ ] Publicar la versión en `CHANGELOG` con su etiqueta firmada (`git tag -s`)
 
 ---
