@@ -1,41 +1,32 @@
 #!/bin/bash
-# ~/.config/scripts/toggle_anonymity.sh
-# Toggle de anonimato endurecido. Pasos al activar:
-#   1. anonsurf start  → redirige TCP+DNS a Tor vía iptables
-#   2. ip6tables OUTPUT DROP → mata IPv6 (anonsurf solo cubre IPv4; sin esto,
-#      si la red soporta v6, todo el tráfico v6 sale FUERA de Tor)
-#   3. iptables ICMP OUTPUT DROP → evita ping/traceroute → IP real
-#   4. curl check.torproject.org/api/ip → confirma que REALMENTE salimos por
-#      Tor (no solo que el proceso `tor` esté vivo). Si falla, revierte todo.
-# Al desactivar, se restauran las policies a ACCEPT y se quita la regla ICMP.
+# Hardened anonymity toggle, run by Super+A (sxhkdrc), a left click on polybar's anon_status module
+# or by hand. Turning it on:
+#   1. anonsurf start sends TCP and DNS through Tor with iptables.
+#   2. IPv6 output goes to DROP: anonsurf covers IPv4 only, and on a network with IPv6 that traffic
+#      would leave outside Tor.
+#   3. ICMP output goes to DROP, so ping or traceroute cannot reveal the real IP.
+#   4. check.torproject.org/api/ip confirms the traffic really leaves through Tor, not just that a
+#      `tor` process is alive; if not, everything is rolled back.
+# Turning it off puts the policies back to ACCEPT and removes the ICMP rule.
 #
-# El estado se toma del servicio anonsurfd (el que enruta el tráfico por Tor),
-# no de si hay un proceso `tor`: Parrot puede dejar tor@default corriendo
-# suelto al arrancar (anonsurf-recovery) sin que haya anonimato, y entonces el
-# toggle creía que estaba activo e intentaba desactivarlo sin éxito.
+# The state comes from the anonsurfd service, the one that routes through Tor, not from a `tor`
+# process: Parrot can leave tor@default running at boot (anonsurf-recovery) with no anonymity, and
+# the toggle then believed it was on and failed to turn it off.
 #
-# Uso:
-#   - Atajo Super+A (configurado en sxhkdrc)
-#   - Click izquierdo en el módulo "anon_status" de polybar
-#   - Manual: ~/.config/scripts/toggle_anonymity.sh
-#
-# Requisitos: `sudo ./system/setup.sh` (una vez tras install.sh) instala
-#   - /usr/local/sbin/anon-harden: las reglas de IPv6/ICMP, ejecutadas como root
-#   - /etc/sudoers.d/anon_toggle: NOPASSWD SOLO para `anonsurf start|stop` y
-#     `anon-harden up|down` (nunca para iptables directo: sería root gratis)
-# Sin eso, `sudo -n` falla y el toggle avisa "Tor no arrancó".
+# Needs `sudo ./70-system/setup.sh` (once, after install.sh), which installs
+# /usr/local/sbin/anon-harden (the IPv6 and ICMP rules, run as root) and /etc/sudoers.d/anon_toggle
+# (NOPASSWD only for `anonsurf start|stop` and `anon-harden up|down`, never iptables itself, which
+# would be free root). Without them `sudo -n` fails and the toggle says AnonSurf did not start.
 
 STATE_FILE="$HOME/.config/bin/anon_state"
 mkdir -p "$(dirname "$STATE_FILE")"
 
-# Mismo fantasma que el módulo de polybar (anon_module.sh), nf-md-ghost
-# (U+F02A0) como escape UTF-8. En las notificaciones el estado lo da el texto.
+# The same ghost as polybar's module (anon_module.sh), nf-md-ghost (U+F02A0) as a UTF-8 escape. In
+# the notifications the text gives the state.
 ICON=$'\xf3\xb0\x8a\xa0'
 
-# ----- HARDENING: IPv6 + ICMP -----
-# Capas que anonsurf no cubre (IPv6 a DROP, ICMP saliente a DROP). Las reglas
-# viven en /usr/local/sbin/anon-harden (ver su cabecera); aquí solo se invoca.
-# Rutas absolutas porque la regla sudoers autoriza esas rutas exactas.
+# The layers anonsurf leaves out (IPv6 and outgoing ICMP to DROP) live in
+# /usr/local/sbin/anon-harden. Absolute paths because the sudoers rule allows these exact ones.
 ANONSURF=/usr/bin/anonsurf
 ANON_HARDEN=/usr/local/sbin/anon-harden
 
@@ -47,10 +38,9 @@ harden_down() {
   sudo -n "$ANON_HARDEN" down 2>/dev/null
 }
 
-# ----- VALIDACIÓN: ¿salimos REALMENTE por Tor? -----
-# check.torproject.org/api/ip devuelve JSON: {"IsTor":true,"IP":"x.x.x.x"}.
-# Falla si: (a) tor no está bootstrapped, (b) DNS no se está routeando por
-# Tor, (c) hay un leak. Más fiable que `pgrep tor`.
+# check.torproject.org/api/ip answers {"IsTor":true,"IP":"x.x.x.x"}. It fails when tor has not
+# finished bootstrapping, DNS is not going through Tor or something leaks: more reliable than
+# `pgrep tor`.
 verify_tor() {
   local resp
   resp=$(curl --max-time 15 -s https://check.torproject.org/api/ip 2>/dev/null)
@@ -58,18 +48,16 @@ verify_tor() {
   echo "$resp" | grep -q '"IsTor":true'
 }
 
-# ¿Está AnonSurf enrutando el tráfico por Tor? (ver la cabecera)
 anonsurf_active() {
   systemctl is-active --quiet anonsurfd
 }
 
 if anonsurf_active; then
-  # ----- DESACTIVAR -----
   notify-send -u low -t 3000 \
     "$ICON  Desactivando anonimato..." \
     "Cerrando Tor y restaurando conexión directa"
   harden_down
-  # `yes y |` auto-confirma el prompt "kill dangerous apps? [Y/n]"
+  # `yes y` answers anonsurf's "kill dangerous apps? [Y/n]".
   yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
   sleep 2
 
@@ -84,12 +72,11 @@ if anonsurf_active; then
       "Conexión directa restaurada · tráfico sin enmascarar"
   fi
 else
-  # ----- ACTIVAR -----
   notify-send -u normal -t 3000 \
     "$ICON  Activando anonimato..." \
     "Conectando a la red Tor (puede tardar 10-15s)"
-  # anonsurf start también pregunta "kill dangerous apps? [Y/n]"; sin un
-  # 'y' en stdin aborta con EOFError y tor nunca arranca.
+  # anonsurf start asks "kill dangerous apps? [Y/n]" too; with no 'y' on stdin it aborts with
+  # EOFError and tor never starts.
   yes y | sudo -n "$ANONSURF" start >/dev/null 2>&1
   sleep 5
 
@@ -100,17 +87,15 @@ else
     exit 1
   fi
 
-  # AnonSurf activo → endurecer capas que anonsurf no cubre
   harden_up
 
-  # Validación real contra check.torproject.org. Si falla, ROLLBACK completo.
   if verify_tor; then
     echo "on" >"$STATE_FILE"
     notify-send -u critical -t 5000 \
       "$ICON  Anonimato ON · verificado" \
       "Todo el tráfico via Tor (IPv6 bloqueado, ICMP bloqueado, IsTor:true)"
   else
-    # Bootstrap incompleto o leak detectado: revertir TODO
+    # Unfinished bootstrap or a leak: undo everything.
     harden_down
     yes y | sudo -n "$ANONSURF" stop >/dev/null 2>&1
     echo "off" >"$STATE_FILE"

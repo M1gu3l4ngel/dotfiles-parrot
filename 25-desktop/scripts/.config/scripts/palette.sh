@@ -1,22 +1,18 @@
 # shellcheck shell=sh
-# ~/.config/scripts/palette.sh
-# Paleta Monokai Soda (la de kitty) con un rol fijo para cada color. La cargan
-# los módulos de polybar con `. "${0%/*}/palette.sh"`: cambiar un color aquí
-# lo cambia en todas las barras. Los mismos valores están en
-# 25-desktop/polybar/.config/polybar/colors.ini para la configuración de las barras.
+# The Monokai Soda palette (kitty's) with a fixed role per color, loaded by the polybar modules with
+# `. "${0%/*}/palette.sh"`: a color changed here changes in every bar. The same values are in
+# 25-desktop/polybar/.config/polybar/colors.ini for the bars themselves.
 #
-# Regla de diseño: el color comunica estado. Gris (MUTED) = apagado o vacío;
-# color = activo. Contraste de texto verificado (WCAG, mínimo 4.5:1 sobre el
-# fondo de las barras, #1A1A1A); ERROR (4.15:1) solo se usa en iconos.
-#
-# Formato: valores para el tag de color de polybar %{F#...}.
+# Color means state: grey (MUTED) is off or empty, color is active. Text contrast checked against
+# WCAG (at least 4.5:1 on the bars' #1A1A1A background); ERROR (4.15:1) is for icons only. Values
+# for polybar's %{F#...} color tag.
 
-# shellcheck disable=SC2034 # Las variables se usan en los scripts que cargan este archivo.
-TEXT='#C4C5B5'       # texto normal
-STRONG='#F6F6EF'     # datos importantes (IPs)
-MUTED='#8F8B7A'      # apagado, vacío, desconectado
-ACCENT='#FA8419'     # foco y elemento seleccionado
-SUCCESS='#98E024'    # conectado, activo, correcto
-ERROR='#F4005F'      # target activo, fallos (solo iconos)
-INFO='#58D1EB'       # red local
-EXTRA='#9D65FF'      # Firefox pentest
+# shellcheck disable=SC2034 # The scripts that load this file use the variables.
+TEXT='#C4C5B5'    # normal text
+STRONG='#F6F6EF'  # important data (IPs)
+MUTED='#8F8B7A'   # off, empty, disconnected
+ACCENT='#FA8419'  # focus and selected item
+SUCCESS='#98E024' # connected, active, fine
+ERROR='#F4005F'   # active target, failures (icons only)
+INFO='#58D1EB'    # local network
+EXTRA='#9D65FF'   # pentest Firefox

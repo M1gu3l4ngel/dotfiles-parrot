@@ -1,29 +1,24 @@
 #!/bin/sh
-# ~/.config/scripts/vpn_status.sh
-# Muestra la IPv4 de la VPN en el módulo `vpn_status` de polybar
-# (bar/vpn_bar), o "Disconnected" si no hay ninguna. polybar lo ejecuta cada
-# segundo.
+# Shows the VPN's IPv4 in polybar's vpn_status module (bar/vpn_bar), or "Disconnected"; polybar runs
+# it every second. Any tunnel counts: tun* (OpenVPN, the HTB and THM VPN) and wg* (WireGuard), the
+# first one if there are several. It is the IP used as LHOST in the labs.
 #
-# Detecta cualquier túnel: tun* (OpenVPN, la VPN de HTB/THM) y wg* (WireGuard).
-# Si hay varios, muestra el primero. Es la IP que se usa como LHOST en los labs.
-#
-# Una sola llamada a `ip`; el resto con builtins de sh. Sin `set -e` a
-# propósito: la barra debe mostrar un texto aunque algo falle.
+# One call to `ip`, the rest with sh builtins. No `set -e` on purpose: the bar must show a text even
+# if something fails.
 
 set -u
 
-# Icono nf-md-cube_outline (U+F01A7) como escape: los glifos de uso privado
-# (PUA) escritos literalmente los eliminan las herramientas de edición.
+# nf-md-cube_outline (U+F01A7) as an escape: editing tools drop private use glyphs (PUA) written
+# literally.
 ICON=$(printf '\363\260\206\247')
 
-# ----- MODO DEMO -----
-# Con `demo on` (ver ethernet_status.sh), la VPN falsa es el segundo campo.
+# With `demo on` (ethernet_status.sh) the fake VPN is the second field.
 DEMO_FILE="$HOME/.config/bin/demo"
 ip_address=""
 [ -r "$DEMO_FILE" ] && read -r _ ip_address _ <"$DEMO_FILE"
 
 if [ -z "$ip_address" ]; then
-  # Formato de `ip -4 -br addr`: "<interfaz> <estado> <ip>/<prefijo> ...".
+  # `ip -4 -br addr` prints "<interface> <state> <ip>/<prefix> ...".
   while read -r iface _ addr _; do
     case "$iface" in
       tun* | wg*)
@@ -40,8 +35,8 @@ fi
 # shellcheck source=palette.sh
 . "${0%/*}/palette.sh"
 
-# Conectada: icono verde (éxito) e IP destacada. Desconectada: todo en gris,
-# para que no parezca un estado correcto.
+# Connected: a green icon (success) and the IP highlighted. Disconnected: all grey, so it does not
+# look like a good state.
 if [ -n "$ip_address" ]; then
   echo "%{F${SUCCESS}}${ICON} %{F${STRONG}}${ip_address}%{F-}"
 else

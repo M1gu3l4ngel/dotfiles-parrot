@@ -1,20 +1,15 @@
 #!/bin/bash
-# ~/.config/scripts/powermenu.sh
-# Menú de sesión con rofi: apagar, reiniciar o cerrar sesión. Lo abre el botón
-# de apagado de polybar ([module/power] en current.ini).
+# The session menu in rofi (power off, reboot, log out), opened by polybar's power button
+# ([module/power] in current.ini). It asks for the action instead of powering off on one click, so a
+# wrong click does not close everything that is open; Esc or "Cancelar" close it doing nothing.
 #
-# Pide elegir la acción en vez de apagar con un solo click: el botón está
-# junto al de anonimato y un click equivocado cerraría todo lo abierto. Esc o
-# "Cancelar" cierran el menú sin hacer nada.
-#
-# Apaga y reinicia con systemctl, que cierra los programas y escribe en disco
-# todo lo pendiente antes de apagar: un corte brusco de la VM puede dejar
-# archivos vacíos (ya ocurrió con objetos de git). No pide contraseña: polkit
-# lo permite a la sesión local activa.
+# systemctl powers off and reboots after closing the programs and writing everything pending to
+# disk: a hard VM cut can leave empty files (it happened to git objects). No password: polkit
+# allows it to the active local session.
 
 set -euo pipefail
 
-# Iconos como escapes UTF-8 (los glifos PUA literales se pierden al editar).
+# Icons as UTF-8 escapes (literal PUA glyphs are lost on editing).
 ICON_POWEROFF=$'\xef\x80\x91'   # power-off (U+F011)
 ICON_REBOOT=$'\xf3\xb0\x9c\x89' # nf-md-restart (U+F0709)
 ICON_LOGOUT=$'\xf3\xb0\x8d\x83' # nf-md-logout (U+F0343)
@@ -25,10 +20,9 @@ REBOOT="$ICON_REBOOT  Reiniciar"
 LOGOUT="$ICON_LOGOUT  Cerrar sesión"
 CANCEL="$ICON_CANCEL  Cancelar"
 
-# Mismo tema que Super+D (config.rasi), más estrecho y sin buscador: solo se
-# elige con flechas/Enter o con el ratón. -no-custom impide ejecutar texto
-# escrito a mano. `|| true`: Esc hace que rofi salga con error, y eso no es
-# un fallo sino "cancelar".
+# The same theme as Super+D (config.rasi), narrower and with no search box: arrows and Enter or the
+# mouse only. -no-custom keeps typed text from running. Esc makes rofi exit with an error, which
+# here means cancel, not a failure.
 choice=$(printf '%s\n' "$POWEROFF" "$REBOOT" "$LOGOUT" "$CANCEL" |
   rofi -dmenu -i -no-custom -p "Sesión" \
     -theme-str 'window { width: 300px; } listview { lines: 4; } inputbar { enabled: false; }' ||
@@ -37,7 +31,7 @@ choice=$(printf '%s\n' "$POWEROFF" "$REBOOT" "$LOGOUT" "$CANCEL" |
 case "$choice" in
   "$POWEROFF") systemctl poweroff ;;
   "$REBOOT") systemctl reboot ;;
-  # bspc quit cierra bspwm y vuelve a la pantalla de login.
+  # Quitting bspwm goes back to the login screen.
   "$LOGOUT") bspc quit ;;
-  *) ;; # Cancelar o Esc: no hacer nada.
+  *) ;; # Cancel or Esc: nothing to do.
 esac

@@ -1,13 +1,10 @@
 #!/bin/bash
-# ~/.config/scripts/parrot_module.sh
-# Polybar module — logo de Parrot OS en la barra `log` (esquina izquierda).
-# Lo ejecuta [module/parrot] de current.ini una vez al día (el logo es estático).
+# The Parrot OS logo in the `log` bar (left corner), run by [module/parrot] in current.ini once a
+# day: the logo is static.
 #
-# %{T2} selecciona font-1 de current.ini (Hack Nerd Font Mono): el glifo
-# nf-linux-parrot (U+F329) solo existe en Nerd Fonts v3+, y Hack es la fuente
-# instalada que lo trae. Si falta Hack, el logo no se ve.
-# Se escribe como escape UTF-8 `$'\x..'` y no como carácter literal: los
-# glifos de uso privado (PUA) los eliminan las herramientas de edición.
+# %{T2} picks current.ini's font-1 (Hack Nerd Font Mono): nf-linux-parrot (U+F329) exists only in
+# Nerd Fonts v3+, and Hack is the installed font that has it; without Hack the logo does not show.
+# A UTF-8 escape rather than the literal character: editing tools drop private use glyphs (PUA).
 
 ICON=$'\xef\x8c\xa9' # U+F329 nf-linux-parrot
 echo "%{T2}${ICON}%{T-}"
