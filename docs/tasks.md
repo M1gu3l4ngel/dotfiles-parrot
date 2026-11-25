@@ -10,6 +10,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Sin el recordatorio de español local
+
+**Plataforma:** Claude Code.
+
+- [ ] [Esta PC] En una sesión nueva, Claude sigue respondiendo en español sin el recordatorio `UserPromptSubmit` (copia previa en `~/.claude/settings.json.bak-reminder`)
+
 ## Solo el tema de rofi en uso
 
 **Plataforma:** Escritorio.
@@ -152,19 +158,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
 - [ ] Tras el push, el CI pasa con el paso «LF line endings» en verde
-
-# Fase 3 — Capa de Claude desde dotfiles-windows
-
-## Recordatorio de español local en settings.json
-
-**Plataforma:** Claude Code.
-**Prioridad:** P2.
-**Requiere:** nada.
-
-`install.sh` ya fusiona `settings.json` con `install-settings.mjs`. Queda un hook que solo existe
-en esta máquina.
-
-- [ ] Decidir si el `UserPromptSubmit` local (recordatorio de español con `printf`) se queda o se borra porque ya lo cubre `reply-in-spanish.mjs`
 
 # Cierre — Instalación desde cero
 
