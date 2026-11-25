@@ -15,7 +15,8 @@
 #   5. JSON válido (tema de oh-my-posh, lazy-lock)
 #   6. sudoers y keymap XKB (se validan con visudo y xkbcomp)
 #   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>,
-#      y documentación bilingüe sincronizada (check-docs.mjs de dotfiles-windows)
+#      documentación bilingüe sincronizada y formato del panel (herramientas de
+#      dotfiles-windows), y tests de install.sh/uninstall.sh (tools/test-install.sh)
 #   8. Secretos en todo el historial con gitleaks (si está instalado)
 #
 # Una herramienta que falte se avisa y se omite (en local); el CI instala todas.
@@ -191,24 +192,34 @@ if [ -z "$crlf" ]; then pass "LF line endings"; else
   echo "$crlf"
 fi
 
-# ----- 7b. DOCUMENTACIÓN BILINGÜE SINCRONIZADA -----
-# Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
-# The checker is the one dotfiles-windows shares with every repo: its clone next to this one, or
-# CLAUDE_LAYER_DIR in CI. nvim's README is NvChad's, protected and English only.
-docs_tool="${CLAUDE_LAYER_DIR:-$HOME/dotfiles-windows/50-claude}/tools/check-docs.mjs"
-if ! have node || [ ! -f "$docs_tool" ]; then
-  # Skipped only locally: the CI checks the layer out, so a missing tool there is a broken step.
-  if [ -n "${CI:-}" ]; then
-    fail "Documentación bilingüe: falta node o $docs_tool"
+# ----- 7b. HERRAMIENTAS DE LA CAPA DE CLAUDE CODE -----
+# The bilingual docs and panel checkers are the ones dotfiles-windows shares with every repo: its
+# clone next to this one, or CLAUDE_LAYER_DIR in CI. The install tests need the layer too.
+LAYER_DIR="${CLAUDE_LAYER_DIR:-$HOME/dotfiles-windows/50-claude}"
+
+# Runs a check that needs the layer and node. Skipped only locally: the CI checks the layer out,
+# so a missing layer there is a broken step. Usage: layer_check <label> <command...>
+layer_check() {
+  local label=$1 out
+  shift
+  if ! have node || [ ! -f "$LAYER_DIR/links.json" ]; then
+    if [ -n "${CI:-}" ]; then fail "$label: falta node o $LAYER_DIR"; else skip "$label: falta node o $LAYER_DIR"; fi
+  elif out=$("$@" 2>&1); then
+    pass "$label: ${out##*$'\n'}"
   else
-    skip "Documentación bilingüe: falta node o $docs_tool"
+    fail "$label:"
+    echo "$out"
   fi
-elif out=$(node "$docs_tool" . --exclude 30-editor/nvim/.config/nvim/README.md 2>&1); then
-  pass "$out"
-else
-  fail "Documentación bilingüe desincronizada:"
-  echo "$out"
-fi
+}
+
+# Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
+# nvim's README is NvChad's, protected and English only.
+layer_check "Documentación bilingüe" \
+  node "$LAYER_DIR/tools/check-docs.mjs" . --exclude 30-editor/nvim/.config/nvim/README.md
+# docs/tasks.md and docs/backlog.md keep the format the task panel reads.
+layer_check "Formato del panel de tareas" node "$LAYER_DIR/panel/check.mjs" .
+# install.sh and uninstall.sh against a throwaway HOME; the real one is never touched.
+layer_check "Tests de install.sh y uninstall.sh" env CLAUDE_LAYER_DIR="$LAYER_DIR" tools/test-install.sh
 
 # ----- 8. SECRETOS -----
 if have gitleaks; then

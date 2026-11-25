@@ -12,6 +12,10 @@
     ./tools/check.sh
     ```
 
+    The docs, task panel and install test checks need dotfiles-windows
+    cloned in `~/dotfiles-windows` (`bootstrap.sh` clones it); without it
+    they are skipped locally and only CI runs them.
+
 4. Commit following the commit format.
 5. Open a pull request. CI runs the same checks and reports the result on
    GitHub.

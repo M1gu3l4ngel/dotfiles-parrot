@@ -1,9 +1,7 @@
-# .github/workflows/ci.yml
-# CI del repo: en cada push a main y en cada pull request ejecuta
-# tools/check.sh (sintaxis, shellcheck, Lua, JSON, sudoers, XKB, higiene del
-# repo público y gitleaks sobre todo el historial). El resultado aparece como
-# ✓ / ✗ junto a cada commit en GitHub.
-# Para ejecutar lo mismo en local: ./tools/check.sh
+# On every push to main and every pull request, runs tools/check.sh: shell syntax, shellcheck and
+# shfmt, zsh, Lua, JSON, sudoers, XKB, public repo hygiene, the bilingual docs, the task panel
+# format, the install tests and gitleaks over the whole history. The same as ./tools/check.sh
+# locally. node comes with the runner: there is no package.json to pin it in.
 
 name: CI
 
@@ -12,49 +10,50 @@ on:
     branches: [main]
   pull_request:
 
-# Mínimo privilegio: el workflow solo necesita leer el código.
+# Least privilege: the workflow only reads the code.
 permissions:
   contents: read
 
-# Un push nuevo cancela la ejecución anterior de la misma rama.
+# A new push cancels the previous run of the same branch.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   check:
-    name: Comprobaciones
+    name: Checks
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      # Acciones fijadas por SHA de commit y no por etiqueta: una etiqueta
-      # (v7) puede moverse a otro código; un SHA no.
-      - name: Descargar el repo
+      # Actions are pinned by commit SHA, not by tag: a tag (v7) can be moved to other code; a SHA
+      # cannot. Dependabot proposes the bumps once a month.
+      - name: Check out the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Historial completo: gitleaks revisa todos los commits, no solo el último.
+          # The whole history: gitleaks scans every commit, not only the last one.
           fetch-depth: 0
-          # No dejar el token de GitHub guardado en .git/config del runner.
+          # Leaves no GitHub token in the runner's .git/config.
           persist-credentials: false
 
-      # The bilingual docs checker is shared from dotfiles-windows, pinned to a commit like the
-      # actions: a new version there cannot change what passes here until this SHA moves.
-      - name: Descargar la capa de Claude Code (dotfiles-windows)
+      # The docs and panel checkers and the Claude Code layer the install tests link come from
+      # dotfiles-windows, pinned to a commit like the actions: a new version there cannot change
+      # what passes here until this SHA moves.
+      - name: Check out the Claude Code layer (dotfiles-windows)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: M1gu3l4ngel/dotfiles-windows
-          ref: 87a6791331f1abcac67dd2c78dc5d446ee715a16
+          ref: 4451272ba6fe21e05ac46c999e263968627bb8fe
           path: .ci/dotfiles-windows
           persist-credentials: false
 
-      - name: Instalar herramientas
+      - name: Install the tools
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq shellcheck shfmt zsh lua5.1 x11-xkb-utils
 
-      # gitleaks no está en apt: se descarga el binario oficial en una versión
-      # fijada y se verifica su SHA-256 antes de usarlo.
-      - name: Instalar gitleaks
+      # gitleaks is not in apt: the official binary at a pinned version, checked against its
+      # SHA-256 before it runs.
+      - name: Install gitleaks
         env:
           GITLEAKS_VERSION: "8.30.1"
           GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
@@ -66,7 +65,7 @@ jobs:
           tar -xzf gitleaks.tar.gz gitleaks
           sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
 
-      - name: Ejecutar tools/check.sh
+      - name: Run tools/check.sh
         env:
           CLAUDE_LAYER_DIR: ${{ github.workspace }}/.ci/dotfiles-windows/50-claude
         run: ./tools/check.sh

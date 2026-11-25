@@ -1,0 +1,22 @@
+# Keeps the CI workflow's actions up to date.
+#
+# Actions are pinned by commit SHA, not by tag: a tag can be moved to other code without this
+# repo changing a line; a SHA cannot. The price is that nobody hears about new versions, and this
+# covers it: once a month it opens ONE pull request with all the bumps together, updating both
+# the SHA and the version comment next to it.
+#
+# `cooldown` waits seven days after a version is published before proposing it: the window in
+# which a compromised release is usually caught and pulled.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(ci)"

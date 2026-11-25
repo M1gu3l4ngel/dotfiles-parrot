@@ -12,6 +12,11 @@ Notable changes to the project. The format follows
 
 - README header with the Dotfiles Parrot logo (light and dark theme),
   section links and badges, following the same recipe as dotfiles-windows.
+- `tools/test-install.sh`: runs `install.sh` and `uninstall.sh` against a
+  throwaway `HOME` (link states, backups, restore after a failed `ln`, signing
+  key, idempotence). `tools/check.sh` runs it and the task panel format check.
+- `.github/dependabot.yml`: one grouped monthly pull request for the CI
+  actions, with a 7-day cooldown, as in dotfiles-windows.
 - `install.sh --dry-run` shows what it would link, back up or change without
   touching anything; `install.sh --check` reports the state of every link and
   of `~/.claude/settings.json` and exits with 1 if something is wrong.
@@ -71,6 +76,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- CI step names and comments in English; the dotfiles-windows checkout moves
+  to the commit whose docs checker also validates HTML `href`, `src` and
+  `srcset`.
 - The configs live in numbered layers, as in dotfiles-windows: `10-shell`,
   `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format`, `60-apps`
   and `70-system`. `install.sh` (or the `post-merge` hook) relinks the old

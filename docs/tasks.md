@@ -59,6 +59,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` lista los paquetes de `60-apps/apt.txt` que faltan
 
+## CI con tests de instalación y Dependabot
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, el CI de GitHub pasa en verde, con los pasos en inglés y las líneas «Formato del panel de tareas» y «Tests de install.sh y uninstall.sh» en `✓`
+- [ ] Al mes del push, Dependabot abre un único PR `chore(ci)` con las acciones que tengan versión nueva (o ninguno si están al día)
+
 ## Cabecera del README con los logos de Parrot
 
 **Plataforma:** Repositorio.
@@ -141,33 +148,13 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 # Fase 5 — Calidad y CI
 
-## CI completo con acciones fijadas
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] El CI corre lo mismo que `./tools/check.sh`: shellcheck, shfmt, tests, docs bilingües, check del panel, check de comentarios y gitleaks
-- [ ] Segundo `actions/checkout` de dotfiles-windows, fijado por SHA, para las herramientas compartidas
-- [ ] Node del runner sin versión escrita en el YAML (no hay `package.json`: se usa el del runner)
-- [ ] `.github/dependabot.yml` mensual para `github-actions`, agrupado y con `cooldown` de 7 días, como en Windows
-- [ ] Nombres de los pasos del CI en inglés
-
-## Tests de install.sh y uninstall.sh
-
-**Plataforma:** Instalación, Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-
-- [ ] `tools/test-install.sh`: ejecuta `install.sh` y `uninstall.sh` con un `HOME` temporal y comprueba los cuatro estados, el backup, la restauración tras un fallo y que una segunda ejecución no cambia nada (hay un borrador con 19 casos en el scratchpad de la sesión que se puede partir)
-- [ ] `tools/check.sh` y el CI lo ejecutan
 
 ## Recarga de polybar sin killall
 
 **Plataforma:** Escritorio.
 **Prioridad:** Mejora.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `polybar/launch.sh` cierra las barras con `polybar-msg cmd quit` (con `enable-ipc = true` en las barras) en vez de `killall -q polybar`
 
@@ -208,7 +195,7 @@ Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-wi
 **Prioridad:** P2.
 **Requiere:** nada.
 
-- [ ] Badges de CI y licencia, tabla de carpetas numeradas con enlace a su README y tabla de recargas (hoy solo en `CLAUDE.md`)
+- [ ] Tabla de carpetas numeradas con enlace a su README y tabla de recargas (hoy solo en `CLAUDE.md`)
 - [ ] Diagrama Mermaid: `bootstrap.sh` → apt, fuentes, Neovim, oh-my-posh, Node → `install.sh` → enlaces → programas, la capa de Claude desde dotfiles-windows y `git pull` → `post-merge`
 - [ ] Secciones de `--check`, `--dry-run` y «Mantener otra PC al día», como en Windows
 

@@ -12,6 +12,12 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 - Cabecera del README con el logo de Dotfiles Parrot (tema claro y oscuro),
   enlaces a las secciones y badges, con la misma receta que dotfiles-windows.
+- `tools/test-install.sh`: ejecuta `install.sh` y `uninstall.sh` con un
+  `HOME` temporal (estados de enlace, copias de seguridad, restauración tras un
+  `ln` fallido, clave de firma, idempotencia). `tools/check.sh` lo ejecuta, y
+  también el check de formato del panel de tareas.
+- `.github/dependabot.yml`: un único pull request mensual y agrupado para las
+  acciones del CI, con 7 días de espera, como en dotfiles-windows.
 - `install.sh --dry-run` muestra qué enlazaría, respaldaría o cambiaría sin
   tocar nada; `install.sh --check` informa del estado de cada enlace y de
   `~/.claude/settings.json` y sale con 1 si algo está mal.
@@ -69,6 +75,8 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- Pasos y comentarios del CI en inglés; el checkout de dotfiles-windows pasa
+  al commit cuyo check de docs valida también `href`, `src` y `srcset` de HTML.
 - Las configuraciones viven en capas numeradas, como en dotfiles-windows:
   `10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format`,
   `60-apps` y `70-system`. `install.sh` (o el hook `post-merge`) rehace los
