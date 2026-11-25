@@ -1,94 +1,78 @@
 #!/usr/bin/env bash
-# bootstrap.sh
-# Instalación completa en un solo comando sobre Parrot OS recién instalado:
+# Full install on a fresh Parrot OS in one command, as a regular user (it asks for sudo once and
+# uses it only for apt, /opt and /etc):
 #
 #   git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
 #   cd ~/dotfiles && ./bootstrap.sh
 #
-# Orden: paquetes de apt -> fuentes -> Neovim -> oh-my-posh -> nvm + Node +
-# pnpm + Claude Code -> symlinks (install.sh) -> extensiones de VSCodium ->
-# hardening (system/setup.sh) -> zsh como shell -> guía de GPG/SSH/pass.
-#
-# Idempotente: cada paso comprueba si ya está hecho (y en qué versión) y solo
-# aplica lo que falta. Se puede volver a ejecutar tras un fallo o para
-# actualizar una versión fijada.
-#
-# Se ejecuta como usuario normal: pide sudo una vez y lo usa solo en los pasos
-# que tocan el sistema (apt, /opt, /etc).
-#
-# Uso:
-#   ./bootstrap.sh          instalación completa
-#   ./bootstrap.sh --help   esta ayuda
+# Each step checks what is already done, and at which version, and applies only what is missing:
+# it runs again safely after a failure or to update a pinned version. --dry-run shows what each
+# step would do without sudo, downloads or changes.
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# =============================================================================
-# VERSIONES FIJADAS
-# =============================================================================
-# Todo lo que no viene de apt se descarga en una versión concreta y se
-# comprueba contra el SHA-256 guardado aquí. Si la descarga no coincide
-# (corrupta o manipulada), la instalación se detiene. Para actualizar:
-# cambiar versión y hash juntos, tomando el hash del release oficial.
+# ==== PINNED VERSIONS ====
+# Everything that does not come from apt is downloaded at a fixed version and checked against the
+# SHA-256 kept here: a corrupt or tampered download stops the install. To update, change version
+# and hash together, taking the hash from the official release.
 
-# Nerd Fonts: solo la familia que usa cada config (y su licencia).
+# Nerd Fonts: only the family each config uses, and its license.
 NERD_FONTS_VERSION="v3.5.1"
 declare -A FONT_SHA256=(
   [Hack]="cdd389472e10e2261520140ff1b382b4f8a226af5fd0b2735b975d31151d9c3c"
   [CascadiaCode]="ae598e9401e2846aa3ee364513715de0490b844a4b54f0768991f45f23aa8369"
 )
-# CaskaydiaCove -> todo el texto (polybar, kitty, dunst y rofi);
-# Hack Mono -> solo el logo de Parrot en polybar.
+# CaskaydiaCove for all text (polybar, kitty, dunst and rofi); Hack Mono only for the Parrot logo
+# in polybar.
 declare -A FONT_FILES=(
   [Hack]="HackNerdFontMono-*"
   [CascadiaCode]="CaskaydiaCoveNerdFont-*"
 )
 
-# Neovim oficial: el de apt va varias versiones por detrás de lo que exige NvChad.
+# Official Neovim: apt's is several versions behind what NvChad needs.
 NVIM_VERSION="v0.12.5"
 NVIM_SHA256="bce0f56eda1f1b1db6eee8f4133d7a38813ea07933837dd1777411ca384c6875"
 
-# oh-my-posh (prompt). Binario del release, no `curl | bash` de un script remoto.
+# oh-my-posh (prompt): the release binary, not `curl | bash` of a remote script.
 OMP_VERSION="v31.4.0"
 OMP_SHA256="28ba5d5ec77fbcd6d2681674f6dd92760e07c5f4eb58927b6f9b03d1dd039fd4"
 
-# nvm se clona en un tag concreto (instalación manual oficial, sin curl | bash).
-# Node se fija por versión mayor: recibe los parches de seguridad de esa rama.
+# nvm is cloned at a tag (the official manual install, no curl | bash). Node is pinned by major
+# version, so it gets that line's security patches.
 NVM_VERSION="v0.40.8"
 NODE_MAJOR="24"
 
-# =============================================================================
-# PAQUETES DE APT
-# =============================================================================
+# The Claude Code layer: dotfiles-windows is its single source on every machine, next to this
+# repo as Windows keeps ~\dotfiles-parrot.
+CLAUDE_LAYER_REPO="https://github.com/M1gu3l4ngel/dotfiles-windows.git"
+CLAUDE_LAYER_CLONE="$HOME/dotfiles-windows"
+
+# ==== APT PACKAGES ====
 APT_PACKAGES=(
-  # Entorno gráfico: WM, atajos, barra, compositor, lanzador, terminal, fondo,
-  # notificaciones, gestor de archivos y utilidades de X11 (xkbcomp para el
-  # keymap, xset).
+  # Desktop: window manager, hotkeys, bar, compositor, launcher, terminal, wallpaper,
+  # notifications, file manager and X11 tools (xkbcomp for the keymap, xset).
   bspwm sxhkd polybar picom rofi kitty feh dunst libnotify-bin nautilus
   x11-xkb-utils x11-xserver-utils
-  # Shell y herramientas de terminal.
+  # Shell and terminal tools.
   zsh zsh-autosuggestions zsh-syntax-highlighting
   bat lsd fzf tmux ripgrep jq xclip
-  # Desarrollo: git, análisis de shell scripts, lo que necesita Mason (nvim)
-  # para descargar LSPs y formateadores, y VSCodium (VS Code sin telemetría,
-  # del repositorio de Parrot).
+  # Development: git, shell script checks, what Mason (nvim) needs to fetch LSPs and formatters,
+  # and VSCodium (VS Code without telemetry, from Parrot's repository).
   git shellcheck shfmt curl wget unzip xz-utils tar codium
-  # Seguridad: firewall, anonimato, parches automáticos, claves y secretos.
+  # Security: firewall, anonymity, automatic patches, keys and secrets.
   ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
-  # Pentesting: VPN de los labs (HTB, THM), que crea la interfaz tun0 que
-  # muestra la barra de VPN de polybar, y dig para las pruebas de fugas de
-  # DNS del anonimato (docs/anonymity.md).
+  # Pentesting: the labs' VPN (HTB, THM), whose tun0 interface polybar's VPN module shows, and
+  # dig for the anonymity DNS leak tests (docs/anonymity.md).
   openvpn bind9-dnsutils
-  # Base para fuentes y descargas HTTPS, y glxinfo (mesa-utils) para
-  # comprobar la aceleración gráfica (docs/vmware.md).
+  # Fonts and HTTPS downloads, and glxinfo (mesa-utils) to check graphics acceleration
+  # (docs/vmware.md).
   fontconfig ca-certificates mesa-utils
   firefox-esr
 )
 
-# =============================================================================
-# UTILIDADES
-# =============================================================================
+# ==== HELPERS ====
 BOLD='\033[1m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -98,17 +82,32 @@ NC='\033[0m'
 step() { echo -e "\n${BOLD}==> $1${NC}"; }
 ok() { echo -e "    ${GREEN}✓${NC} $1"; }
 warn() { echo -e "    ${YELLOW}!${NC} $1"; }
+planned() { echo -e "    ${YELLOW}~${NC} $1"; }
 die() {
   echo -e "    ${RED}✗ $1${NC}" >&2
   exit 1
 }
 
-# Carpeta temporal para descargas; se borra al salir, pase lo que pase.
+usage() {
+  cat <<'EOF'
+Uso: ./bootstrap.sh [--dry-run]
+
+  (sin opción)  instalación completa: apt, fuentes, Neovim, oh-my-posh, Node,
+                capa de Claude Code, enlaces, extensiones de VSCodium,
+                hardening y zsh
+  --dry-run     muestra qué haría cada paso, sin sudo, descargas ni cambios
+  -h, --help    esta ayuda
+EOF
+  exit 0
+}
+
+DRY_RUN=0
+
+# Downloads go to a temporary folder removed on exit, whatever happens.
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-# Descarga un archivo y verifica su SHA-256 antes de devolverlo.
-# Uso: download_verified <url> <destino> <sha256>
+# Downloads a file and checks its SHA-256 before handing it over.
 download_verified() {
   local url=$1 dest=$2 sha=$3
   curl -fL --retry 3 --silent --show-error -o "$dest" "$url"
@@ -118,14 +117,7 @@ download_verified() {
   fi
 }
 
-usage() {
-  sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'
-  exit 0
-}
-
-# =============================================================================
-# PASOS
-# =============================================================================
+# ==== STEPS ====
 
 check_prerequisites() {
   step "Comprobaciones previas"
@@ -140,8 +132,12 @@ check_prerequisites() {
   if [ "${XDG_SESSION_TYPE:-x11}" = "wayland" ]; then
     warn "Sesión Wayland detectada: bspwm solo funciona en X11 (elige la sesión 'bspwm' al iniciar)"
   fi
-  # Pedir la contraseña una sola vez y mantener sudo vivo mientras dure el
-  # script, para no volver a pedirla a mitad de un paso largo.
+  if [ "$DRY_RUN" -eq 1 ]; then
+    ok "Usuario $USER (simulación: no se pide sudo)"
+    return
+  fi
+  # The password once, and sudo kept alive while the script runs, so a long step never stops to
+  # ask again.
   sudo -v
   while true; do
     sudo -n true
@@ -154,13 +150,12 @@ check_prerequisites() {
 install_apt_packages() {
   step "Paquetes del sistema (apt)"
   local packages=("${APT_PACKAGES[@]}")
-  # Integración con VMware (portapapeles, resolución, carpeta compartida).
+  # VMware integration: clipboard, resolution, shared folder.
   if [ "$(systemd-detect-virt 2>/dev/null || true)" = "vmware" ]; then
     packages+=(open-vm-tools-desktop)
   fi
-  # Solo se instala lo que falta. Si ya está todo, se evita `apt-get update`,
-  # que descarga los índices de todos los repositorios y es lo más lento de
-  # una re-ejecución. Una sola consulta a dpkg para todos los paquetes.
+  # Only what is missing, and with nothing missing no `apt-get update`, which fetches every
+  # repository index and is the slowest part of a rerun. One dpkg query for all packages.
   local -A installed=()
   local pkg status missing=()
   while read -r pkg status; do
@@ -173,9 +168,13 @@ install_apt_packages() {
     ok "Los ${#packages[@]} paquetes ya están instalados"
     return
   fi
+  if [ "$DRY_RUN" -eq 1 ]; then
+    planned "Instalaría ${#missing[@]} paquetes: ${missing[*]}"
+    return
+  fi
   echo "    Instalando ${#missing[@]} paquetes: ${missing[*]}"
   sudo apt-get update -qq
-  # Una sola transacción de apt para todos: resuelve dependencias una vez.
+  # One apt transaction for all of them: dependencies are resolved once.
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${missing[@]}"
   ok "${#missing[@]} paquetes instalados"
 }
@@ -185,10 +184,14 @@ install_fonts() {
   local base="$HOME/.local/share/fonts/NerdFonts" name dest archive changed=false
   for name in "${!FONT_SHA256[@]}"; do
     dest="$base/$name"
-    # Un archivo .version por familia permite saltar lo ya instalado y
-    # reinstalar solo al cambiar NERD_FONTS_VERSION.
+    # A .version file per family skips what is installed and reinstalls only when
+    # NERD_FONTS_VERSION changes.
     if [ "$(cat "$dest/.version" 2>/dev/null)" = "$NERD_FONTS_VERSION" ]; then
       ok "$name ya instalada"
+      continue
+    fi
+    if [ "$DRY_RUN" -eq 1 ]; then
+      planned "Descargaría e instalaría $name en $base"
       continue
     fi
     archive="$TMP_DIR/$name.tar.xz"
@@ -196,13 +199,12 @@ install_fonts() {
       "https://github.com/ryanoasis/nerd-fonts/releases/download/$NERD_FONTS_VERSION/$name.tar.xz" \
       "$archive" "${FONT_SHA256[$name]}"
     rm -rf "$dest" && mkdir -p "$dest"
-    # Solo la familia usada + la licencia (OFL/MIT exigen acompañar la fuente).
+    # Only the family in use plus its license: OFL and MIT require shipping it with the font.
     tar -xJf "$archive" -C "$dest" --wildcards "${FONT_FILES[$name]}" 'LICENSE*'
     echo "$NERD_FONTS_VERSION" >"$dest/.version"
     ok "$name instalada ($(find "$dest" -name '*.ttf' | wc -l) archivos)"
     changed=true
   done
-  # Regenerar la caché de fuentes solo si se instaló alguna.
   if [ "$changed" = true ]; then
     fc-cache -f "$base" >/dev/null
   fi
@@ -213,6 +215,8 @@ install_neovim() {
   local prefix=/opt/nvim-linux-x86_64 archive="$TMP_DIR/nvim.tar.gz"
   if "$prefix/bin/nvim" --version 2>/dev/null | head -1 | grep -q "NVIM $NVIM_VERSION$"; then
     ok "Ya instalado"
+  elif [ "$DRY_RUN" -eq 1 ]; then
+    planned "Descargaría Neovim $NVIM_VERSION y lo instalaría en $prefix (sudo)"
   else
     download_verified \
       "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux-x86_64.tar.gz" \
@@ -221,9 +225,16 @@ install_neovim() {
     sudo tar -xzf "$archive" -C /opt
     ok "Instalado en $prefix"
   fi
-  # El enlace en /usr/local/bin hace que nvim esté en el PATH estándar sin
-  # tocar el PATH de la shell.
-  sudo ln -sfn "$prefix/bin/nvim" /usr/local/bin/nvim
+  # A link in /usr/local/bin puts nvim on the standard PATH without touching the shell's.
+  if [ "$(readlink /usr/local/bin/nvim 2>/dev/null)" = "$prefix/bin/nvim" ]; then
+    return
+  fi
+  if [ "$DRY_RUN" -eq 1 ]; then
+    planned "Enlazaría /usr/local/bin/nvim (sudo)"
+  else
+    sudo ln -sfn "$prefix/bin/nvim" /usr/local/bin/nvim
+    ok "Enlazado /usr/local/bin/nvim"
+  fi
 }
 
 install_oh_my_posh() {
@@ -231,6 +242,10 @@ install_oh_my_posh() {
   local bin="$HOME/.local/bin/oh-my-posh"
   if [ "$("$bin" version 2>/dev/null)" = "${OMP_VERSION#v}" ]; then
     ok "Ya instalado"
+    return
+  fi
+  if [ "$DRY_RUN" -eq 1 ]; then
+    planned "Descargaría oh-my-posh $OMP_VERSION en $bin"
     return
   fi
   download_verified \
@@ -243,6 +258,31 @@ install_oh_my_posh() {
 install_node_toolchain() {
   step "nvm $NVM_VERSION + Node $NODE_MAJOR + pnpm + Claude Code"
   export NVM_DIR="$HOME/.nvm"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    if [ ! -d "$NVM_DIR/.git" ]; then
+      planned "Clonaría nvm $NVM_VERSION en $NVM_DIR, e instalaría Node $NODE_MAJOR, pnpm y Claude Code"
+      return
+    fi
+    if [ "$(git -C "$NVM_DIR" describe --tags 2>/dev/null)" = "$NVM_VERSION" ]; then
+      ok "nvm $NVM_VERSION"
+    else
+      planned "Cambiaría nvm a $NVM_VERSION"
+    fi
+    if compgen -G "$NVM_DIR/versions/node/v$NODE_MAJOR.*" >/dev/null; then
+      ok "Node $NODE_MAJOR"
+    else
+      planned "Instalaría Node $NODE_MAJOR"
+    fi
+    local tool
+    for tool in pnpm claude; do
+      if compgen -G "$NVM_DIR/versions/node/v$NODE_MAJOR.*/bin/$tool" >/dev/null; then
+        ok "$tool"
+      else
+        planned "Instalaría $tool con npm"
+      fi
+    done
+    return
+  fi
   if [ ! -d "$NVM_DIR/.git" ]; then
     git clone --quiet --depth 1 --branch "$NVM_VERSION" https://github.com/nvm-sh/nvm.git "$NVM_DIR"
   elif [ "$(git -C "$NVM_DIR" describe --tags 2>/dev/null)" != "$NVM_VERSION" ]; then
@@ -250,26 +290,45 @@ install_node_toolchain() {
     git -C "$NVM_DIR" -c advice.detachedHead=false checkout --quiet "$NVM_VERSION"
   fi
   ok "nvm $NVM_VERSION"
-  # nvm usa variables sin inicializar: se desactiva -u solo mientras se usa.
+  # nvm reads unset variables: -u is off only while it runs.
   set +u
   # shellcheck source=/dev/null
   . "$NVM_DIR/nvm.sh"
-  # nvm escribe su progreso en inglés en stderr; se descarta y, si falla, se
-  # muestra un error propio con el comando para reintentarlo a mano.
+  # nvm writes its progress in English to stderr: dropped, with our own error and the command to
+  # retry by hand if it fails.
   nvm install "$NODE_MAJOR" >/dev/null 2>&1 ||
     die "No se pudo instalar Node $NODE_MAJOR. Prueba a mano: nvm install $NODE_MAJOR"
   nvm alias default "$NODE_MAJOR" >/dev/null
   set -u
   ok "Node $(node --version)"
-  # Globales de npm dentro del Node de nvm: no necesitan sudo.
+  # npm globals inside nvm's Node: no sudo needed.
   command -v pnpm >/dev/null || npm install -g --silent pnpm
   command -v claude >/dev/null || npm install -g --silent @anthropic-ai/claude-code
   ok "pnpm $(pnpm --version), Claude Code $(claude --version 2>/dev/null | cut -d' ' -f1)"
 }
 
+# Only cloned when missing: an existing clone is the user's to pull, and may hold work in progress.
+clone_claude_layer() {
+  step "Capa de Claude Code (dotfiles-windows)"
+  if [ -d "$CLAUDE_LAYER_CLONE/.git" ]; then
+    ok "Ya clonada en ~/dotfiles-windows"
+  elif [ -e "$CLAUDE_LAYER_CLONE" ]; then
+    die "Existe ~/dotfiles-windows y no es un clon de git: muévelo y vuelve a ejecutar"
+  elif [ "$DRY_RUN" -eq 1 ]; then
+    planned "Clonaría $CLAUDE_LAYER_REPO en ~/dotfiles-windows"
+  else
+    git clone --quiet "$CLAUDE_LAYER_REPO" "$CLAUDE_LAYER_CLONE"
+    ok "Clonada en ~/dotfiles-windows"
+  fi
+}
+
 link_dotfiles() {
-  step "Symlinks de configuración (install.sh)"
-  "$DOTFILES_DIR/install.sh"
+  step "Enlaces de configuración (install.sh)"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    "$DOTFILES_DIR/install.sh" --dry-run
+  else
+    "$DOTFILES_DIR/install.sh"
+  fi
 }
 
 install_vscodium_extensions() {
@@ -279,7 +338,7 @@ install_vscodium_extensions() {
     warn "VSCodium no está instalado; se omiten las extensiones"
     return
   fi
-  # Una sola consulta de las instaladas; codium las lista en minúsculas.
+  # One query for the installed ones; codium lists them in lower case.
   local -A installed=()
   local id
   while read -r id; do
@@ -297,24 +356,33 @@ install_vscodium_extensions() {
     ok "Las ${#wanted[@]} extensiones ya están instaladas"
     return
   fi
-  # Todas en una sola llamada: VSCodium arranca una vez, no una por extensión.
-  # Se filtra el aviso de obsolescencia de Node que imprime su CLI (ruido
-  # interno, no un fallo); cualquier otro error sigue saliendo por stderr.
+  if [ "$DRY_RUN" -eq 1 ]; then
+    planned "Instalaría $((${#args[@]} / 2)) extensiones desde Open VSX"
+    return
+  fi
+  # All in one call, so VSCodium starts once and not once per extension. Its CLI prints a Node
+  # deprecation notice (internal noise, not a failure) that is filtered; other errors still show.
   codium "${args[@]}" >/dev/null 2> >(grep -v -e DeprecationWarning -e trace-deprecation >&2)
   ok "$((${#args[@]} / 2)) extensiones instaladas desde Open VSX"
 }
 
 harden_system() {
   step "Hardening del sistema (system/setup.sh)"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    planned "Ejecutaría sudo system/setup.sh (idempotente: solo aplica lo que falte)"
+    return
+  fi
   sudo "$DOTFILES_DIR/system/setup.sh"
 }
 
 set_default_shell() {
   step "Shell por defecto"
   local zsh_path
-  zsh_path=$(command -v zsh)
+  zsh_path=$(command -v zsh || echo /usr/bin/zsh)
   if [ "$(getent passwd "$USER" | cut -d: -f7)" = "$zsh_path" ]; then
     ok "zsh ya es la shell por defecto"
+  elif [ "$DRY_RUN" -eq 1 ]; then
+    planned "Cambiaría la shell de $USER a $zsh_path (sudo)"
   else
     sudo chsh -s "$zsh_path" "$USER"
     ok "zsh configurada (efectivo al volver a iniciar sesión)"
@@ -322,6 +390,10 @@ set_default_shell() {
 }
 
 print_next_steps() {
+  if [ "$DRY_RUN" -eq 1 ]; then
+    step "Simulación terminada: no se cambió nada. Para aplicarlo: ./bootstrap.sh"
+    return
+  fi
   step "Listo. Pasos manuales que no se automatizan (implican secretos)"
   cat <<'EOF'
     1. Reinicia y en la pantalla de login elige la sesión "bspwm" (X11).
@@ -347,11 +419,10 @@ print_next_steps() {
 EOF
 }
 
-# =============================================================================
-# EJECUCIÓN
-# =============================================================================
+# ==== RUN ====
 for arg in "$@"; do
   case "$arg" in
+    --dry-run) DRY_RUN=1 ;;
     -h | --help) usage ;;
     *) die "Opción desconocida: $arg (ver --help)" ;;
   esac
@@ -363,6 +434,7 @@ install_fonts
 install_neovim
 install_oh_my_posh
 install_node_toolchain
+clone_claude_layer
 link_dotfiles
 install_vscodium_extensions
 harden_system

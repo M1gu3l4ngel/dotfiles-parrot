@@ -41,7 +41,8 @@ Then reboot and pick the `bspwm` session on the login screen.
 ## What bootstrap.sh does
 
 Every step checks whether it is already done, so it can be run again safely
-(for example, after a network failure).
+(for example, after a network failure). `./bootstrap.sh --dry-run` shows what
+each step would do, without sudo, downloads or changes.
 
 | Step | What it installs or configures |
 |---|---|
@@ -50,11 +51,12 @@ Every step checks whether it is already done, so it can be run again safely
 | 3 | Official Neovim in `/opt`, linked as `/usr/local/bin/nvim` |
 | 4 | oh-my-posh (prompt) in `~/.local/bin/` |
 | 5 | nvm, Node 24, pnpm and Claude Code |
-| 6 | Config symlinks in `~/.config/` and `~/.claude/` (`install.sh`) |
-| 7 | VSCodium extensions from Open VSX (`vscodium/extensions.txt`) |
-| 8 | System hardening (`system/setup.sh`): firewall, sudoers, automatic patches, login screen |
-| 9 | zsh as the default shell |
-| 10 | Prints the remaining manual steps |
+| 6 | Clones [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) in `~/dotfiles-windows`, the source of the Claude Code layer |
+| 7 | Config symlinks in `~/.config/` and `~/.claude/` and the merge of `~/.claude/settings.json` (`install.sh`) |
+| 8 | VSCodium extensions from Open VSX (`vscodium/extensions.txt`) |
+| 9 | System hardening (`system/setup.sh`): firewall, sudoers, automatic patches, login screen |
+| 10 | zsh as the default shell |
+| 11 | Prints the remaining manual steps |
 
 Everything that does not come from apt is downloaded at a pinned version and
 verified against a SHA-256 hash before it is installed.

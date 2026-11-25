@@ -76,7 +76,7 @@ change() {
   local what=$1
   shift
   if [ "$MODE" = dry-run ]; then
-    planned "$what"
+    planned "Pendiente: $what"
   elif "$@" >/dev/null 2>&1; then
     ok "$what"
   else

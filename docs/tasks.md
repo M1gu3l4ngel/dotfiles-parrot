@@ -45,6 +45,14 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [Esta PC] El próximo `git pull` con cambios en `~/dotfiles` termina con la salida de `install.sh` («Nada que cambiar» o los enlaces nuevos)
 - [ ] [PC nueva] Tras `./install.sh`, `git -C ~/dotfiles config --get core.hooksPath` devuelve `githooks`
 
+## Modo de prueba en bootstrap.sh y clon de dotfiles-windows
+
+**Plataforma:** Instalación.
+
+- [ ] [Esta PC] `./bootstrap.sh --dry-run` desde `~/dotfiles` no pide sudo y solo marca con `~` el paso de hardening
+- [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
+- [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
+
 ## Finales de línea en LF en cualquier clon
 
 **Plataforma:** Repositorio.
@@ -54,21 +62,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Fase 2 — Instalador sin pérdidas
 
-## Modo de prueba en bootstrap.sh
-
-**Plataforma:** Instalación.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `./bootstrap.sh --dry-run`: cada paso dice qué instalaría o cambiaría, sin `sudo` ni descargas
-- [ ] `usage` sin `sed -n '2,22p'` (números de línea fijos que se desfasan al editar la cabecera)
-
 ## Versiones fijadas en bootstrap.sh
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `pnpm` y `@anthropic-ai/claude-code` se instalan sin versión: fijarlas como Neovim y oh-my-posh
 - [ ] Instalar `gh` (repositorio de Parrot o release verificado por SHA-256): hoy no está y lo piden el skill `new-repo` y el ruleset de `main`
@@ -83,18 +82,6 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] Neovim (`nvim-linux-x86_64`) y oh-my-posh (`posh-linux-amd64`) solo se descargan para x86_64: detectar `uname -m` y fijar el SHA-256 de arm64, o salir con un mensaje claro
 
 # Fase 3 — Capa de Claude desde dotfiles-windows
-
-## Enlazar 50-claude desde el clon de dotfiles-windows
-
-**Plataforma:** Claude Code, Instalación.
-**Prioridad:** P1.
-**Requiere:** nada.
-
-`install.sh` ya enlaza la capa desde `50-claude/links.json` del clon `~/dotfiles-windows` y, si
-falta el clon o node, la omite con un aviso. El contrato está en `50-claude/README.md` de
-dotfiles-windows, sección «Setting up a new machine».
-
-- [ ] `bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` (al lado, como Windows tiene `~\dotfiles-parrot`) antes de llamar a `install.sh`, y `install.sh` falla en vez de avisar si no está
 
 ## Recordatorio de español local en settings.json
 
@@ -231,7 +218,7 @@ Unas 1860 líneas de comentario en 70 archivos; el check compartido encuentra ho
 
 **Plataforma:** Instalación.
 **Prioridad:** P2.
-**Requiere:** «Modo de prueba en bootstrap.sh», «Enlazar 50-claude desde el clon de dotfiles-windows».
+**Requiere:** nada.
 
 - [ ] `docs/getting-started` con diagrama del flujo, `./bootstrap.sh --dry-run` antes de instalar y `./install.sh --check` al final
 - [ ] Cubrir también Parrot instalado sin VMware: hoy la guía da por hecha la VM
