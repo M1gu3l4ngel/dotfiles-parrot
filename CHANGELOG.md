@@ -20,6 +20,11 @@ Notable changes to the project. The format follows
   Structure, How it works, Getting started, Usage, Troubleshooting,
   Documentation, Contributing, Security and License, with the header links
   under the same names. `CONTRIBUTING` uses the standard sections.
+- The git identity leaves the public repo: `15-git/gitconfig` keeps only what
+  can be public, and `bootstrap.sh` writes the name and email to
+  `~/.gitconfig.local` from `--git-name` and `--git-email` (the owner's by
+  default) when the machine has none. A fork commits under its own name, and
+  `install.sh --check` reports a missing identity.
 - `tools/check.sh` fails if a file a public repo carries is missing
   (`check-docs --community public`), and CI checks out the dotfiles-windows
   commit that adds it.

@@ -74,17 +74,31 @@ die() {
 
 usage() {
   cat <<'EOF'
-Usage: ./bootstrap.sh [--dry-run]
+Usage: ./bootstrap.sh [--dry-run] [--git-name <name>] [--git-email <email>]
 
-  (no option)  full install: apt, fonts, Neovim, oh-my-posh, Node, Claude Code
-               layer, links, VSCodium extensions, hardening and zsh
-  --dry-run    shows what each step would do, without sudo, downloads or changes
-  -h, --help   this help
+  (no option)         full install: apt, fonts, Neovim, oh-my-posh, Node, Claude
+                      Code layer, links, git identity, VSCodium extensions,
+                      hardening and zsh
+  --dry-run           shows what each step would do, without sudo, downloads or
+                      changes
+  --git-name <name>   git user.name for ~/.gitconfig.local when the machine has
+                      none (default: the repo owner's)
+  --git-email <email> git user.email, the GitHub noreply address (default: the
+                      repo owner's)
+  -h, --help          this help
+
+A fork passes its own identity:
+  ./bootstrap.sh --git-name '<user>' --git-email '<id>+<user>@users.noreply.github.com'
 EOF
   exit 0
 }
 
 DRY_RUN=0
+# The git identity written to ~/.gitconfig.local when the machine has none. The defaults are the
+# repo owner's: a fork passes its own with --git-name and --git-email. The email is the GitHub
+# noreply address, which every public commit shows.
+GIT_NAME="M1gu3l4ngel"
+GIT_EMAIL="88590762+M1gu3l4ngel@users.noreply.github.com"
 
 # Downloads go to a temporary folder removed on exit, whatever happens.
 TMP_DIR=$(mktemp -d)
@@ -326,6 +340,26 @@ link_dotfiles() {
   fi
 }
 
+# The identity goes in ~/.gitconfig.local, never through --global: ~/.gitconfig is the link to
+# 15-git/gitconfig, so --global would write into the public repo. The defaults (branch, signing)
+# already come from that file. An identity the machine already has is kept.
+set_git_identity() {
+  step "git identity (~/.gitconfig.local)"
+  local key value current
+  for key in user.name user.email; do
+    if [ "$key" = user.name ]; then value=$GIT_NAME; else value=$GIT_EMAIL; fi
+    current=$(git config --file "$HOME/.gitconfig.local" --get "$key" || true)
+    if [ -n "$current" ]; then
+      ok "$key already set: $current"
+    elif [ "$DRY_RUN" -eq 1 ]; then
+      planned "Would set $key = $value in ~/.gitconfig.local"
+    else
+      git config --file "$HOME/.gitconfig.local" "$key" "$value"
+      ok "$key = $value (GPG signing is in the manual steps)"
+    fi
+  done
+}
+
 install_vscodium_extensions() {
   step "VSCodium extensions"
   local list="$DOTFILES_DIR/30-editor/vscodium/extensions.txt"
@@ -390,7 +424,8 @@ print_next_steps() {
     return
   fi
   step "Done. Manual steps left out on purpose (they involve secrets)"
-  cat <<'EOF'
+  # Unquoted so the GPG key carries the identity just set; nothing else in it expands.
+  cat <<EOF
     1. Reboot and pick the "bspwm" session (X11) on the login screen.
        On VMware: turn on "Accelerate 3D graphics" in VM Settings -> Display.
 
@@ -400,9 +435,10 @@ print_next_steps() {
        Keep the passphrase somewhere safe.
 
     3. GPG key (commit signing and pass encryption):
-         gpg --quick-generate-key "<name> <your-noreply>@users.noreply.github.com" default default 2y
+         gpg --quick-generate-key "$GIT_NAME <$GIT_EMAIL>" default default 2y
          git config --file ~/.gitconfig.local user.signingkey <fingerprint>
-       The name, the noreply email and signing already come from 15-git/gitconfig.
+       The name and the noreply email are in ~/.gitconfig.local; signing comes from
+       15-git/gitconfig.
        Never git config --global: it would write into the repo through the link.
        Keep the passphrase and a backup of the private key somewhere safe.
 
@@ -414,12 +450,18 @@ EOF
 }
 
 # Options are read before any step runs, so --dry-run reaches every one of them.
-for arg in "$@"; do
-  case "$arg" in
+while [ $# -gt 0 ]; do
+  case "$1" in
     --dry-run) DRY_RUN=1 ;;
+    --git-name | --git-email)
+      [ -n "${2:-}" ] || die "$1 needs a value (see --help)"
+      if [ "$1" = --git-name ]; then GIT_NAME=$2; else GIT_EMAIL=$2; fi
+      shift
+      ;;
     -h | --help) usage ;;
-    *) die "Unknown option: $arg (see --help)" ;;
+    *) die "Unknown option: $1 (see --help)" ;;
   esac
+  shift
 done
 
 check_prerequisites
@@ -430,6 +472,7 @@ install_oh_my_posh
 install_node_toolchain
 clone_claude_layer
 link_dotfiles
+set_git_identity
 install_vscodium_extensions
 harden_system
 set_default_shell

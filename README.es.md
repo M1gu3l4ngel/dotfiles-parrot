@@ -143,10 +143,11 @@ cambios.
 | 5 | nvm, Node 24, pnpm y Claude Code |
 | 6 | Clona [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en `~/dotfiles-windows`, de donde sale la capa de Claude Code |
 | 7 | Enlaces de las configuraciones en `~/.config/` y `~/.claude/` y fusión de `~/.claude/settings.json` (`install.sh`) |
-| 8 | Extensiones de VSCodium desde Open VSX (`30-editor/vscodium/extensions.txt`) |
-| 9 | Hardening del sistema (`70-system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
-| 10 | zsh como shell por defecto |
-| 11 | Muestra los pasos manuales pendientes |
+| 8 | Identidad de git en `~/.gitconfig.local`, si la máquina no tiene: `--git-name` y `--git-email`, por defecto los del dueño |
+| 9 | Extensiones de VSCodium desde Open VSX (`30-editor/vscodium/extensions.txt`) |
+| 10 | Hardening del sistema (`70-system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
+| 11 | zsh como shell por defecto |
+| 12 | Muestra los pasos manuales pendientes |
 
 Todo lo que no viene de apt se descarga en una versión fijada y se verifica
 con SHA-256 antes de instalarse.

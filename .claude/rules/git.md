@@ -17,6 +17,11 @@
 - Antes del commit: `./tools/check.sh` debe pasar y el diff no debe contener
   datos personales (ver `security.md`).
 - Los archivos nuevos no aparecen en `git diff`: revisarlos aparte.
+- `15-git/gitconfig` es la parte que puede ser pública: firma y rama por
+  defecto. Lo de cada persona o máquina (identidad, clave de firma,
+  organizaciones) vive en `~/.gitconfig.local`, nunca en el repo; `bootstrap.sh`
+  escribe ahí la identidad (`--git-name`, `--git-email`). Nunca
+  `git config --global`: `~/.gitconfig` es el enlace al repo público.
 - Para borrar archivos versionados: confirmarlo antes con el usuario, `rm` de
   los archivos y `git add` de sus rutas (el hook global bloquea `git rm`), y
   comprobar después con `git show --stat HEAD` que el borrado entró en el commit.

@@ -6,7 +6,7 @@ git's identity and commit signing, and the GPG agent that keeps the key unlocked
 
 | Path | Linked to | What it is |
 |---|---|---|
-| `gitconfig` | `~/.gitconfig` | Public identity (name and noreply email, the same as dotfiles-windows), signed commits and tags, `main` as the default branch; it includes `~/.gitconfig.local` |
+| `gitconfig` | `~/.gitconfig` | Signed commits and tags and `main` as the default branch, what can be public; it includes `~/.gitconfig.local` |
 | `gnupg/.gnupg/gpg-agent.conf` | `~/.gnupg/gpg-agent.conf` | GPG agent: graphical passphrase dialog and cache (10 minutes idle, 2 hours at most) |
 
 `install.sh` creates the links. Only the agent's file is linked: `~/.gnupg` holds the private keys
@@ -14,9 +14,12 @@ and stays a real folder with mode 700, outside any repo.
 
 ## What does not go here
 
-- The signing key and any work account: they belong to each machine and go in
-  `~/.gitconfig.local`, which the repo never sees. `install.sh` carries the key there from an old
-  `~/.gitconfig`.
+- The identity (name and noreply email), the signing key and any work account: they belong to
+  each person or machine and go in `~/.gitconfig.local`, which the repo never sees. Whoever forks
+  the repo commits under their own name. `bootstrap.sh` writes the identity there when the
+  machine has none, from `--git-name` and `--git-email` (the owner's by default), and
+  `install.sh --check` reports it if it is missing. `install.sh` carries the key there from an
+  old `~/.gitconfig`.
 - `git config --global`: it would write into the repo through the link. Use
   `git config --file ~/.gitconfig.local` instead.
 

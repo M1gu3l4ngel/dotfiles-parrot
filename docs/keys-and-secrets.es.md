@@ -105,9 +105,10 @@ o fíltralo en cada exportación (paso 3).
 
 ### 2. Configurar git para firmar
 
-El nombre, el email noreply y la firma de cada commit y etiqueta ya vienen de
-`15-git/gitconfig`, enlazado como `~/.gitconfig`. La clave es de esta máquina,
-así que va en `~/.gitconfig.local`, fuera del repo. Nunca uses
+La firma de cada commit y etiqueta ya viene de `15-git/gitconfig`, enlazado
+como `~/.gitconfig`, y `bootstrap.sh` escribió el nombre y el email noreply en
+`~/.gitconfig.local`. La clave es de esta máquina, así que va en ese mismo
+archivo, fuera del repo. Nunca uses
 `git config --global`, que la escribiría en el repo público a través del
 enlace:
 

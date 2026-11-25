@@ -18,6 +18,15 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] Tras el push, el README sale en el orden nuevo en los dos idiomas, y cada enlace de la cabecera lleva a su sección
 - [ ] Tras el push y activar el reporte privado, «New issue» muestra los dos formularios y el enlace «Report a vulnerability», sin opción de issue en blanco
 
+## Identidad de git fuera del repo
+
+**Plataforma:** Shell.
+
+- [ ] [Esta PC] `git config --show-origin user.email` desde `~/dotfiles` muestra `~/.gitconfig.local` como origen
+- [ ] [Esta PC] `./install.sh --check` acaba en «All installed: 30 links, ~/.claude/settings.json and git identity»
+- [ ] Tras el push, el commit de este cambio sale «Verified» en GitHub con el nombre M1gu3l4ngel
+- [ ] [PC nueva] `./bootstrap.sh` sin argumentos deja el nombre y el email noreply del dueño en `~/.gitconfig.local`, y con `--git-name` y `--git-email` deja los que se pasan
+
 ## Estado del target en ~/.local/state
 
 **Plataforma:** Shell, Escritorio.

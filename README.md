@@ -143,10 +143,11 @@ each step would do, without sudo, downloads or changes.
 | 5 | nvm, Node 24, pnpm and Claude Code |
 | 6 | Clones [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) in `~/dotfiles-windows`, the source of the Claude Code layer |
 | 7 | Config symlinks in `~/.config/` and `~/.claude/` and the merge of `~/.claude/settings.json` (`install.sh`) |
-| 8 | VSCodium extensions from Open VSX (`30-editor/vscodium/extensions.txt`) |
-| 9 | System hardening (`70-system/setup.sh`): firewall, sudoers, automatic patches, login screen |
-| 10 | zsh as the default shell |
-| 11 | Prints the remaining manual steps |
+| 8 | git identity in `~/.gitconfig.local`, if the machine has none: `--git-name` and `--git-email`, the owner's by default |
+| 9 | VSCodium extensions from Open VSX (`30-editor/vscodium/extensions.txt`) |
+| 10 | System hardening (`70-system/setup.sh`): firewall, sudoers, automatic patches, login screen |
+| 11 | zsh as the default shell |
+| 12 | Prints the remaining manual steps |
 
 Everything that does not come from apt is downloaded at a pinned version and
 verified against a SHA-256 hash before it is installed.

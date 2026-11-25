@@ -20,6 +20,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
   Estructura, Cómo funciona, Cómo empezar, Uso, Solución de problemas,
   Documentación, Contribuir, Seguridad y Licencia, con los enlaces de la
   cabecera con esos mismos nombres. `CONTRIBUTING` usa las secciones estándar.
+- La identidad de git sale del repo público: `15-git/gitconfig` guarda solo lo
+  que puede ser público, y `bootstrap.sh` escribe el nombre y el email en
+  `~/.gitconfig.local` desde `--git-name` y `--git-email` (por defecto, los del
+  dueño) si la máquina no tiene. Un fork hace commits con su propio nombre, e
+  `install.sh --check` avisa si falta la identidad.
 - `tools/check.sh` falla si falta un archivo que lleva un repo público
   (`check-docs --community public`), y el CI descarga el commit de
   dotfiles-windows que lo añade.

@@ -78,6 +78,14 @@ Qué hace cada paso del script: [README](../README.es.md#qué-hace-bootstrapsh).
 Si falla (por ejemplo, un corte de red), vuelve a ejecutarlo: solo aplica lo
 que falta.
 
+Si hiciste un fork del repo, pasa tu nombre de git y tu email noreply de GitHub
+en el paso 4. Sin ellos usa los del dueño. Van en `~/.gitconfig.local`, fuera
+del repo:
+
+```bash
+./bootstrap.sh --git-name '<user>' --git-email '<id>+<user>@users.noreply.github.com'
+```
+
 ## 4. Reiniciar y entrar en bspwm
 
 1. Reinicia (en cualquier directorio, como usuario normal):

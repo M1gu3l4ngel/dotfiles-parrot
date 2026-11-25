@@ -82,10 +82,19 @@ check "the Claude Code layer is linked from links.json" '[ "$(readlink "$T/.clau
 check "settings.json is created with the layer hooks" \
   'grep -q "panel-session-start.mjs" "$T/.claude/settings.json" && grep -q "$T/.claude" "$T/.claude/settings.json"'
 check "the signing key moves to .gitconfig.local" \
-  '[ "$(HOME=$T git config --get user.signingkey)" = ABCDEF0123456789 ] && [ "$(HOME=$T git config --get user.name)" = M1gu3l4ngel ] && [ -f "$T/.gitconfig.pre-dotfiles.bak" ]'
+  '[ "$(HOME=$T git config --get user.signingkey)" = ABCDEF0123456789 ] && [ -f "$T/.gitconfig.pre-dotfiles.bak" ]'
+check "the linked gitconfig carries no identity" '[ -z "$(HOME=$T git config --get user.name)" ]'
 check "the GnuPG home is created with mode 700" '[ "$(stat -c %a "$T/.gnupg")" = 700 ]'
 check "the old target moves to ~/.local/state and ~/.config/bin goes away" \
   '[ "$(cat "$T/.local/state/dotfiles/target")" = "10.10.11.42 Lame" ] && [ ! -e "$T/.config/bin" ]'
+
+run "$REPO/install.sh" --check
+check "check without a git identity exits 1 and names it" \
+  '[ $CODE -eq 1 ] && grep -q "MISSING *git identity" "$OUT"'
+
+# What bootstrap.sh writes when the machine has no identity.
+git config --file "$T/.gitconfig.local" user.name "Test User"
+git config --file "$T/.gitconfig.local" user.email "test@example.invalid"
 
 run "$REPO/install.sh" --check
 check "check after installing exits 0 with all $expected links" \

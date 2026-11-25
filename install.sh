@@ -157,9 +157,18 @@ check_installation() {
     printf '  %-11s %s\n' MISSING "Claude Code layer ($(short "$CLAUDE_LAYER_DIR"))"
     bad=$((bad + 1))
   fi
+  # The identity is per person, in ~/.gitconfig.local, not in the linked 15-git/gitconfig:
+  # without it every commit fails. bootstrap.sh writes it; install.sh only reports it.
+  if [ -n "$(git config --get user.name)" ] && [ -n "$(git config --get user.email)" ]; then
+    printf '  %-11s %s\n' ok "git identity"
+  else
+    printf '  %-11s %s\n' MISSING \
+      "git identity in ~/.gitconfig.local (./bootstrap.sh --git-name <name> --git-email <email>)"
+    bad=$((bad + 1))
+  fi
   echo
   if [ "$bad" -eq 0 ]; then
-    ok "All installed: ${#LINKS[@]} links and ~/.claude/settings.json"
+    ok "All installed: ${#LINKS[@]} links, ~/.claude/settings.json and git identity"
     exit 0
   fi
   echo -e "    ${RED}✗${NC} $bad checks failed. To fix them: ./install.sh"

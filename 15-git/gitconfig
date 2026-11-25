@@ -1,9 +1,7 @@
-# Linked as ~/.gitconfig by install.sh. The public identity, the same as dotfiles-windows, so
-# commits from both machines carry one name. The signing key (`user.signingkey`) belongs to each
-# machine: it goes in ~/.gitconfig.local.
-[user]
-	name = M1gu3l4ngel
-	email = 88590762+M1gu3l4ngel@users.noreply.github.com
+# Linked as ~/.gitconfig by install.sh. The identity (`user.name`, `user.email`) belongs to each
+# person and the signing key (`user.signingkey`) to each machine: both go in ~/.gitconfig.local,
+# which bootstrap.sh fills from --git-name and --git-email. A fork never commits under the owner's
+# name.
 [init]
 	defaultBranch = main
 [commit]

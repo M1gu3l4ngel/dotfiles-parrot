@@ -104,9 +104,10 @@ or filter it out on every export (step 3).
 
 ### 2. Configure git to sign
 
-The name, the noreply email and signing on every commit and tag already come
-from `15-git/gitconfig`, linked as `~/.gitconfig`. The key belongs to this
-machine, so it goes in `~/.gitconfig.local`, outside the repo. Never use
+Signing on every commit and tag already comes from `15-git/gitconfig`, linked
+as `~/.gitconfig`, and `bootstrap.sh` wrote the name and the noreply email to
+`~/.gitconfig.local`. The key belongs to this machine, so it goes in that same
+file, outside the repo. Never use
 `git config --global`, which would write it into the public repo through the
 link:
 
