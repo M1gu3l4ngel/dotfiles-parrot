@@ -12,11 +12,10 @@
 #      bashismos en sh, como el $UID que rompía launch.sh) y formato con shfmt
 #   3. Sintaxis de .zshrc (zsh -n)
 #   4. Sintaxis de la config Lua de Neovim
-#   5. JSON válido (tema de oh-my-posh, lazy-lock) y presupuesto de líneas de
-#      la capa global de Claude Code (claude/check-budget.mjs)
+#   5. JSON válido (tema de oh-my-posh, lazy-lock)
 #   6. sudoers y keymap XKB (se validan con visudo y xkbcomp)
 #   7. Higiene del repo público: sin binarios de fuentes ni rutas /home/<usuario>,
-#      y documentación bilingüe sincronizada (tools/check-docs.py)
+#      y documentación bilingüe sincronizada (check-docs.mjs de dotfiles-windows)
 #   8. Secretos en todo el historial con gitleaks (si está instalado)
 #
 # Una herramienta que falte se avisa y se omite (en local); el CI instala todas.
@@ -151,20 +150,6 @@ while IFS= read -r f; do
 done < <(git ls-files '*.json')
 [ "$errors" -eq 0 ] && pass "JSON válido"
 
-# ----- 5b. PRESUPUESTO DE LA CAPA DE CLAUDE CODE -----
-# claude/CLAUDE.md se carga en cada sesión de Claude: si crece, cuesta contexto
-# en todas. check-budget.mjs falla si la capa supera sus límites de líneas.
-if have node; then
-  if node claude/check-budget.mjs >/dev/null; then
-    pass "Capa de Claude Code dentro de presupuesto"
-  else
-    node claude/check-budget.mjs
-    fail "Capa de Claude Code fuera de presupuesto (detalle arriba)"
-  fi
-else
-  skip "node no instalado: se omite el presupuesto de claude/"
-fi
-
 # ----- 6. SUDOERS Y XKB -----
 if have visudo || [ -x /usr/sbin/visudo ]; then
   tmp=$(mktemp)
@@ -207,9 +192,18 @@ if [ -z "$crlf" ]; then pass "LF line endings"; else
 fi
 
 # ----- 7b. DOCUMENTACIÓN BILINGÜE SINCRONIZADA -----
-# Cada X.md (inglés) tiene su X.es.md (español) con la misma estructura,
-# enlaces y bloques de código. Detalle de qué compara en tools/check-docs.py.
-if out=$(python3 tools/check-docs.py); then
+# Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
+# The checker is the one dotfiles-windows shares with every repo: its clone next to this one, or
+# CLAUDE_LAYER_DIR in CI. nvim's README is NvChad's, protected and English only.
+docs_tool="${CLAUDE_LAYER_DIR:-$HOME/dotfiles-windows/50-claude}/tools/check-docs.mjs"
+if ! have node || [ ! -f "$docs_tool" ]; then
+  # Skipped only locally: the CI checks the layer out, so a missing tool there is a broken step.
+  if [ -n "${CI:-}" ]; then
+    fail "Documentación bilingüe: falta node o $docs_tool"
+  else
+    skip "Documentación bilingüe: falta node o $docs_tool"
+  fi
+elif out=$(node "$docs_tool" . --exclude nvim/.config/nvim/README.md 2>&1); then
   pass "$out"
 else
   fail "Documentación bilingüe desincronizada:"

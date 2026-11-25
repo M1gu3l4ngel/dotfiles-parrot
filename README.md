@@ -145,7 +145,6 @@ they come from `50-claude/links.json` of the
 | `gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Default Prettier and EditorConfig style for projects | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Prompt theme | Read from the repo |
-| `claude/` | Former copy of the Claude Code layer ([claude/README.md](claude/README.md)); the layer now comes from dotfiles-windows | Not used |
 | `scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |

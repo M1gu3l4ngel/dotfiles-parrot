@@ -145,7 +145,6 @@ clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
 | `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
 | `format/` | Estilo por defecto de Prettier y EditorConfig para proyectos | `~/.prettierrc.json`, `~/.editorconfig` |
 | `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `claude/` | Antigua copia de la capa de Claude Code ([claude/README.es.md](claude/README.es.md)); la capa sale ahora de dotfiles-windows | No se usa |
 | `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
 | `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |

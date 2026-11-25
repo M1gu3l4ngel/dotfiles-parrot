@@ -6,13 +6,11 @@
 
 # ----- MARKDOWN -----
 # Las listas anidadas van con 4 espacios (.claude/rules/documentation.md) y
-# Prettier las realinea a 2. tools/check-docs.py vigila su estructura.
+# Prettier las realinea a 2. tools/check.sh vigila su estructura.
 *.md
 
 # ----- COMPARTIDOS CON DOTFILES-WINDOWS -----
-# Idénticos byte a byte en los dos repos (la capa de Claude Code entera y el
-# tema del prompt): reformatearlos aquí los separaría.
-claude/
+# Idéntico byte a byte en los dos repos: reformatearlo aquí lo separaría.
 oh-my-posh/capr4n.omp.json
 
 # ----- PROTEGIDOS -----

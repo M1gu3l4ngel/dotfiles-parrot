@@ -37,6 +37,16 @@ jobs:
           # No dejar el token de GitHub guardado en .git/config del runner.
           persist-credentials: false
 
+      # The bilingual docs checker is shared from dotfiles-windows, pinned to a commit like the
+      # actions: a new version there cannot change what passes here until this SHA moves.
+      - name: Descargar la capa de Claude Code (dotfiles-windows)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: M1gu3l4ngel/dotfiles-windows
+          ref: 87a6791331f1abcac67dd2c78dc5d446ee715a16
+          path: .ci/dotfiles-windows
+          persist-credentials: false
+
       - name: Instalar herramientas
         run: |
           sudo apt-get update -qq
@@ -57,4 +67,6 @@ jobs:
           sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
 
       - name: Ejecutar tools/check.sh
+        env:
+          CLAUDE_LAYER_DIR: ${{ github.workspace }}/.ci/dotfiles-windows/50-claude
         run: ./tools/check.sh

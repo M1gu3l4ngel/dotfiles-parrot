@@ -10,6 +10,14 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- `install.sh --dry-run` muestra qué enlazaría, respaldaría o cambiaría sin
+  tocar nada; `install.sh --check` informa del estado de cada enlace y de
+  `~/.claude/settings.json` y sale con 1 si algo está mal.
+- `githooks/post-merge`: cada `git pull` con cambios vuelve a ejecutar `install.sh`.
+- `bootstrap.sh --dry-run`, un paso que clona dotfiles-windows, `gh` desde apt,
+  y pnpm y Claude Code en versiones fijadas.
+- `.gitattributes` mantiene los finales de línea LF en cualquier clon, y
+  `tools/check.sh` falla si hay CRLF.
 - Documentación completa en inglés y español: cada documento `X.md` (inglés,
   el que muestra GitHub) tiene su pareja `X.es.md`, con selector de idioma.
   Incluye el README, `CONTRIBUTING`, este changelog, `docs/` y los README de
@@ -56,6 +64,11 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- La capa de Claude Code sale de `50-claude/` del clon de dotfiles-windows
+  (`links.json`), e `install.sh` fusiona `~/.claude/settings.json` con su
+  `install-settings.mjs` en vez de copiar una plantilla.
+- `tools/check.sh` revisa la documentación bilingüe con `check-docs.mjs` de
+  dotfiles-windows, que el CI descarga en un commit fijado.
 - Prompt: el título de la ventana muestra `~` en la carpeta de inicio en
   lugar de su nombre, para que el título de la pestaña no enseñe el usuario
   real. Igual que en dotfiles-windows.
@@ -95,6 +108,9 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Corregido
 
+- `install.sh` y `uninstall.sh` daban por suyo cualquier enlace que empezara
+  por la ruta del repo (también `~/dotfiles-windows`), no rehacían los enlaces
+  a rutas viejas del repo y perdían el original si `ln` fallaba tras el backup.
 - Arranque sin errores: `system/setup.sh` (paso 10) desactiva los servicios
   de pentest que Parrot activa sin configuración (`hostapd-wpe`,
   `isc-dhcp-server`, `sslh`, `cpupower-gui`), que fallaban en cada arranque.
@@ -109,6 +125,8 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Eliminado
 
+- `claude/` y `tools/check-docs.py`: la copia de la capa de Claude Code y sus
+  comprobaciones viven ya solo en dotfiles-windows.
 - Iosevka: ya no la usa ninguna configuración y `bootstrap.sh` no la descarga.
 - i3lock-fancy e imagemagick: sustituidos por `dm-tool lock`.
 

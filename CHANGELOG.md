@@ -10,6 +10,14 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `install.sh --dry-run` shows what it would link, back up or change without
+  touching anything; `install.sh --check` reports the state of every link and
+  of `~/.claude/settings.json` and exits with 1 if something is wrong.
+- `githooks/post-merge`: each `git pull` with changes runs `install.sh` again.
+- `bootstrap.sh --dry-run`, a step that clones dotfiles-windows, `gh` from apt,
+  and pnpm and Claude Code at pinned versions.
+- `.gitattributes` keeps LF line endings in every clone, and `tools/check.sh`
+  fails on CRLF.
 - Full documentation in English and Spanish: each `X.md` document (English,
   the one GitHub shows) has its `X.es.md` pair, with a language selector.
   This covers the README, `CONTRIBUTING`, this changelog, `docs/` and the
@@ -58,6 +66,11 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The Claude Code layer comes from `50-claude/` of the dotfiles-windows clone
+  (`links.json`), and `install.sh` merges `~/.claude/settings.json` with its
+  `install-settings.mjs` instead of copying a template.
+- `tools/check.sh` checks the bilingual docs with `check-docs.mjs` from
+  dotfiles-windows, which the CI checks out at a pinned commit.
 - Prompt: the window title shows `~` in the home folder instead of its name,
   so the tab title does not reveal the real user name. Same as in
   dotfiles-windows.
@@ -96,6 +109,9 @@ Notable changes to the project. The format follows
 
 ### Fixed
 
+- `install.sh` and `uninstall.sh` took any link starting with the repo path
+  as their own (also `~/dotfiles-windows`), did not redo links to old repo
+  paths, and lost the original if `ln` failed after the backup.
 - Boot without errors: `system/setup.sh` (step 10) disables the pentest
   services that Parrot enables without a configuration (`hostapd-wpe`,
   `isc-dhcp-server`, `sslh`, `cpupower-gui`), which failed on every boot.
@@ -110,6 +126,8 @@ Notable changes to the project. The format follows
 
 ### Removed
 
+- `claude/` and `tools/check-docs.py`: the copy of the Claude Code layer and
+  its checks now live only in dotfiles-windows.
 - Iosevka: no configuration uses it anymore and `bootstrap.sh` no longer
   downloads it.
 - i3lock-fancy and imagemagick: replaced by `dm-tool lock`.

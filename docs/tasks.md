@@ -53,6 +53,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Copia claude/ quitada y check de docs compartido
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, el CI pasa con el paso «Descargar la capa de Claude Code (dotfiles-windows)» y «Documentación bilingüe» en verde (no «omitida»)
+
 ## Versiones fijadas de pnpm y Claude Code, y gh
 
 **Plataforma:** Instalación.
@@ -90,25 +96,14 @@ en esta máquina.
 
 - [ ] Decidir si el `UserPromptSubmit` local (recordatorio de español con `printf`) se queda o se borra porque ya lo cubre `reply-in-spanish.mjs`
 
-## Quitar la copia claude/ del repo
-
-**Plataforma:** Claude Code, Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `git rm` de `claude/` (incluida `tasks-artifact.template.html`, que el panel sustituye) tras comprobar `./install.sh --check` en verde
-- [ ] `.prettierignore` deja de listar `claude/`; `tools/check.sh` ya no llama a `claude/check-budget.mjs`
-- [ ] `git rm` de `tools/check-docs.py`: `tools/check.sh` llama a `node ~/.claude/tools/check-docs.mjs . --exclude nvim/.config/nvim/README.md` (protegido, heredado de NvChad)
-- [ ] `~/.claude/entorno.md` rehecho con las secciones de `50-claude/entorno.template.md`, con lo de Linux que el `CLAUDE.md` global ya no dice (`~/Dev`, `/tmp` en RAM, `rm` sin papelera)
-
 # Fase 4 — Carpetas numeradas por capa
 
 ## Reorganizar en carpetas numeradas
 
 **Plataforma:** Repositorio, Instalación.
 **Prioridad:** P2.
-**Requiere:** «Quitar la copia claude/ del repo».
+**Requiere:** nada.
+**Estado:** en curso.
 
 Propuesta: `10-shell/` (zsh, oh-my-posh), `15-git/` (gitconfig, gnupg), `20-terminal/` (kitty),
 `25-desktop/` (bspwm, sxhkd, polybar, picom, rofi, dunst, gtk, xkb, scripts), `30-editor/`
@@ -139,7 +134,7 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Quitar la copia claude/ del repo».
+**Requiere:** nada.
 
 - [ ] El CI corre lo mismo que `./tools/check.sh`: shellcheck, shfmt, tests, docs bilingües, check del panel, check de comentarios y gitleaks
 - [ ] Segundo `actions/checkout` de dotfiles-windows, fijado por SHA, para las herramientas compartidas
@@ -170,10 +165,10 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 
 **Plataforma:** Repositorio, Claude Code.
 **Prioridad:** P2.
-**Requiere:** «Quitar la copia claude/ del repo».
+**Requiere:** nada.
 
 `docs/contributing/comments.md` de dotfiles-windows es la guía. `.claude/rules/style.md`,
-`documentation.md`, `CONTRIBUTING` y `claude/CLAUDE.md` dicen hoy «comentarios en español».
+`documentation.md` y `CONTRIBUTING` dicen hoy «comentarios en español».
 
 - [ ] Sección «Idioma del código: inglés» en `CLAUDE.md`, como la de dotfiles-windows, antes de migrar nada
 - [ ] `.claude/rules/documentation.md` deja de decir «solo en español: la salida de los scripts»: el `CLAUDE.md` global pide en inglés comentarios, salida de los scripts, `reason` de los hooks y nombres de los tests
@@ -236,11 +231,9 @@ Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-wi
 
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
-**Requiere:** «Quitar la copia claude/ del repo».
+**Requiere:** nada.
 
-- [ ] `claude/README` dice que los tres hooks y `tasks-artifact.template.html` son iguales a los de Windows: ya no lo son (se resuelve al quitar la copia)
 - [ ] `CONTRIBUTING`: commits en una línea y en español; el modelo pide título en inglés en imperativo y cuerpo con un guion por cambio
-- [ ] `README`, «What bootstrap.sh does»: añadir los pasos nuevos (clon de dotfiles-windows, identidad de git, `gh`)
 - [ ] `docs/README` indexa `docs/contributing/comments.md`
 
 # Fase 8 — Limpieza

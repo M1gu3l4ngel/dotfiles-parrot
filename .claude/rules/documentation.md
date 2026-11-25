@@ -25,7 +25,7 @@ español) ni a `nvim/.config/nvim/README.md` (protegido).
   `<your-noreply>`), explicados en el texto de cada idioma. Los textos que
   muestra el programa (notificaciones, salidas) se citan tal cual.
 - Un cambio en uno va también al otro, en el mismo commit.
-  `tools/check.sh` (`tools/check-docs.py`) falla si falta una pareja o un
+  `tools/check.sh` (`check-docs.mjs` de dotfiles-windows) falla si falta una pareja o un
   selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
   o bloques de código, o si hay enlaces o anclas rotos.
 - Solo en español: comentarios de código, mensajes de commit y la salida de
