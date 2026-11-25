@@ -14,11 +14,14 @@
 </p>
 
 <p align="center">
-  <a href="#reproducir-en-un-comando">Instalar</a> ·
-  <a href="#estructura-del-repo">Estructura</a> ·
-  <a href="#atajos">Atajos</a> ·
-  <a href="docs/README.es.md">Documentación</a> ·
-  <a href="CONTRIBUTING.es.md">Contribuir</a>
+  <a href="#estructura">Estructura</a> ·
+  <a href="#cómo-funciona">Cómo funciona</a> ·
+  <a href="#cómo-empezar">Cómo empezar</a> ·
+  <a href="#uso">Uso</a> ·
+  <a href="#documentación">Documentación</a> ·
+  <a href="#contribuir">Contribuir</a> ·
+  <a href="#seguridad">Seguridad</a> ·
+  <a href="#licencia">Licencia</a>
 </p>
 
 <p align="center">
@@ -33,167 +36,7 @@
 
 ![Escritorio](assets/preview.png)
 
-## Reproducir en un comando
-
-¿Empiezas desde cero, sin VM? Sigue [docs/getting-started.es.md](docs/getting-started.es.md):
-crear la VM, instalar Parrot, el entorno, comprobarlo y la snapshot.
-
-En un Parrot OS 7 recién instalado, como usuario normal (pedirá la contraseña
-de sudo una vez):
-
-```bash
-git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
-```
-
-```bash
-cd ~/dotfiles
-```
-
-```bash
-./bootstrap.sh
-```
-
-Después, reinicia y en la pantalla de login elige la sesión `bspwm`.
-
-## Requisitos previos
-
-- Parrot OS 7 (basado en Debian 13). `anonsurf` solo existe en Parrot.
-- Una máquina x86_64 (amd64): Neovim y oh-my-posh están fijados a sus builds
-  de x86_64, y `bootstrap.sh` se detiene en cualquier otra arquitectura antes
-  de cambiar nada.
-- Usuario con permisos de sudo y conexión a internet.
-- Sesión X11: bspwm no funciona en Wayland.
-- En VMware: "Accelerate 3D graphics" activado y 2 GB o más de memoria de
-  vídeo. Ver [docs/vmware.es.md](docs/vmware.es.md).
-
-## Qué hace bootstrap.sh
-
-Cada paso comprueba si ya está hecho, así que se puede ejecutar varias veces
-sin efectos colaterales (por ejemplo, tras un fallo de red).
-`./bootstrap.sh --dry-run` muestra qué haría cada paso, sin sudo, descargas ni
-cambios.
-
-| Paso | Qué instala o configura |
-|---|---|
-| 1 | Paquetes de apt de `60-apps/apt.txt`: entorno gráfico, herramientas de terminal, seguridad, openvpn, VSCodium |
-| 2 | Fuentes Nerd Fonts (CaskaydiaCove y Hack) en `~/.local/share/fonts/` |
-| 3 | Neovim oficial en `/opt`, enlazado en `/usr/local/bin/nvim` |
-| 4 | oh-my-posh (prompt) en `~/.local/bin/` |
-| 5 | nvm, Node 24, pnpm y Claude Code |
-| 6 | Clona [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en `~/dotfiles-windows`, de donde sale la capa de Claude Code |
-| 7 | Enlaces de las configuraciones en `~/.config/` y `~/.claude/` y fusión de `~/.claude/settings.json` (`install.sh`) |
-| 8 | Extensiones de VSCodium desde Open VSX (`30-editor/vscodium/extensions.txt`) |
-| 9 | Hardening del sistema (`70-system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
-| 10 | zsh como shell por defecto |
-| 11 | Muestra los pasos manuales pendientes |
-
-Todo lo que no viene de apt se descarga en una versión fijada y se verifica
-con SHA-256 antes de instalarse.
-
-## Pasos manuales tras la instalación
-
-Implican secretos, así que no se automatizan:
-
-1. Claves SSH y GPG, firma de commits y `pass`:
-   [docs/keys-and-secrets.es.md](docs/keys-and-secrets.es.md).
-2. Perfil de Firefox para pentesting: [docs/firefox.es.md](docs/firefox.es.md).
-
-## Instalar sobre una configuración existente
-
-Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
-`~/dotfiles`:
-
-```bash
-./install.sh
-```
-
-Para ver antes qué enlazaría, respaldaría o ajustaría, sin tocar nada:
-
-```bash
-./install.sh --dry-run
-```
-
-Para ver el estado de cada enlace (`ok`, `MISSING` si falta, `STALE` si apunta
-a una ruta vieja del repo, `FOREIGN` si es un archivo ajeno al repo), del hook
-`post-merge` y de `~/.claude/settings.json`. Sale con 1 si algo no está bien:
-
-```bash
-./install.sh --check
-```
-
-`install.sh` activa además el hook `githooks/post-merge` (`core.hooksPath`):
-tras cada `git pull` que trae cambios vuelve a ejecutar `install.sh`, así una
-configuración nueva o movida queda enlazada sin ejecutarlo a mano.
-
-Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
-(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`; si
-después falla el enlace, el original vuelve a su sitio. Un enlace a una ruta
-vieja del repo (una carpeta movida) se rehace sin copia. Para volver atrás, ver
-[Desinstalar](#desinstalar).
-
-## Desinstalar
-
-`uninstall.sh` revierte `install.sh`: quita los enlaces que apuntan a este
-repo y devuelve a su sitio las copias `.pre-dotfiles.bak` de tus archivos
-originales. Como usuario normal, desde `~/dotfiles`:
-
-1. Ver qué haría, sin tocar nada:
-
-    ```bash
-    ./uninstall.sh --dry-run
-    ```
-
-2. Aplicarlo:
-
-    ```bash
-    ./uninstall.sh
-    ```
-
-3. Cerrar sesión y volver a entrar para usar la configuración original.
-
-Solo quita enlaces de este repo: si en un destino hay un archivo tuyo, lo deja
-y avisa. No desinstala paquetes ni revierte el hardening de `70-system/setup.sh`,
-ni los ajustes que `install.sh` aplica sin enlaces (modo oscuro de GTK4,
-Nautilus como gestor de carpetas e indexador desactivado). Las copias con
-fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
-script las lista para que elijas a mano.
-
-La lista de enlaces vive en `lib/links.sh` y la comparten los dos scripts:
-para añadir una configuración nueva basta con sumar una línea allí. Los
-enlaces de Claude Code no están en ella: salen de `50-claude/links.json` del
-clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
-`~/dotfiles-windows`.
-
-## Mantener otra PC al día
-
-Con una PC ya configurada, llevarle un cambio hecho en otra es un `git pull`.
-En la PC donde hiciste el cambio, commit y push. En la otra, como usuario
-normal:
-
-```bash
-cd ~/dotfiles
-```
-
-```bash
-git pull
-```
-
-Las configuraciones son enlaces al repo, así que lo que traes funciona en cuanto
-cada programa lo recarga ([Recargar un cambio](#recargar-un-cambio)). Tras cada
-pull git ejecuta además `install.sh` por su cuenta (`githooks/post-merge`), y
-eso cubre el resto:
-
-- Se enlazan las configuraciones nuevas o movidas (`lib/links.sh`).
-- Los hooks nuevos de Claude Code se fusionan en `~/.claude/settings.json`, con
-  copia previa y sin tocar nada más del archivo.
-- Si el pull cambió `bootstrap.sh` o `60-apps/apt.txt`, ejecuta `./bootstrap.sh`
-  tú; si cambió `70-system/`, `sudo ./70-system/setup.sh`. Instalar programas
-  y tocar `/etc` nunca es automático.
-
-Lo que no se versiona no viaja: las claves, `~/.gitconfig.local` y
-`~/.claude/entorno.md`.
-
-## Estructura del repo
+## Estructura
 
 Cada carpeta numerada es una capa del entorno, en el mismo orden que
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows), con su propio README: qué es
@@ -248,7 +91,137 @@ flowchart LR
     G["git pull"] -- "githooks/post-merge" --> I
 ```
 
-## Recargar un cambio
+## Cómo empezar
+
+¿Empiezas desde cero, sin VM? Sigue [docs/getting-started.es.md](docs/getting-started.es.md):
+crear la VM, instalar Parrot, el entorno, comprobarlo y la snapshot. Sigue la
+versión corta.
+
+### Requisitos previos
+
+- Parrot OS 7 (basado en Debian 13). `anonsurf` solo existe en Parrot.
+- Una máquina x86_64 (amd64): Neovim y oh-my-posh están fijados a sus builds
+  de x86_64, y `bootstrap.sh` se detiene en cualquier otra arquitectura antes
+  de cambiar nada.
+- Usuario con permisos de sudo y conexión a internet.
+- Sesión X11: bspwm no funciona en Wayland.
+- En VMware: "Accelerate 3D graphics" activado y 2 GB o más de memoria de
+  vídeo. Ver [docs/vmware.es.md](docs/vmware.es.md).
+
+### Instalar en un comando
+
+En un Parrot OS 7 recién instalado, como usuario normal (pedirá la contraseña
+de sudo una vez):
+
+```bash
+git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
+```
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+./bootstrap.sh
+```
+
+Después, reinicia y en la pantalla de login elige la sesión `bspwm`.
+
+### Qué hace bootstrap.sh
+
+Cada paso comprueba si ya está hecho, así que se puede ejecutar varias veces
+sin efectos colaterales (por ejemplo, tras un fallo de red).
+`./bootstrap.sh --dry-run` muestra qué haría cada paso, sin sudo, descargas ni
+cambios.
+
+| Paso | Qué instala o configura |
+|---|---|
+| 1 | Paquetes de apt de `60-apps/apt.txt`: entorno gráfico, herramientas de terminal, seguridad, openvpn, VSCodium |
+| 2 | Fuentes Nerd Fonts (CaskaydiaCove y Hack) en `~/.local/share/fonts/` |
+| 3 | Neovim oficial en `/opt`, enlazado en `/usr/local/bin/nvim` |
+| 4 | oh-my-posh (prompt) en `~/.local/bin/` |
+| 5 | nvm, Node 24, pnpm y Claude Code |
+| 6 | Clona [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en `~/dotfiles-windows`, de donde sale la capa de Claude Code |
+| 7 | Enlaces de las configuraciones en `~/.config/` y `~/.claude/` y fusión de `~/.claude/settings.json` (`install.sh`) |
+| 8 | Extensiones de VSCodium desde Open VSX (`30-editor/vscodium/extensions.txt`) |
+| 9 | Hardening del sistema (`70-system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
+| 10 | zsh como shell por defecto |
+| 11 | Muestra los pasos manuales pendientes |
+
+Todo lo que no viene de apt se descarga en una versión fijada y se verifica
+con SHA-256 antes de instalarse.
+
+### Instalar solo las configuraciones
+
+Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
+`~/dotfiles`:
+
+```bash
+./install.sh
+```
+
+Para ver antes qué enlazaría, respaldaría o ajustaría, sin tocar nada:
+
+```bash
+./install.sh --dry-run
+```
+
+Para ver el estado de cada enlace (`ok`, `MISSING` si falta, `STALE` si apunta
+a una ruta vieja del repo, `FOREIGN` si es un archivo ajeno al repo), del hook
+`post-merge` y de `~/.claude/settings.json`. Sale con 1 si algo no está bien:
+
+```bash
+./install.sh --check
+```
+
+`install.sh` activa además el hook `githooks/post-merge` (`core.hooksPath`):
+tras cada `git pull` que trae cambios vuelve a ejecutar `install.sh`, así una
+configuración nueva o movida queda enlazada sin ejecutarlo a mano.
+
+Antes de crear cada enlace, `install.sh` renombra lo que haya en el destino
+(archivo, carpeta o enlace propio) con el sufijo `.pre-dotfiles.bak`; si
+después falla el enlace, el original vuelve a su sitio. Un enlace a una ruta
+vieja del repo (una carpeta movida) se rehace sin copia. Para volver atrás, ver
+[Desinstalar](#desinstalar).
+
+### Pasos manuales (implican secretos, no se automatizan)
+
+1. Claves SSH y GPG, firma de commits y `pass`:
+   [docs/keys-and-secrets.es.md](docs/keys-and-secrets.es.md).
+2. Perfil de Firefox para pentesting: [docs/firefox.es.md](docs/firefox.es.md).
+
+## Uso
+
+### Mantener otra PC al día
+
+Con una PC ya configurada, llevarle un cambio hecho en otra es un `git pull`.
+En la PC donde hiciste el cambio, commit y push. En la otra, como usuario
+normal:
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+git pull
+```
+
+Las configuraciones son enlaces al repo, así que lo que traes funciona en cuanto
+cada programa lo recarga ([Recargar un cambio](#recargar-un-cambio)). Tras cada
+pull git ejecuta además `install.sh` por su cuenta (`githooks/post-merge`), y
+eso cubre el resto:
+
+- Se enlazan las configuraciones nuevas o movidas (`lib/links.sh`).
+- Los hooks nuevos de Claude Code se fusionan en `~/.claude/settings.json`, con
+  copia previa y sin tocar nada más del archivo.
+- Si el pull cambió `bootstrap.sh` o `60-apps/apt.txt`, ejecuta `./bootstrap.sh`
+  tú; si cambió `70-system/`, `sudo ./70-system/setup.sh`. Instalar programas
+  y tocar `/etc` nunca es automático.
+
+Lo que no se versiona no viaja: las claves, `~/.gitconfig.local` y
+`~/.claude/entorno.md`.
+
+### Recargar un cambio
 
 Cada programa vuelve a leer su configuración con su propia recarga. Nunca con `kill`, `killall` ni
 `pkill`: estas recargas cierran cada programa limpiamente cuando tiene que reiniciarse (polybar se
@@ -266,9 +239,9 @@ cierra por IPC y borra su socket).
 | Neovim | Reabrirlo, o `:source %` |
 | Agente de GPG | `gpg-connect-agent reloadagent /bye` |
 
-## Atajos
+### Atajos
 
-### Sistema y aplicaciones
+#### Sistema y aplicaciones
 
 | Atajo | Acción |
 |---|---|
@@ -285,7 +258,7 @@ cierra por IPC y borra su socket).
 | Botón de apagado (polybar, esquina derecha) | Menú: apagar, reiniciar o cerrar sesión de forma ordenada |
 | `Alt+Shift` | Cambiar la distribución de teclado (us / latam) |
 
-### Ventanas
+#### Ventanas
 
 | Atajo | Acción |
 |---|---|
@@ -299,7 +272,7 @@ cierra por IPC y borra su socket).
 | `Super+M` | Alternar entre mosaico y una sola ventana |
 | `Super+G` | Intercambiar con la ventana más grande |
 
-### Escritorios
+#### Escritorios
 
 | Atajo | Acción |
 |---|---|
@@ -308,7 +281,7 @@ cierra por IPC y borra su socket).
 | `Super+[` / `Super+]` | Escritorio anterior / siguiente |
 | `Super+Tab` | Último escritorio visitado |
 
-### Terminal (kitty y zsh)
+#### Terminal (kitty y zsh)
 
 | Atajo | Acción |
 |---|---|
@@ -325,6 +298,39 @@ cierra por IPC y borra su socket).
 Para el flujo de pentesting (VPN, target, qué IP usar) ver
 [docs/pentesting.es.md](docs/pentesting.es.md).
 
+### Desinstalar
+
+`uninstall.sh` revierte `install.sh`: quita los enlaces que apuntan a este
+repo y devuelve a su sitio las copias `.pre-dotfiles.bak` de tus archivos
+originales. Como usuario normal, desde `~/dotfiles`:
+
+1. Ver qué haría, sin tocar nada:
+
+    ```bash
+    ./uninstall.sh --dry-run
+    ```
+
+2. Aplicarlo:
+
+    ```bash
+    ./uninstall.sh
+    ```
+
+3. Cerrar sesión y volver a entrar para usar la configuración original.
+
+Solo quita enlaces de este repo: si en un destino hay un archivo tuyo, lo deja
+y avisa. No desinstala paquetes ni revierte el hardening de `70-system/setup.sh`,
+ni los ajustes que `install.sh` aplica sin enlaces (modo oscuro de GTK4,
+Nautilus como gestor de carpetas e indexador desactivado). Las copias con
+fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
+script las lista para que elijas a mano.
+
+La lista de enlaces vive en `lib/links.sh` y la comparten los dos scripts:
+para añadir una configuración nueva basta con sumar una línea allí. Los
+enlaces de Claude Code no están en ella: salen de `50-claude/links.json` del
+clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
+`~/dotfiles-windows`.
+
 ## Solución de problemas
 
 | Síntoma | Causa | Solución |
@@ -335,7 +341,7 @@ Para el flujo de pentesting (VPN, target, qué IP usar) ver
 | Iconos como cuadrados | Faltan las fuentes Nerd Font | Volver a ejecutar `./bootstrap.sh` |
 | Un cambio en `.zshrc` no se aplica | Cada terminal conserva lo que cargó al abrirse | `exec zsh` en esa terminal |
 | keychain pide la passphrase en cada terminal | La clave SSH no se llama `id_ed25519` | Ajustar el nombre en la línea de keychain de `10-shell/zsh/.zshrc` |
-| El anonimato falla con "Tor no arrancó" | Falta la regla sudoers | `sudo ./70-system/setup.sh` desde `~/dotfiles` |
+| El anonimato falla con "AnonSurf no arrancó" | Falta la regla sudoers | `sudo ./70-system/setup.sh` desde `~/dotfiles` |
 | Las notificaciones salen arriba y en azul | dunst arrancó antes de existir su configuración | `dunstctl reload` |
 | polybar consume mucha CPU | Un módulo con `interval = 0` | Usar un intervalo mayor que 0 |
 
@@ -344,14 +350,22 @@ Para restaurar la configuración anterior a los dotfiles, ver
 
 ## Documentación
 
-Guías detalladas en [docs/](docs/README.es.md): pentesting, anonimato, Firefox,
-claves y secretos, VMware y personalización.
+Guías en [docs/](docs/README.es.md), empezando por la de una PC nueva:
+[docs/getting-started.es.md](docs/getting-started.es.md). Pentesting, anonimato, Firefox, claves
+y secretos, VMware y personalización tienen la suya. Convenciones en `.claude/rules/`.
 
-Para contribuir o modificar el repo: [CONTRIBUTING.es.md](CONTRIBUTING.es.md).
+## Contribuir
 
-## Créditos y licencia
+Los cambios son bienvenidos: el flujo, las comprobaciones y el formato de los commits están en
+[CONTRIBUTING.es.md](CONTRIBUTING.es.md), y todo el que participa sigue el
+[código de conducta](CODE_OF_CONDUCT.es.md).
 
-El prompt y la paleta de colores son compartidos con
+## Seguridad
+
+Una vulnerabilidad se reporta en privado, nunca en un issue público:
+[SECURITY.es.md](SECURITY.es.md).
+
+## Licencia
+
+[MIT](LICENSE). El prompt de oh-my-posh y la paleta de colores se comparten con
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows).
-
-Licencia [MIT](LICENSE).

@@ -2,72 +2,66 @@
 
 # Contributing
 
-## Workflow
+Thank you for helping. It is a personal repo, but it follows a standard flow to keep it clean and
+reproducible on any Parrot OS machine.
 
-1. Create a branch from `main`.
-2. Make your changes following the conventions below.
-3. Run the checks from the repo root. They must all pass:
+## Before you start
 
-    ```bash
-    ./tools/check.sh
-    ```
+- **A bug or a small fix:** open a pull request directly, or an issue with the
+  [bug report form](https://github.com/M1gu3l4ngel/dotfiles-parrot/issues/new/choose).
+- **A new package, a new folder or a change to what `bootstrap.sh` or `70-system/setup.sh`
+  installs:** open an issue first and describe the problem it solves. It changes every machine
+  that pulls the repo, so it is agreed before it is written.
+- **A vulnerability:** never in a public issue; follow [`SECURITY.md`](SECURITY.md).
+- **Conduct:** everyone who takes part follows the [code of conduct](CODE_OF_CONDUCT.md).
 
-    The docs, task panel and install test checks need dotfiles-windows
-    cloned in `~/dotfiles-windows` (`bootstrap.sh` clones it); without it
-    they are skipped locally and only CI runs them.
+## Set up
 
-4. Commit following the commit format.
-5. Open a pull request. CI runs the same checks and reports the result on
-   GitHub.
+It needs Parrot OS 7 on x86_64, git and a user with sudo; the
+[README](README.md#prerequisites) explains the rest. Clone the repo, make a branch from `main`
+and run the checks from its root as a normal user. They are the same ones CI runs:
 
-If the change is visible to users, add it to `CHANGELOG.md` ("Unreleased")
-and to `CHANGELOG.es.md` ("Sin publicar").
-
-## Documentation in two languages
-
-All documentation exists in English (`X.md`) and Spanish (`X.es.md`), with
-the language selector on the first line. When you change a document, change
-its pair in the same commit. `./tools/check.sh` fails if they do not share
-the same structure (sections, tables, lists, links) or if their code blocks
-differ: commands are not translated.
-
-Code comments, script output, CI step and test names and commit messages are
-written in English only, following
-[docs/contributing/comments.md](docs/contributing/comments.md). The rules in
-`.claude/rules/` and `CLAUDE.md` are in Spanish only.
-
-## Commits
-
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format,
-in English and in the imperative: a title of at most 72 characters, a blank
-line and a body with one dash per concrete change.
-
-```
-type(scope): summary in the imperative
-
-- One line per concrete change.
+```bash
+./tools/check.sh
 ```
 
-- `type`: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
-- Optional `scope`: the affected component (`polybar`, `zsh`, `system`...).
-- One commit per logical change, even if it touches several files.
+The docs, task panel and install test checks need dotfiles-windows cloned in
+`~/dotfiles-windows` (`bootstrap.sh` clones it); without it they are skipped locally and only CI
+runs them.
 
-Example:
+To see what the installer would change on your machine without changing anything:
 
+```bash
+./bootstrap.sh --dry-run
+./install.sh --check
 ```
-refactor(polybar): close the bars over IPC instead of killall
 
-- Every bar sets enable-ipc so launch.sh can close it with polybar-msg.
-```
+## What a change has to keep
 
-The repo is public and every commit publishes the author's email: use your
-GitHub noreply email and sign your commits with GPG. How to set it up:
-[docs/keys-and-secrets.md](docs/keys-and-secrets.md).
+- **Nothing personal or from a company:** no local user name, email, IP, hostname, key
+  fingerprint, Firefox profile ID or client name. Use placeholders (`__USER__`) or values read
+  at run time (`$HOME`, `$SUDO_USER`). Details in `.claude/rules/security.md`.
+- **Verified downloads:** packages come from apt; anything else is downloaded at a pinned
+  version and verified with SHA-256 (see `bootstrap.sh`). Never `curl ... | bash`, and GitHub
+  Actions are pinned by commit SHA.
+- **Least privilege:** files under `/etc` are installed by `70-system/setup.sh` as `root:root`
+  copies, never as links to the repo, and a `NOPASSWD` sudoers rule names exact commands with
+  fixed arguments.
+- **Idempotent scripts:** each step checks whether it is already done, so a script can run
+  again without breaking anything.
+- **Documents in pairs:** `X.md` in English and `X.es.md` in Spanish, with the same sections,
+  identical code blocks and the language selector on line 1. `./tools/check.sh`
+  (`check-docs.mjs` from dotfiles-windows) checks it, links and anchors included.
+- **English** in code comments, script output, CI step names and test names, following
+  [docs/contributing/comments.md](docs/contributing/comments.md). The text the desktop shows
+  (notifications, rofi menus), the rules in `.claude/rules/` and the task lists
+  (`docs/tasks.md`, `docs/backlog.md`) are Spanish only.
+- **Icons as escapes:** Nerd Font glyphs are written as UTF-8 escapes (`$'\xef\x8c\xa9'`),
+  never as literal characters, which editing tools drop.
+- **Plain documentation:** no emojis, commands that copy and work as they are.
 
-## Conventions
-
-They live in `.claude/rules/` (in Spanish). They are plain Markdown: they work
-the same for people and for Claude Code, which loads them automatically.
+The conventions live in `.claude/rules/` (in Spanish). They are plain Markdown: they work the
+same for people and for Claude Code, which loads them automatically.
 
 | File | What it defines |
 |---|---|
@@ -79,19 +73,32 @@ the same for people and for Claude Code, which loads them automatically.
 | [file-edits.md](.claude/rules/file-edits.md) | Nerd Font icons and protected files |
 | [environment.md](.claude/rules/environment.md) | Environment quirks (X11, VMware, polybar, fonts) |
 
-The most important:
+## Commits and pull requests
 
-- Never include personal data or secrets: local user name, emails, IPs,
-  fingerprints, client names.
-- Everything that does not come from apt is downloaded at a pinned version and
-  verified with SHA-256 (see `bootstrap.sh`). Never `curl ... | bash`.
-- Nerd Font icons are written as escapes (`$'\xef\x8c\xa9'`), never as
-  literal characters.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): a title
+of 72 characters at most, a blank line and a body with one dash per concrete change (no body
+only when the title says it all), in English and in the imperative:
 
-## Reporting issues
+```
+type(scope): summary in the imperative
 
-Open an issue with:
+- One line per concrete change.
+```
 
-- What you expected and what happened.
-- Parrot version (`cat /etc/os-release`) and whether it runs in a VM.
-- The steps to reproduce it and, if it is visual, a screenshot.
+- `type`: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `scope` optional: the affected component (`polybar`, `zsh`, `system`...).
+- **One commit per verified change**: two independent changes go in two commits, so each one
+  can be reviewed and reverted on its own.
+- Add files by path, never with `git add -A` or `git add .`.
+- The repo is public and every commit publishes the author's email: use the GitHub **noreply
+  email** and **sign commits with GPG**, as [docs/keys-and-secrets.md](docs/keys-and-secrets.md)
+  explains.
+
+A pull request does one thing and fills in its template. A change people notice adds its line
+under "Unreleased" in [CHANGELOG.md](CHANGELOG.md) and under "Sin publicar" in its Spanish
+pair. CI has to pass: the same checks as `./tools/check.sh`, plus the secrets scan.
+
+## License
+
+By contributing, you agree that your contribution is licensed under [MIT](LICENSE), like the
+rest of the repo.

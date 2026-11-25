@@ -8,7 +8,21 @@ Notable changes to the project. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `SECURITY` and `CODE_OF_CONDUCT` in English and Spanish, a pull request
+  template and issue forms for bugs and features, with blank issues off and a
+  link to the private vulnerability report.
+
 ### Changed
+
+- The README follows the documentation standard shared with dotfiles-windows:
+  Structure, How it works, Getting started, Usage, Troubleshooting,
+  Documentation, Contributing, Security and License, with the header links
+  under the same names. `CONTRIBUTING` uses the standard sections.
+- `tools/check.sh` fails if a file a public repo carries is missing
+  (`check-docs --community public`), and CI checks out the dotfiles-windows
+  commit that adds it.
 
 - The anonymity toggle asks in rofi before anonsurf closes an open browser or
   client, checks the Tor exit for up to a minute instead of once, and runs one

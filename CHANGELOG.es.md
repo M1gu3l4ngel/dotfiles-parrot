@@ -8,7 +8,21 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Añadido
+
+- `SECURITY` y `CODE_OF_CONDUCT` en inglés y español, una plantilla de pull
+  request y formularios de issues para errores y mejoras, sin issues en blanco
+  y con un enlace al reporte privado de vulnerabilidades.
+
 ### Cambiado
+
+- El README sigue el estándar de documentación compartido con dotfiles-windows:
+  Estructura, Cómo funciona, Cómo empezar, Uso, Solución de problemas,
+  Documentación, Contribuir, Seguridad y Licencia, con los enlaces de la
+  cabecera con esos mismos nombres. `CONTRIBUTING` usa las secciones estándar.
+- `tools/check.sh` falla si falta un archivo que lleva un repo público
+  (`check-docs --community public`), y el CI descarga el commit de
+  dotfiles-windows que lo añade.
 
 - El toggle de anonimato pregunta en rofi antes de que anonsurf cierre un
   navegador o cliente abierto, comprueba la salida por Tor durante hasta un

@@ -1,0 +1,37 @@
+name: Bug report
+description: A script, a link or a configuration does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: A vulnerability goes through SECURITY.md, never in a public issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you got. Paste the full error, or a screenshot if it is visual.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ./bootstrap.sh --dry-run
+        2. ./install.sh --check
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit
+      description: The output of `git rev-parse --short HEAD` in your clone.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: The output of `grep PRETTY_NAME /etc/os-release` and `uname -m`, and whether it runs in VMware.
+    validations:
+      required: true

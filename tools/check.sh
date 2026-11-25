@@ -197,10 +197,12 @@ layer_check() {
   fi
 }
 
-# Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
-# nvim's README is NvChad's, protected and English only.
+# Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks,
+# and --community public fails if a file a public repo carries is missing (SECURITY, the code of
+# conduct, the .github templates). nvim's README is NvChad's, protected and English only.
 layer_check "check-docs" \
-  node "$LAYER_DIR/tools/check-docs.mjs" . --exclude 30-editor/nvim/.config/nvim/README.md
+  node "$LAYER_DIR/tools/check-docs.mjs" . --community public \
+  --exclude 30-editor/nvim/.config/nvim/README.md
 # Comments, script output and test names stay in English. The checker lists its exemptions after
 # the verdict; they are dropped here so the verdict is the line layer_check reports.
 # shellcheck disable=SC2317 # Reached through layer_check, which shellcheck cannot follow.

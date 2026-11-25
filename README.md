@@ -14,11 +14,14 @@
 </p>
 
 <p align="center">
-  <a href="#one-command-setup">Install</a> ·
-  <a href="#repository-layout">Structure</a> ·
-  <a href="#shortcuts">Shortcuts</a> ·
-  <a href="docs/README.md">Documentation</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="#structure">Structure</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#documentation">Documentation</a> ·
+  <a href="#contributing">Contributing</a> ·
+  <a href="#security">Security</a> ·
+  <a href="#license">License</a>
 </p>
 
 <p align="center">
@@ -33,167 +36,7 @@
 
 ![Desktop](assets/preview.png)
 
-## One-command setup
-
-Starting from scratch, with no VM yet? Follow
-[docs/getting-started.md](docs/getting-started.md): create the VM, install
-Parrot, set up the environment, check it and take a snapshot.
-
-On a fresh Parrot OS 7 install, as a regular user (it asks for the sudo
-password once):
-
-```bash
-git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
-```
-
-```bash
-cd ~/dotfiles
-```
-
-```bash
-./bootstrap.sh
-```
-
-Then reboot and pick the `bspwm` session on the login screen.
-
-## Requirements
-
-- Parrot OS 7 (based on Debian 13). `anonsurf` only exists on Parrot.
-- An x86_64 (amd64) machine: Neovim and oh-my-posh are pinned to their x86_64
-  builds, and `bootstrap.sh` stops on any other architecture before changing
-  anything.
-- A user with sudo rights and an internet connection.
-- An X11 session: bspwm does not run on Wayland.
-- On VMware: "Accelerate 3D graphics" enabled and 2 GB or more of graphics
-  memory. See [docs/vmware.md](docs/vmware.md).
-
-## What bootstrap.sh does
-
-Every step checks whether it is already done, so it can be run again safely
-(for example, after a network failure). `./bootstrap.sh --dry-run` shows what
-each step would do, without sudo, downloads or changes.
-
-| Step | What it installs or configures |
-|---|---|
-| 1 | apt packages from `60-apps/apt.txt`: desktop, terminal tools, security, openvpn, VSCodium |
-| 2 | Nerd Fonts (CaskaydiaCove and Hack) in `~/.local/share/fonts/` |
-| 3 | Official Neovim in `/opt`, linked as `/usr/local/bin/nvim` |
-| 4 | oh-my-posh (prompt) in `~/.local/bin/` |
-| 5 | nvm, Node 24, pnpm and Claude Code |
-| 6 | Clones [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) in `~/dotfiles-windows`, the source of the Claude Code layer |
-| 7 | Config symlinks in `~/.config/` and `~/.claude/` and the merge of `~/.claude/settings.json` (`install.sh`) |
-| 8 | VSCodium extensions from Open VSX (`30-editor/vscodium/extensions.txt`) |
-| 9 | System hardening (`70-system/setup.sh`): firewall, sudoers, automatic patches, login screen |
-| 10 | zsh as the default shell |
-| 11 | Prints the remaining manual steps |
-
-Everything that does not come from apt is downloaded at a pinned version and
-verified against a SHA-256 hash before it is installed.
-
-## Manual steps after installing
-
-They involve secrets, so they are not automated:
-
-1. SSH and GPG keys, commit signing and `pass`:
-   [docs/keys-and-secrets.md](docs/keys-and-secrets.md).
-2. Firefox profile for pentesting: [docs/firefox.md](docs/firefox.md).
-
-## Install on top of an existing setup
-
-If the environment is already installed and you only want these configs, from
-`~/dotfiles`:
-
-```bash
-./install.sh
-```
-
-To see first what it would link, back up or set, without changing anything:
-
-```bash
-./install.sh --dry-run
-```
-
-To see the state of every link (`ok`, `MISSING`, `STALE` for an old repo path,
-`FOREIGN` for a file not from the repo), of the `post-merge` hook and of
-`~/.claude/settings.json`. It exits with 1 if something is not right:
-
-```bash
-./install.sh --check
-```
-
-`install.sh` also turns on the `githooks/post-merge` hook (`core.hooksPath`):
-after each `git pull` that brings changes, it runs `install.sh` again, so a
-new or moved config is linked without running it by hand.
-
-Before creating each link, `install.sh` renames whatever is at the target
-(file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix; if the
-link then fails, the original goes back. A link to an old path inside the repo
-(a moved folder) is replaced without a backup. To go back, see
-[Uninstall](#uninstall).
-
-## Uninstall
-
-`uninstall.sh` reverts `install.sh`: it removes the links that point to this
-repo and puts your original files back from their `.pre-dotfiles.bak` copies.
-As a regular user, from `~/dotfiles`:
-
-1. See what it would do, without changing anything:
-
-    ```bash
-    ./uninstall.sh --dry-run
-    ```
-
-2. Apply it:
-
-    ```bash
-    ./uninstall.sh
-    ```
-
-3. Log out and back in to use the original configuration.
-
-It only removes links from this repo: if a target holds a file of yours, it
-leaves it and warns. It does not uninstall packages or revert the
-`70-system/setup.sh` hardening, nor the settings `install.sh` applies without
-links (GTK4 dark mode, Nautilus as the folder handler, file indexer disabled).
-Dated copies (`.pre-dotfiles.bak.<date>`), from reinstalls, are not restored:
-the script lists them so you can choose by hand.
-
-The list of links lives in `lib/links.sh` and both scripts share it: to add a
-new config, add one line there. The Claude Code links are not listed there:
-they come from `50-claude/links.json` of the
-[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) clone in
-`~/dotfiles-windows`.
-
-## Keeping another PC up to date
-
-Once a PC is set up, bringing it a change made on another one is a `git pull`.
-On the PC where you made the change, commit and push. On the other one, as a
-regular user:
-
-```bash
-cd ~/dotfiles
-```
-
-```bash
-git pull
-```
-
-The configs are links into the repo, so what you pull is live as soon as each
-program reloads it ([Reload a change](#reload-a-change)). After each pull git
-also runs `install.sh` on its own (`githooks/post-merge`), and that covers the
-rest:
-
-- New or moved configs (`lib/links.sh`) are linked.
-- New Claude Code hooks are merged into `~/.claude/settings.json`, with a
-  backup first and without touching anything else in the file.
-- If the pull changed `bootstrap.sh` or `60-apps/apt.txt`, run `./bootstrap.sh`
-  yourself; if it changed `70-system/`, run `sudo ./70-system/setup.sh`.
-  Installing programs and touching `/etc` are never automatic.
-
-What is not versioned does not travel: the keys, `~/.gitconfig.local` and
-`~/.claude/entorno.md`.
-
-## Repository layout
+## Structure
 
 Each numbered folder is one layer of the environment, in the same order as
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows), with its own README: what
@@ -248,7 +91,137 @@ flowchart LR
     G["git pull"] -- "githooks/post-merge" --> I
 ```
 
-## Reload a change
+## Getting started
+
+Starting from scratch, with no VM yet? Follow
+[docs/getting-started.md](docs/getting-started.md): create the VM, install
+Parrot, set up the environment, check it and take a snapshot. The short
+version follows.
+
+### Prerequisites
+
+- Parrot OS 7 (based on Debian 13). `anonsurf` only exists on Parrot.
+- An x86_64 (amd64) machine: Neovim and oh-my-posh are pinned to their x86_64
+  builds, and `bootstrap.sh` stops on any other architecture before changing
+  anything.
+- A user with sudo rights and an internet connection.
+- An X11 session: bspwm does not run on Wayland.
+- On VMware: "Accelerate 3D graphics" enabled and 2 GB or more of graphics
+  memory. See [docs/vmware.md](docs/vmware.md).
+
+### Install in one command
+
+On a fresh Parrot OS 7 install, as a regular user (it asks for the sudo
+password once):
+
+```bash
+git clone https://github.com/M1gu3l4ngel/dotfiles-parrot.git ~/dotfiles
+```
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+./bootstrap.sh
+```
+
+Then reboot and pick the `bspwm` session on the login screen.
+
+### What bootstrap.sh does
+
+Every step checks whether it is already done, so it can be run again safely
+(for example, after a network failure). `./bootstrap.sh --dry-run` shows what
+each step would do, without sudo, downloads or changes.
+
+| Step | What it installs or configures |
+|---|---|
+| 1 | apt packages from `60-apps/apt.txt`: desktop, terminal tools, security, openvpn, VSCodium |
+| 2 | Nerd Fonts (CaskaydiaCove and Hack) in `~/.local/share/fonts/` |
+| 3 | Official Neovim in `/opt`, linked as `/usr/local/bin/nvim` |
+| 4 | oh-my-posh (prompt) in `~/.local/bin/` |
+| 5 | nvm, Node 24, pnpm and Claude Code |
+| 6 | Clones [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) in `~/dotfiles-windows`, the source of the Claude Code layer |
+| 7 | Config symlinks in `~/.config/` and `~/.claude/` and the merge of `~/.claude/settings.json` (`install.sh`) |
+| 8 | VSCodium extensions from Open VSX (`30-editor/vscodium/extensions.txt`) |
+| 9 | System hardening (`70-system/setup.sh`): firewall, sudoers, automatic patches, login screen |
+| 10 | zsh as the default shell |
+| 11 | Prints the remaining manual steps |
+
+Everything that does not come from apt is downloaded at a pinned version and
+verified against a SHA-256 hash before it is installed.
+
+### Install only the configurations
+
+If the environment is already installed and you only want these configs, from
+`~/dotfiles`:
+
+```bash
+./install.sh
+```
+
+To see first what it would link, back up or set, without changing anything:
+
+```bash
+./install.sh --dry-run
+```
+
+To see the state of every link (`ok`, `MISSING`, `STALE` for an old repo path,
+`FOREIGN` for a file not from the repo), of the `post-merge` hook and of
+`~/.claude/settings.json`. It exits with 1 if something is not right:
+
+```bash
+./install.sh --check
+```
+
+`install.sh` also turns on the `githooks/post-merge` hook (`core.hooksPath`):
+after each `git pull` that brings changes, it runs `install.sh` again, so a
+new or moved config is linked without running it by hand.
+
+Before creating each link, `install.sh` renames whatever is at the target
+(file, folder or your own symlink) with the `.pre-dotfiles.bak` suffix; if the
+link then fails, the original goes back. A link to an old path inside the repo
+(a moved folder) is replaced without a backup. To go back, see
+[Uninstall](#uninstall).
+
+### Manual steps (involve secrets, not automated)
+
+1. SSH and GPG keys, commit signing and `pass`:
+   [docs/keys-and-secrets.md](docs/keys-and-secrets.md).
+2. Firefox profile for pentesting: [docs/firefox.md](docs/firefox.md).
+
+## Usage
+
+### Keeping another PC up to date
+
+Once a PC is set up, bringing it a change made on another one is a `git pull`.
+On the PC where you made the change, commit and push. On the other one, as a
+regular user:
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+git pull
+```
+
+The configs are links into the repo, so what you pull is live as soon as each
+program reloads it ([Reload a change](#reload-a-change)). After each pull git
+also runs `install.sh` on its own (`githooks/post-merge`), and that covers the
+rest:
+
+- New or moved configs (`lib/links.sh`) are linked.
+- New Claude Code hooks are merged into `~/.claude/settings.json`, with a
+  backup first and without touching anything else in the file.
+- If the pull changed `bootstrap.sh` or `60-apps/apt.txt`, run `./bootstrap.sh`
+  yourself; if it changed `70-system/`, run `sudo ./70-system/setup.sh`.
+  Installing programs and touching `/etc` are never automatic.
+
+What is not versioned does not travel: the keys, `~/.gitconfig.local` and
+`~/.claude/entorno.md`.
+
+### Reload a change
 
 Each program reads its configuration again with its own reload. Never with `kill`, `killall` or
 `pkill`: these reloads close each program cleanly when it has to restart (polybar closes over IPC
@@ -266,9 +239,9 @@ and removes its socket).
 | Neovim | Reopen it, or `:source %` |
 | GPG agent | `gpg-connect-agent reloadagent /bye` |
 
-## Shortcuts
+### Shortcuts
 
-### System and applications
+#### System and applications
 
 | Shortcut | Action |
 |---|---|
@@ -285,7 +258,7 @@ and removes its socket).
 | Power button (polybar, right corner) | Menu: clean shutdown, reboot or log out |
 | `Alt+Shift` | Switch keyboard layout (us / latam) |
 
-### Windows
+#### Windows
 
 | Shortcut | Action |
 |---|---|
@@ -299,7 +272,7 @@ and removes its socket).
 | `Super+M` | Toggle between tiled and a single window |
 | `Super+G` | Swap with the largest window |
 
-### Desktops
+#### Desktops
 
 | Shortcut | Action |
 |---|---|
@@ -308,7 +281,7 @@ and removes its socket).
 | `Super+[` / `Super+]` | Previous / next desktop |
 | `Super+Tab` | Last visited desktop |
 
-### Terminal (kitty and zsh)
+#### Terminal (kitty and zsh)
 
 | Shortcut | Action |
 |---|---|
@@ -325,6 +298,39 @@ and removes its socket).
 For the pentesting workflow (VPN, target, which IP to use) see
 [docs/pentesting.md](docs/pentesting.md).
 
+### Uninstall
+
+`uninstall.sh` reverts `install.sh`: it removes the links that point to this
+repo and puts your original files back from their `.pre-dotfiles.bak` copies.
+As a regular user, from `~/dotfiles`:
+
+1. See what it would do, without changing anything:
+
+    ```bash
+    ./uninstall.sh --dry-run
+    ```
+
+2. Apply it:
+
+    ```bash
+    ./uninstall.sh
+    ```
+
+3. Log out and back in to use the original configuration.
+
+It only removes links from this repo: if a target holds a file of yours, it
+leaves it and warns. It does not uninstall packages or revert the
+`70-system/setup.sh` hardening, nor the settings `install.sh` applies without
+links (GTK4 dark mode, Nautilus as the folder handler, file indexer disabled).
+Dated copies (`.pre-dotfiles.bak.<date>`), from reinstalls, are not restored:
+the script lists them so you can choose by hand.
+
+The list of links lives in `lib/links.sh` and both scripts share it: to add a
+new config, add one line there. The Claude Code links are not listed there:
+they come from `50-claude/links.json` of the
+[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) clone in
+`~/dotfiles-windows`.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -335,7 +341,7 @@ For the pentesting workflow (VPN, target, which IP to use) see
 | Icons show as squares | Nerd Fonts missing | Run `./bootstrap.sh` again |
 | A `.zshrc` change does not apply | Each terminal keeps what it loaded at startup | `exec zsh` in that terminal |
 | keychain asks for the passphrase in every terminal | The SSH key is not named `id_ed25519` | Change the name in the keychain line of `10-shell/zsh/.zshrc` |
-| Anonymity fails with "Tor no arrancó" | The sudoers rule is missing | `sudo ./70-system/setup.sh` from `~/dotfiles` |
+| Anonymity fails with "AnonSurf no arrancó" | The sudoers rule is missing | `sudo ./70-system/setup.sh` from `~/dotfiles` |
 | Notifications appear at the top and in blue | dunst started before its config existed | `dunstctl reload` |
 | polybar uses a lot of CPU | A module with `interval = 0` | Use an interval greater than 0 |
 
@@ -344,14 +350,22 @@ To restore the configuration you had before these dotfiles, see
 
 ## Documentation
 
-Detailed guides in [docs/](docs/README.md): pentesting, anonymity,
-Firefox, keys and secrets, VMware and customization.
+Guides in [docs/](docs/README.md), starting with the new PC one:
+[docs/getting-started.md](docs/getting-started.md). Pentesting, anonymity, Firefox, keys and
+secrets, VMware and customization have their own. Conventions in `.claude/rules/`.
 
-To contribute or change the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+## Contributing
 
-## Credits and license
+Changes are welcome: the flow, the checks and the commit format are in
+[CONTRIBUTING.md](CONTRIBUTING.md), and everyone who takes part follows the
+[code of conduct](CODE_OF_CONDUCT.md).
 
-The prompt and the color palette are shared with
+## Security
+
+A vulnerability is reported privately, never in a public issue:
+[SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE). The oh-my-posh prompt and the color palette are shared with
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows).
-
-[MIT](LICENSE) license.
