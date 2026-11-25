@@ -23,9 +23,11 @@ import sys
 
 # ----- ALCANCE -----
 # Instrucciones para Claude Code (no documentación para el lector) y archivos
-# heredados de la plantilla de NvChad: solo en español o intocables.
+# heredados de la plantilla de NvChad: solo en español o intocables. Las listas
+# del panel de tareas también: son el trabajo del agente, y el panel lee sus
+# títulos en español.
 EXCLUDED_PREFIXES = (".claude/", "nvim/")
-EXCLUDED_FILES = {"CLAUDE.md", "claude/CLAUDE.md"}
+EXCLUDED_FILES = {"CLAUDE.md", "claude/CLAUDE.md", "docs/tasks.md", "docs/backlog.md"}
 
 ES_SUFFIX = ".es.md"
 

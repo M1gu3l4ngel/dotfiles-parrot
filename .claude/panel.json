@@ -1,0 +1,15 @@
+{
+  "project": "dotfiles-parrot",
+  "platforms": {
+    "install": "Instalación",
+    "desktop": "Escritorio",
+    "shell": "Shell",
+    "system": "Sistema",
+    "claude": "Claude Code",
+    "repo": "Repositorio"
+  },
+  "devices": {
+    "here": "Esta PC",
+    "new": "PC nueva"
+  }
+}
