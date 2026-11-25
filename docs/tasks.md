@@ -154,6 +154,4 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Aplazado — cada uno con el evento que lo dispara
 
-- [ ] Separar `60-apps/apt.txt` en esencial y opcional (pentesting), como `essential.json` y `optional.json` de Windows — cuando `bootstrap.sh` necesite una opción para omitir lo opcional
 - [ ] Estado de `settarget` y del anonimato en `~/.local/state` en vez de `~/.config/bin` (4 scripts, `.zshrc`, `install.sh` y `.gitignore` juntos) — al tocar los scripts de polybar
-- [ ] Medir el arranque de zsh (`zmodload zsh/zprof`) y pasar de nvm a fnm como Windows si nvm es lo lento — cuando se note la espera al abrir kitty
