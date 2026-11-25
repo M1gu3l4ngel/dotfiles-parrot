@@ -15,6 +15,8 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 **Plataforma:** Repositorio.
 
 - [ ] Tras el push, cada carpeta numerada muestra su README en GitHub, con el selector de idioma y las tablas bien formadas
+- [ ] Tras el push, el diagrama de «How it works» del README raíz se dibuja en GitHub, en inglés y en español
+- [ ] Los enlaces de la tabla de carpetas del README raíz abren el README de cada carpeta en su idioma
 - [ ] Lo que dice cada README (adónde se enlaza, cómo se recarga) coincide con lo que ves en esta PC
 
 ## Comentarios y salida de los scripts en inglés
@@ -174,17 +176,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 # Fase 7 — Documentación
 
-## README raíz al nivel de dotfiles-windows
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] Tabla de carpetas numeradas con enlace a su README y tabla de recargas (hoy solo en `CLAUDE.md`)
-- [ ] Diagrama Mermaid: `bootstrap.sh` → apt, fuentes, Neovim, oh-my-posh, Node → `install.sh` → enlaces → programas, la capa de Claude desde dotfiles-windows y `git pull` → `post-merge`
-- [ ] Secciones de `--check`, `--dry-run` y «Mantener otra PC al día», como en Windows
-
 ## Guía de PC nueva de principio a fin
 
 **Plataforma:** Instalación.
@@ -209,6 +200,7 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] `CONTRIBUTING`: commits en una línea y en español; el modelo pide título en inglés en imperativo y cuerpo con un guion por cambio
 - [ ] `docs/README` indexa `docs/contributing/comments.md`

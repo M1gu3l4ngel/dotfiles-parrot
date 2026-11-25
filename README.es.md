@@ -104,10 +104,19 @@ Si ya tienes el entorno instalado y solo quieres estas configuraciones, desde
 ./install.sh
 ```
 
-Para ver antes qué cambiaría, sin tocar nada, ejecútalo con `--dry-run`. Con
-`--check` lista el estado de cada enlace (`ok`, `MISSING` si falta, `STALE` si
-apunta a una ruta vieja del repo, `FOREIGN` si es un archivo ajeno al repo) y de
-`~/.claude/settings.json`, y sale con 1 si algo no está bien.
+Para ver antes qué enlazaría, respaldaría o ajustaría, sin tocar nada:
+
+```bash
+./install.sh --dry-run
+```
+
+Para ver el estado de cada enlace (`ok`, `MISSING` si falta, `STALE` si apunta
+a una ruta vieja del repo, `FOREIGN` si es un archivo ajeno al repo), del hook
+`post-merge` y de `~/.claude/settings.json`. Sale con 1 si algo no está bien:
+
+```bash
+./install.sh --check
+```
 
 `install.sh` activa además el hook `githooks/post-merge` (`core.hooksPath`):
 tras cada `git pull` que trae cambios vuelve a ejecutar `install.sh`, así una
@@ -152,38 +161,107 @@ enlaces de Claude Code no están en ella: salen de `50-claude/links.json` del
 clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
 `~/dotfiles-windows`.
 
+## Mantener otra PC al día
+
+Con una PC ya configurada, llevarle un cambio hecho en otra es un `git pull`.
+En la PC donde hiciste el cambio, commit y push. En la otra, como usuario
+normal:
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+git pull
+```
+
+Las configuraciones son enlaces al repo, así que lo que traes funciona en cuanto
+cada programa lo recarga ([Recargar un cambio](#recargar-un-cambio)). Tras cada
+pull git ejecuta además `install.sh` por su cuenta (`githooks/post-merge`), y
+eso cubre el resto:
+
+- Se enlazan las configuraciones nuevas o movidas (`lib/links.sh`).
+- Los hooks nuevos de Claude Code se fusionan en `~/.claude/settings.json`, con
+  copia previa y sin tocar nada más del archivo.
+- Si el pull cambió `bootstrap.sh` o `60-apps/apt.txt`, ejecuta `./bootstrap.sh`
+  tú; si cambió `70-system/`, `sudo ./70-system/setup.sh`. Instalar programas
+  y tocar `/etc` nunca es automático.
+
+Lo que no se versiona no viaja: las claves, `~/.gitconfig.local` y
+`~/.claude/entorno.md`.
+
 ## Estructura del repo
 
-Las configuraciones se agrupan en capas numeradas, en el mismo orden que
-[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows); dentro de
-cada una, cada componente mantiene su estructura `<componente>/.config/<componente>/`.
+Cada carpeta numerada es una capa del entorno, en el mismo orden que
+[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows), con su propio README: qué es
+cada archivo, dónde se enlaza, cómo se recarga y qué no tocar.
 
-| Directorio | Contenido | Se instala en |
-|---|---|---|
-| `10-shell/zsh/` | Shell | `~/.zshrc` |
-| `10-shell/oh-my-posh/` | Tema del prompt, idéntico al de Windows | Se lee desde el repo |
-| `15-git/gitconfig` | Identidad de git y firma de commits; la clave va en `~/.gitconfig.local` | `~/.gitconfig` |
-| `15-git/gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
-| `20-terminal/kitty/` | Terminal | `~/.config/kitty/` |
-| `25-desktop/bspwm/` | Gestor de ventanas y script de redimensionado | `~/.config/bspwm/` |
-| `25-desktop/sxhkd/` | Atajos de teclado | `~/.config/sxhkd/` |
-| `25-desktop/polybar/` | Barras, paleta de colores y lanzador | `~/.config/polybar/` |
-| `25-desktop/picom/` | Compositor (esquinas, transparencias) | `~/.config/picom/` |
-| `25-desktop/rofi/` | Lanzador de aplicaciones y temas | `~/.config/rofi/` |
-| `25-desktop/dunst/` | Notificaciones | `~/.config/dunst/` |
-| `25-desktop/gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
-| `25-desktop/xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
-| `25-desktop/scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
-| `30-editor/nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
-| `30-editor/vscodium/` | Ajustes, atajos y extensiones del editor VSCodium | `~/.config/Visual Studio Code/User/` |
-| `40-format/` | Estilo por defecto de Prettier y EditorConfig para proyectos, idéntico al de Windows | `~/.prettierrc.json`, `~/.editorconfig` |
-| `60-apps/` | Lista de paquetes de apt que instala `bootstrap.sh` | No se instala (la lee `bootstrap.sh`) |
-| `70-system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
-| `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
-| `docs/` | Guías detalladas | No se instala |
-| `githooks/` | `post-merge`: ejecuta `install.sh` tras cada `git pull` con cambios | `core.hooksPath` del clon |
-| `lib/` | Lista de enlaces compartida por `install.sh` y `uninstall.sh` | No se instala |
-| `tools/` | Comprobaciones del repo (`check.sh`) | No se instala |
+| Carpeta | Contenido |
+|---|---|
+| `10-shell/` | zsh y el prompt de oh-my-posh, compartido con Windows ([10-shell/README.es.md](10-shell/README.es.md)) |
+| `15-git/` | Identidad de git, firma de commits y el agente de GPG ([15-git/README.es.md](15-git/README.es.md)) |
+| `20-terminal/` | kitty ([20-terminal/README.es.md](20-terminal/README.es.md)) |
+| `25-desktop/` | bspwm, sxhkd, polybar, picom, rofi, dunst, GTK4, keymap y los scripts de polybar ([25-desktop/README.es.md](25-desktop/README.es.md)) |
+| `30-editor/` | Neovim con NvChad y VSCodium ([30-editor/README.es.md](30-editor/README.es.md)) |
+| `40-format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([40-format/README.es.md](40-format/README.es.md)) |
+| `60-apps/` | La lista de paquetes de apt que instala `bootstrap.sh` ([60-apps/README.es.md](60-apps/README.es.md)) |
+| `70-system/` | Hardening como copias de root: firewall, sudoers, Firefox, apt, pantalla de login ([70-system/README.es.md](70-system/README.es.md)) |
+
+Y alrededor:
+
+| Ruta | Contenido |
+|---|---|
+| `bootstrap.sh` | Instalación en un comando |
+| `install.sh` | Enlaces de configuración (`--check` para ver su estado, `--dry-run` para simular) |
+| `uninstall.sh` | Quita los enlaces y restaura las copias (`--dry-run` para simular) |
+| `lib/` | La lista de enlaces que comparten `install.sh` y `uninstall.sh` |
+| `githooks/` | `post-merge`: ejecuta `install.sh` tras cada `git pull` con cambios |
+| `tools/` | Comprobaciones (`check.sh`, igual que el CI) y los tests de instalación |
+| `assets/` | Logos, captura del escritorio y fondo por defecto |
+| `docs/` | Guías ([docs/README.es.md](docs/README.es.md)) |
+| `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |
+
+## Cómo funciona
+
+`bootstrap.sh` instala las herramientas; `install.sh` enlaza cada archivo de configuración del repo
+donde lo lee su programa. Como son enlaces, editar el repo es editar la configuración en vivo, y un
+`git pull` en otra PC la aplica allí.
+
+```mermaid
+flowchart LR
+    B["bootstrap.sh"] --> A["apt<br/>60-apps/apt.txt"]
+    B --> F["Nerd Fonts · Neovim · oh-my-posh<br/>SHA-256 verified"]
+    B --> N["nvm · Node · pnpm · Claude Code"]
+    B --> C["git clone<br/>dotfiles-windows"]
+    B --> I["install.sh<br/>lib/links.sh"]
+    B --> S["sudo 70-system/setup.sh"]
+    I -- "symlinks" --> H["~/.config: bspwm · polybar · kitty<br/>zsh · nvim · VSCodium"]
+    C --> L["50-claude/links.json<br/>Claude layer links"]
+    L --> I
+    I -- "symlinks" --> K["~/.claude"]
+    I -- "node" --> M["50-claude/tools/install-settings.mjs"]
+    M -- "template merge" --> J["~/.claude/settings.json"]
+    S -- "root copies" --> E["/etc · /usr/local/sbin"]
+    G["git pull"] -- "githooks/post-merge" --> I
+```
+
+## Recargar un cambio
+
+Cada programa vuelve a leer su configuración con su propia recarga. Nunca con `kill`, `killall` ni
+`pkill`: estas recargas cierran cada programa limpiamente cuando tiene que reiniciarse (polybar se
+cierra por IPC y borra su socket).
+
+| Componente | Recarga |
+|---|---|
+| bspwm (y polybar) | `Super+Alt+R` |
+| sxhkd | `Super+Escape` |
+| polybar | `~/.config/polybar/launch.sh` |
+| picom | Al guardar `picom.conf` |
+| dunst | `dunstctl reload` |
+| kitty | `Ctrl+Shift+F5` |
+| zsh | `exec zsh` (en cada terminal abierta) |
+| Neovim | Reabrirlo, o `:source %` |
+| Agente de GPG | `gpg-connect-agent reloadagent /bye` |
 
 ## Atajos
 

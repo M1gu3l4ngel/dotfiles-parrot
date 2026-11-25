@@ -104,10 +104,19 @@ If the environment is already installed and you only want these configs, from
 ./install.sh
 ```
 
-To see first what it would change, without changing anything, run it with
-`--dry-run`. With `--check` it lists the state of every link (`ok`, `MISSING`,
-`STALE` for an old repo path, `FOREIGN` for a file not from the repo) and of
-`~/.claude/settings.json`, and exits with 1 if something is not right.
+To see first what it would link, back up or set, without changing anything:
+
+```bash
+./install.sh --dry-run
+```
+
+To see the state of every link (`ok`, `MISSING`, `STALE` for an old repo path,
+`FOREIGN` for a file not from the repo), of the `post-merge` hook and of
+`~/.claude/settings.json`. It exits with 1 if something is not right:
+
+```bash
+./install.sh --check
+```
 
 `install.sh` also turns on the `githooks/post-merge` hook (`core.hooksPath`):
 after each `git pull` that brings changes, it runs `install.sh` again, so a
@@ -152,38 +161,107 @@ they come from `50-claude/links.json` of the
 [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) clone in
 `~/dotfiles-windows`.
 
+## Keeping another PC up to date
+
+Once a PC is set up, bringing it a change made on another one is a `git pull`.
+On the PC where you made the change, commit and push. On the other one, as a
+regular user:
+
+```bash
+cd ~/dotfiles
+```
+
+```bash
+git pull
+```
+
+The configs are links into the repo, so what you pull is live as soon as each
+program reloads it ([Reload a change](#reload-a-change)). After each pull git
+also runs `install.sh` on its own (`githooks/post-merge`), and that covers the
+rest:
+
+- New or moved configs (`lib/links.sh`) are linked.
+- New Claude Code hooks are merged into `~/.claude/settings.json`, with a
+  backup first and without touching anything else in the file.
+- If the pull changed `bootstrap.sh` or `60-apps/apt.txt`, run `./bootstrap.sh`
+  yourself; if it changed `70-system/`, run `sudo ./70-system/setup.sh`.
+  Installing programs and touching `/etc` are never automatic.
+
+What is not versioned does not travel: the keys, `~/.gitconfig.local` and
+`~/.claude/entorno.md`.
+
 ## Repository layout
 
-The configs are grouped in numbered layers, in the same order as
-[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows); inside
-each one, every component keeps its `<component>/.config/<component>/` layout.
+Each numbered folder is one layer of the environment, in the same order as
+[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows), with its own README: what
+each file is, where it is linked, how to reload it and what not to touch.
 
-| Directory | Contents | Installed to |
-|---|---|---|
-| `10-shell/zsh/` | Shell | `~/.zshrc` |
-| `10-shell/oh-my-posh/` | Prompt theme, identical to Windows | Read from the repo |
-| `15-git/gitconfig` | git identity and commit signing; the key goes in `~/.gitconfig.local` | `~/.gitconfig` |
-| `15-git/gnupg/` | GPG agent configuration | `~/.gnupg/gpg-agent.conf` |
-| `20-terminal/kitty/` | Terminal | `~/.config/kitty/` |
-| `25-desktop/bspwm/` | Window manager and resize script | `~/.config/bspwm/` |
-| `25-desktop/sxhkd/` | Keyboard shortcuts | `~/.config/sxhkd/` |
-| `25-desktop/polybar/` | Bars, color palette and launcher | `~/.config/polybar/` |
-| `25-desktop/picom/` | Compositor (corners, transparency) | `~/.config/picom/` |
-| `25-desktop/rofi/` | Application launcher and themes | `~/.config/rofi/` |
-| `25-desktop/dunst/` | Notifications | `~/.config/dunst/` |
-| `25-desktop/gtk/` | File manager colors and settings (GTK4) | `~/.config/gtk-4.0/` |
-| `25-desktop/xkb/` | Keyboard layout (us and latam) | `~/.config/xkb/` |
-| `25-desktop/scripts/` | polybar modules, target and anonymity | `~/.config/scripts/` |
-| `30-editor/nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
-| `30-editor/vscodium/` | VSCodium settings, shortcuts and extensions | `~/.config/Visual Studio Code/User/` |
-| `40-format/` | Default Prettier and EditorConfig style for projects, identical to Windows | `~/.prettierrc.json`, `~/.editorconfig` |
-| `60-apps/` | apt package list that `bootstrap.sh` installs | Not installed (read by `bootstrap.sh`) |
-| `70-system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
-| `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |
-| `docs/` | Detailed guides | Not installed |
-| `githooks/` | `post-merge`: runs `install.sh` after each `git pull` with changes | `core.hooksPath` of the clone |
-| `lib/` | Link list shared by `install.sh` and `uninstall.sh` | Not installed |
-| `tools/` | Repo checks (`check.sh`) | Not installed |
+| Folder | Contents |
+|---|---|
+| `10-shell/` | zsh and the oh-my-posh prompt, shared with Windows ([10-shell/README.md](10-shell/README.md)) |
+| `15-git/` | git identity, commit signing and the GPG agent ([15-git/README.md](15-git/README.md)) |
+| `20-terminal/` | kitty ([20-terminal/README.md](20-terminal/README.md)) |
+| `25-desktop/` | bspwm, sxhkd, polybar, picom, rofi, dunst, GTK4, keymap and the polybar scripts ([25-desktop/README.md](25-desktop/README.md)) |
+| `30-editor/` | Neovim with NvChad and VSCodium ([30-editor/README.md](30-editor/README.md)) |
+| `40-format/` | Global Prettier and EditorConfig style for projects without their own ([40-format/README.md](40-format/README.md)) |
+| `60-apps/` | The apt package list that `bootstrap.sh` installs ([60-apps/README.md](60-apps/README.md)) |
+| `70-system/` | Hardening as root copies: firewall, sudoers, Firefox, apt, login screen ([70-system/README.md](70-system/README.md)) |
+
+And around them:
+
+| Path | Contents |
+|---|---|
+| `bootstrap.sh` | One-command install |
+| `install.sh` | Config links (`--check` to see their state, `--dry-run` to simulate) |
+| `uninstall.sh` | Removes the links and restores the backups (`--dry-run` to simulate) |
+| `lib/` | The link list shared by `install.sh` and `uninstall.sh` |
+| `githooks/` | `post-merge`: runs `install.sh` after each `git pull` with changes |
+| `tools/` | Checks (`check.sh`, the same as CI) and the install tests |
+| `assets/` | Logos, desktop screenshot and default wallpaper |
+| `docs/` | Guides ([docs/README.md](docs/README.md)) |
+| `.claude/rules/` | Project conventions (loaded by Claude Code) |
+
+## How it works
+
+`bootstrap.sh` installs the tools; `install.sh` links each configuration file from the repo to
+where its program reads it. Since they are links, editing the repo is editing the live
+configuration, and a `git pull` on another PC applies it there.
+
+```mermaid
+flowchart LR
+    B["bootstrap.sh"] --> A["apt<br/>60-apps/apt.txt"]
+    B --> F["Nerd Fonts · Neovim · oh-my-posh<br/>SHA-256 verified"]
+    B --> N["nvm · Node · pnpm · Claude Code"]
+    B --> C["git clone<br/>dotfiles-windows"]
+    B --> I["install.sh<br/>lib/links.sh"]
+    B --> S["sudo 70-system/setup.sh"]
+    I -- "symlinks" --> H["~/.config: bspwm · polybar · kitty<br/>zsh · nvim · VSCodium"]
+    C --> L["50-claude/links.json<br/>Claude layer links"]
+    L --> I
+    I -- "symlinks" --> K["~/.claude"]
+    I -- "node" --> M["50-claude/tools/install-settings.mjs"]
+    M -- "template merge" --> J["~/.claude/settings.json"]
+    S -- "root copies" --> E["/etc · /usr/local/sbin"]
+    G["git pull"] -- "githooks/post-merge" --> I
+```
+
+## Reload a change
+
+Each program reads its configuration again with its own reload. Never with `kill`, `killall` or
+`pkill`: these reloads close each program cleanly when it has to restart (polybar closes over IPC
+and removes its socket).
+
+| Component | Reload |
+|---|---|
+| bspwm (and polybar) | `Super+Alt+R` |
+| sxhkd | `Super+Escape` |
+| polybar | `~/.config/polybar/launch.sh` |
+| picom | On saving `picom.conf` |
+| dunst | `dunstctl reload` |
+| kitty | `Ctrl+Shift+F5` |
+| zsh | `exec zsh` (in each open terminal) |
+| Neovim | Reopen it, or `:source %` |
+| GPG agent | `gpg-connect-agent reloadagent /bye` |
 
 ## Shortcuts
 
