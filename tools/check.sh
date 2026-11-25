@@ -10,8 +10,8 @@
 #   4. Syntax of Neovim's Lua config
 #   5. Valid JSON (oh-my-posh theme, lazy-lock, VSCodium)
 #   6. The sudoers rule and the XKB keymap (visudo and xkbcomp)
-#   7. Public repo hygiene: no font binaries, /home/<user> paths or CRLF; bilingual docs in sync and
-#      the panel's format (dotfiles-windows tools); install.sh and uninstall.sh tests
+#   7. Public repo hygiene: no font binaries, /home/<user> paths or CRLF; bilingual docs in sync,
+#      comments in English and the panel's format (dotfiles-windows tools); install tests
 #      (tools/test-install.sh)
 #   8. Secrets in the whole history with gitleaks (if installed)
 #
@@ -201,6 +201,17 @@ layer_check() {
 # nvim's README is NvChad's, protected and English only.
 layer_check "check-docs" \
   node "$LAYER_DIR/tools/check-docs.mjs" . --exclude 30-editor/nvim/.config/nvim/README.md
+# Comments, script output and test names stay in English. The checker lists its exemptions after
+# the verdict; they are dropped here so the verdict is the line layer_check reports.
+# shellcheck disable=SC2317 # Reached through layer_check, which shellcheck cannot follow.
+check_comments() {
+  local out code
+  out=$(node "$LAYER_DIR/tools/check-comments.mjs" .)
+  code=$?
+  grep -v '^exempt:' <<<"$out"
+  return "$code"
+}
+layer_check "check-comments" check_comments
 # docs/tasks.md and docs/backlog.md keep the format the task panel reads.
 layer_check "panel/check" node "$LAYER_DIR/panel/check.mjs" .
 # install.sh and uninstall.sh against a throwaway HOME; the real one is never touched.

@@ -10,6 +10,15 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Comentarios y salida de los scripts en inglés
+
+**Plataforma:** Repositorio.
+
+- [ ] [Esta PC] `sudo ./70-system/setup.sh` desde `~/dotfiles` muestra sus 10 pasos en inglés y acaba en «Setup complete»
+- [ ] [Esta PC] Firmar un commit tras `gpg-connect-agent reloadagent /bye` sigue abriendo el diálogo de la passphrase (el `gpg-agent.conf` nuevo)
+- [ ] [Esta PC] Las notificaciones, los menús de rofi y polybar siguen en español
+- [ ] [Esta PC] Neovim y VSCodium abren con los mismos ajustes que antes
+
 ## Reglas de secretos en el settings.json de esta máquina
 
 **Plataforma:** Claude Code.
@@ -156,23 +165,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 
 
-# Fase 6 — Comentarios en inglés
-
-## Migrar los comentarios por carpeta
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-**Estado:** en curso.
-
-El check compartido encuentra 439 comentarios en español en 58 archivos, además de los banners
-`# ----- X -----`, que no detecta. Los textos que muestra el escritorio (notificaciones, rofi,
-polybar) se quedan en español.
-
-- [ ] Un commit por carpeta numerada, con la salida de los scripts en inglés en el mismo paso
-- [ ] `tools/check.sh` ejecuta `node ~/.claude/tools/check-comments.mjs .`, estricto y con sus exenciones impresas
-- [ ] Tras la migración, el check no encuentra ningún comentario en español
-
 # Fase 7 — Documentación
 
 ## README raíz al nivel de dotfiles-windows
@@ -239,7 +231,7 @@ cabecera) y el repo no incluye su licencia.
 ## Prueba en una PC limpia
 
 **Plataforma:** Instalación.
-**Requiere:** «Guía de PC nueva de principio a fin», «Migrar los comentarios por carpeta».
+**Requiere:** «Guía de PC nueva de principio a fin».
 
 - [ ] Seguir `docs/getting-started` en un Parrot recién instalado y anotar cada paso que falte o falle
 - [ ] Publicar la versión en `CHANGELOG` con su etiqueta firmada (`git tag -s`)
