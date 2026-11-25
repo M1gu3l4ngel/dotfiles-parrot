@@ -14,7 +14,7 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 **Plataforma:** Repositorio.
 
-- [ ] [Esta PC] Quitar de GitHub la clave GPG antigua que publica el email personal, y comprobar con `curl -fsS https://github.com/M1gu3l4ngel.gpg | gpg --show-keys` que solo queda el noreply
+- [ ] [PC nueva] En la PC de la oficina (Windows), quitar el UID con el email personal de su clave GPG (`gpg --edit-key`, como en `docs/gpg-signing` de dotfiles-windows), borrar la entrada vieja en GitHub y subirla de nuevo; comprobar con `curl -fsS https://github.com/M1gu3l4ngel.gpg | gpg --show-keys` que solo queda el noreply
 - [ ] [PC nueva] Seguir la sección GPG de `docs/keys-and-secrets` con una clave nueva: el primer commit sale `G` y «Verified» en GitHub
 
 ## README de cada carpeta
