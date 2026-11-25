@@ -1,7 +1,11 @@
 #!/bin/sh
-# Installed as /usr/local/sbin/anon-harden. The kill switch for the layers anonsurf leaves out,
-# run by ~/.config/scripts/toggle_anonymity.sh through `sudo -n` when anonymity turns on or off
+# Installed as /usr/local/sbin/anon-harden. A second barrier on top of anonsurf, run by
+# ~/.config/scripts/toggle_anonymity.sh through `sudo -n` when anonymity turns on or off
 # (Super+A or a click in polybar). Usage: anon-harden up|down
+#
+# anonsurf 6 already turns IPv6 off with sysctl and sends TCP and DNS through Tor. These rules do
+# not depend on that: if anything brings IPv6 back on an interface, or anonsurf's own rules miss a
+# case, the traffic is dropped instead of leaving with the real IP.
 #
 # Why a script instead of sudo on iptables: iptables takes `--modprobe=<program>`, which runs that
 # program as root, so a NOPASSWD rule on iptables with free arguments is passwordless root for any
@@ -16,11 +20,16 @@ IPTABLES=/usr/sbin/iptables
 IP6TABLES=/usr/sbin/ip6tables
 # The label of our own ICMP rule, to remove it without touching anyone else's.
 TAG=anon_toggle_icmp
+# The IPv6 policies before `up`, so `down` puts back what was there instead of forcing ACCEPT. In
+# /run, which is empty after a reboot, like the rules themselves.
+SAVED_POLICIES=/run/anon-harden.ip6-policies
 
 case "${1:-}" in
   up)
-    # All IPv6 to DROP: anonsurf sends only IPv4 through Tor, and on a network with IPv6 that traffic
-    # would leave directly, with the real IP.
+    # Saved only on the first `up`: a second call would save the DROP policies set here.
+    if [ ! -f "$SAVED_POLICIES" ]; then
+      "$IP6TABLES" -S | grep '^-P ' >"$SAVED_POLICIES"
+    fi
     "$IP6TABLES" -P OUTPUT DROP
     "$IP6TABLES" -P INPUT DROP
     "$IP6TABLES" -P FORWARD DROP
@@ -31,9 +40,19 @@ case "${1:-}" in
     fi
     ;;
   down)
-    "$IP6TABLES" -P OUTPUT ACCEPT
-    "$IP6TABLES" -P INPUT ACCEPT
-    "$IP6TABLES" -P FORWARD ACCEPT
+    if [ -f "$SAVED_POLICIES" ]; then
+      # Each line is `-P <chain> <policy>`.
+      while read -r _ chain policy; do
+        "$IP6TABLES" -P "$chain" "$policy"
+      done <"$SAVED_POLICIES"
+      rm -f "$SAVED_POLICIES"
+    elif "$IP6TABLES" -S OUTPUT | grep -q '^-P OUTPUT DROP$'; then
+      # Nothing saved but OUTPUT dropped: left by an `up` from before the policies were saved.
+      # Without that sign this is a `down` with nothing to undo, and any policy stays as it is.
+      "$IP6TABLES" -P OUTPUT ACCEPT
+      "$IP6TABLES" -P INPUT ACCEPT
+      "$IP6TABLES" -P FORWARD ACCEPT
+    fi
     # Removes every copy of the labeled rule.
     while "$IPTABLES" -C OUTPUT -p icmp -m comment --comment "$TAG" -j DROP 2>/dev/null; do
       "$IPTABLES" -D OUTPUT -p icmp -m comment --comment "$TAG" -j DROP

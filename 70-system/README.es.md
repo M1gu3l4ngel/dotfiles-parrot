@@ -8,8 +8,9 @@ no se usan symlinks: son copias con dueño root (ver al final por qué).
 
 ## Contenido
 
-- `sbin/anon-harden` — kill switch del toggle de anonimato (IPv6 a DROP e
-  ICMP saliente a DROP). Solo acepta `up` o `down`. Se instala en
+- `sbin/anon-harden` — segunda barrera sobre anonsurf para el toggle de
+  anonimato (IPv6 a DROP e ICMP saliente a DROP); `down` devuelve las
+  políticas de IPv6 que había antes. Solo acepta `up` o `down`. Se instala en
   `/usr/local/sbin/` como `root:root 0755`.
 - `sudoers.d/anon_toggle` — regla NOPASSWD para que
   `~/.config/scripts/toggle_anonymity.sh` ejecute **solo** estos comandos

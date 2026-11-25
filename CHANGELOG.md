@@ -8,6 +8,23 @@ Notable changes to the project. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The anonymity toggle asks in rofi before anonsurf closes an open browser or
+  client, checks the Tor exit for up to a minute instead of once, and runs one
+  change at a time. The ghost turns orange while Tor connects.
+- `anon-harden down` puts back the IPv6 policies there were before `up`
+  instead of forcing `ACCEPT`.
+- `docs/anonymity` covers what it does not protect: browsing without Tor
+  Browser, Tor on the same machine (Whonix as the alternative) and the MAC
+  behind VMware's NAT.
+
+### Fixed
+
+- polybar's ghost read a state file that outlived a reboot or a manual
+  `sudo anonsurf stop`, so it could stay green with no anonymity. It now reads
+  `anonsurfd`'s state from systemd.
+
 ## [2.0.0] - 2026-11-25
 
 The components moved into numbered folders, so the paths of a 1.0.0 clone

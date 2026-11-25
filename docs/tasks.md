@@ -10,6 +10,17 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## Anonimato con indicador fiable
+
+**Plataforma:** Escritorio.
+
+- [ ] [Esta PC] `sudo ./70-system/setup.sh` desde `~/dotfiles`, para instalar el `anon-harden` nuevo
+- [ ] [Esta PC] Con Firefox abierto, `Super+A` muestra en rofi «AnonSurf cerrará: firefox-esr»; «Cancelar» no cambia nada
+- [ ] [Esta PC] `Super+A` y «Cerrar y continuar»: el fantasma pasa a naranja y luego a verde con «Anonimato ON · verificado»
+- [ ] [Esta PC] Con el anonimato activo, `sudo anonsurf stop` en una terminal: el fantasma pasa a gris en un segundo
+- [ ] [Esta PC] Tras apagarlo, `sudo ip6tables -S` muestra las mismas políticas que antes de activarlo
+- [ ] [Esta PC] Guardar las reglas con el anonimato activo (`sudo iptables-save`, `sudo ip6tables -S`) para comprobar si anonsurf bloquea el UDP y el ICMP fuera de Tor
+
 ## Sin el recordatorio de español local
 
 **Plataforma:** Claude Code.
@@ -150,8 +161,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] En el clon de Windows (`~\dotfiles-parrot`), tras `git pull`, `git ls-files --eol` muestra `w/lf` en los scripts (puede hacer falta `git checkout -- .` una vez, sin cambios pendientes)
 
----
+# Fase 9 — Anonimato revisado
 
-# Aplazado — cada uno con el evento que lo dispara
+## Estado de settarget y del modo demo fuera de ~/.config
 
-- [ ] Estado de `settarget` y del anonimato en `~/.local/state` en vez de `~/.config/bin` (4 scripts, `.zshrc`, `install.sh` y `.gitignore` juntos) — al tocar los scripts de polybar
+**Plataforma:** Shell, Escritorio.
+**Prioridad:** P2.
+**Requiere:** nada.
+**Estado:** en curso.
+
+- [ ] `target` y `demo` pasan de `~/.config/bin` a `~/.local/state/dotfiles` (scripts de polybar, `.zshrc`, `install.sh`, `.gitignore` y `docs/pentesting`), moviendo el target actual

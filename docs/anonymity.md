@@ -15,32 +15,41 @@ sudo ./70-system/setup.sh
 
 It installs the sudoers rule that lets the toggle run, without a password,
 only `anonsurf start|stop` and `/usr/local/sbin/anon-harden up|down`. Without
-it, the toggle fails with "Tor no arrancó".
+it, the toggle fails with "AnonSurf no arrancó". Run it again after a change to
+`70-system/sbin/anon-harden`: the installed copy is the one that runs.
 
 ## Turn it on and off
 
 1. Press `Super+A` or click the ghost in polybar, next to the Firefox
    icons.
-2. Wait 15 to 20 seconds: Tor connects to the network and the script checks
-   the exit.
-3. Result:
+2. If a browser or client that anonsurf closes is open (Firefox, Chromium,
+   Thunderbird, HexChat, Transmission, Dropbox), rofi lists it and asks:
+   "Cerrar y continuar" goes on, "Cancelar" or `Esc` changes nothing. anonsurf
+   closes them so that a connection opened before the switch does not stay
+   outside Tor, and so that the same cookies are not seen from both IPs.
+3. Wait up to a minute with the ghost orange: Tor connects to the network and
+   the script checks the exit every 5 seconds.
+4. Result:
     - Success: notification "Anonimato ON · verificado" and a green ghost.
-    - Error: red notification. If the exit could not be confirmed as Tor, the
-      script undoes every change and goes back to the direct connection.
-4. To turn it off, press `Super+A` again: notification "Anonimato OFF" and a
-   gray ghost.
+    - Error: red notification. If the exit could not be confirmed as Tor within
+      a minute, the script undoes every change and goes back to the direct
+      connection.
+5. To turn it off, press `Super+A` again: the same question if those programs
+   are open, then notification "Anonimato OFF" and a gray ghost.
 
-The state comes from AnonSurf (`systemctl is-active anonsurfd`), not from
-whether a `tor` process exists: Parrot may leave Tor running after boot
-without anonymity being active (`anonsurf status` shows `AnonSurf: inactive`).
+The state comes from AnonSurf's `anonsurfd` service, not from whether a `tor`
+process exists: Parrot may leave Tor running after boot without anonymity
+being active (`anonsurf status` shows `AnonSurf: inactive`). The ghost reads
+the same service, so it never stays green after a reboot or a manual
+`sudo anonsurf stop`.
 
 ## What it does when turned on
 
 | Layer | What it does | Why |
 |---|---|---|
-| `anonsurf start` | Redirects TCP and DNS to Tor | Hides the real IP |
-| IPv6 to DROP | Blocks all IPv6 traffic | anonsurf only redirects IPv4 |
-| Outgoing ICMP to DROP | Blocks ping and traceroute | Tor only carries TCP |
+| `anonsurf start` | Redirects TCP and DNS to Tor and turns IPv6 off with `sysctl` | Hides the real IP |
+| IPv6 to DROP | Blocks all IPv6 traffic | A second barrier if anything brings IPv6 back on an interface |
+| Outgoing ICMP to DROP | Blocks ping and traceroute | Tor only carries TCP, and this rule does not depend on anonsurf's |
 | Check | Queries `check.torproject.org` and requires `IsTor: true` | Verify the real exit, not just that Tor is running |
 
 The IPv6 and ICMP rules live in `70-system/sbin/anon-harden`. The sudoers rule
@@ -110,7 +119,8 @@ any directory:
 sudo ip6tables -S
 ```
 
-The first three lines must be `-P INPUT ACCEPT`, `-P FORWARD ACCEPT` and
+The first three lines must be the policies there were before turning it on:
+on a default system, `-P INPUT ACCEPT`, `-P FORWARD ACCEPT` and
 `-P OUTPUT ACCEPT`.
 
 ```bash
@@ -124,6 +134,16 @@ No rule with the comment `anon_toggle_icmp` must show up.
 - It hides the IP, not the identity: logging into your accounts or using a
   browser with a unique fingerprint identifies you all the same. For strong
   anonymity, use Tor Browser (it makes all its users look alike).
+- Browsing with Firefox through it is not anonymous browsing: use Tor Browser.
+  The `torbrowser-launcher` package is installed; the first run of
+  `torbrowser-launcher` downloads and verifies Tor Browser.
+- Tor runs on the same machine as everything else. A process with root can
+  change the firewall and send traffic outside Tor, and any program the user
+  runs can turn anonymity off (`anonsurf stop` needs no password). For
+  anonymity that holds even then, Tor must run on a separate gateway machine,
+  as in Whonix.
+- Changing the MAC address inside the VM does not help: with VMware's NAT, the
+  real network only sees the host's MAC.
 - The Tor exit node sees traffic that is not encrypted: always use HTTPS.
 - It adds latency and many services block Tor nodes. It is a tool for
   specific moments (see [pentesting.md](pentesting.md)).
@@ -135,9 +155,10 @@ No rule with the comment `anon_toggle_icmp` must show up.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| "Tor no arrancó" | The sudoers rule is missing | `sudo ./70-system/setup.sh` from `~/dotfiles` |
+| "AnonSurf no arrancó" | The sudoers rule is missing | `sudo ./70-system/setup.sh` from `~/dotfiles` |
 | "No se confirmó salida por Tor" | Tor did not finish connecting or the network blocks it | Wait a minute and turn it on again |
 | The button does not change color | polybar is not reading the state | `~/.config/polybar/launch.sh` |
+| "Ya hay un cambio en curso" | Another turn on or off has not finished | Wait for its notification |
 
 To see which commands the toggle can run without a password:
 

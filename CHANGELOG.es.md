@@ -8,6 +8,23 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Cambiado
+
+- El toggle de anonimato pregunta en rofi antes de que anonsurf cierre un
+  navegador o cliente abierto, comprueba la salida por Tor durante hasta un
+  minuto en vez de una sola vez y hace un solo cambio a la vez. El fantasma se
+  pone naranja mientras Tor conecta.
+- `anon-harden down` devuelve las políticas de IPv6 que había antes de `up`
+  en vez de forzar `ACCEPT`.
+- `docs/anonymity` explica lo que no protege: navegar sin Tor Browser, Tor en
+  la misma máquina (Whonix como alternativa) y la MAC tras el NAT de VMware.
+
+### Corregido
+
+- El fantasma de polybar leía un archivo de estado que sobrevivía a un
+  reinicio o a un `sudo anonsurf stop` manual, así que podía quedarse verde sin
+  anonimato. Ahora lee de systemd el estado de `anonsurfd`.
+
 ## [2.0.0] - 2026-11-25
 
 Los componentes pasan a carpetas numeradas, así que las rutas de un clon de la
