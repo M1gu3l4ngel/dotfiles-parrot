@@ -5,6 +5,22 @@
 From an empty VM to the finished desktop, in order. Each step is short and
 links to the guide with the details.
 
+```mermaid
+flowchart LR
+    V["1. VMware VM"] --> P["2. Parrot OS 7"]
+    P --> D["3. bootstrap.sh --dry-run"]
+    D --> B["bootstrap.sh"]
+    B --> R["4. Reboot into bspwm"]
+    R --> C["5. install.sh --check"]
+    C --> M["6. Keys and Firefox"]
+    M --> S["7. Snapshot"]
+```
+
+Without VMware (Parrot installed on a physical PC or in another hypervisor),
+skip step 1 and the snapshot. `bootstrap.sh` and `70-system/setup.sh` detect
+it on their own: they do not install `open-vm-tools-desktop` and skip the
+shared folder. The checks marked "VMware only" do not apply either.
+
 ## 1. Create the VM in VMware (Windows)
 
 1. Resources of the reference VM: 4 CPUs, 8 GB of RAM and a 60 GB disk. The
@@ -45,7 +61,14 @@ As a regular user (the script asks for the sudo password once).
     cd ~/dotfiles
     ```
 
-3. Install everything:
+3. See what each step would do, without sudo, downloads or changes. Each
+   line says what it would install or link, or that it is already done:
+
+    ```bash
+    ./bootstrap.sh --dry-run
+    ```
+
+4. Install everything:
 
     ```bash
     ./bootstrap.sh
@@ -68,28 +91,35 @@ what is missing.
 
 ## 5. Check that everything works
 
-From any directory, as a regular user except where noted.
+As a regular user except where noted.
 
-1. Graphics acceleration. It must show `SVGA3D` (if it shows `llvmpipe`,
-   review step 1.2):
+1. Links and Claude Code settings, from `~/dotfiles`. It must end with
+   `All installed`; otherwise it lists what is wrong and exits with 1:
+
+    ```bash
+    ./install.sh --check
+    ```
+
+2. Graphics acceleration, VMware only. It must show `SVGA3D` (if it shows
+   `llvmpipe`, review step 1.2):
 
     ```bash
     glxinfo -B | grep renderer
     ```
 
-2. Firewall. With sudo; it must report that it is active:
+3. Firewall. With sudo; it must report that it is active:
 
     ```bash
     sudo ufw status
     ```
 
-3. Shared folder. It must list the contents of `C:\VMShare`:
+4. Shared folder, VMware only. It must list the contents of `C:\VMShare`:
 
     ```bash
     ls ~/VMShare
     ```
 
-4. Desktop: polybar bars at the top, `Super+Enter` opens kitty, `Super+D`
+5. Desktop: polybar bars at the top, `Super+Enter` opens kitty, `Super+D`
    opens the application menu and `Super+Shift+X` locks the screen.
 
 ## 6. Manual steps

@@ -5,6 +5,22 @@
 De una VM vacía al escritorio terminado, en orden. Cada paso es corto y enlaza
 a la guía con el detalle.
 
+```mermaid
+flowchart LR
+    V["1. VMware VM"] --> P["2. Parrot OS 7"]
+    P --> D["3. bootstrap.sh --dry-run"]
+    D --> B["bootstrap.sh"]
+    B --> R["4. Reboot into bspwm"]
+    R --> C["5. install.sh --check"]
+    C --> M["6. Keys and Firefox"]
+    M --> S["7. Snapshot"]
+```
+
+Sin VMware (Parrot instalado en una PC física o en otro hipervisor), sáltate
+el paso 1 y la snapshot. `bootstrap.sh` y `70-system/setup.sh` lo detectan
+solos: no instalan `open-vm-tools-desktop` y se saltan la carpeta compartida.
+Las comprobaciones marcadas «solo VMware» tampoco aplican.
+
 ## 1. Crear la VM en VMware (Windows)
 
 1. Recursos de la VM de referencia: 4 CPU, 8 GB de RAM y 60 GB de disco. La
@@ -45,7 +61,14 @@ Como usuario normal (el script pedirá la contraseña de sudo una vez).
     cd ~/dotfiles
     ```
 
-3. Instalar todo:
+3. Ver qué haría cada paso, sin sudo, descargas ni cambios. Cada línea dice
+   qué instalaría o enlazaría, o que ya está hecho:
+
+    ```bash
+    ./bootstrap.sh --dry-run
+    ```
+
+4. Instalar todo:
 
     ```bash
     ./bootstrap.sh
@@ -68,28 +91,35 @@ que falta.
 
 ## 5. Comprobar que todo funciona
 
-En cualquier directorio, como usuario normal salvo donde se indica.
+Como usuario normal salvo donde se indica.
 
-1. Aceleración gráfica. Debe mostrar `SVGA3D` (si muestra `llvmpipe`, revisa
-   el paso 1.2):
+1. Enlaces y ajustes de Claude Code, desde `~/dotfiles`. Debe terminar en
+   `All installed`; si no, lista lo que está mal y sale con 1:
+
+    ```bash
+    ./install.sh --check
+    ```
+
+2. Aceleración gráfica, solo VMware. Debe mostrar `SVGA3D` (si muestra
+   `llvmpipe`, revisa el paso 1.2):
 
     ```bash
     glxinfo -B | grep renderer
     ```
 
-2. Firewall. Con sudo; debe indicar que está activo:
+3. Firewall. Con sudo; debe indicar que está activo:
 
     ```bash
     sudo ufw status
     ```
 
-3. Carpeta compartida. Debe listar el contenido de `C:\VMShare`:
+4. Carpeta compartida, solo VMware. Debe listar el contenido de `C:\VMShare`:
 
     ```bash
     ls ~/VMShare
     ```
 
-4. Escritorio: barras de polybar arriba, `Super+Enter` abre kitty, `Super+D`
+5. Escritorio: barras de polybar arriba, `Super+Enter` abre kitty, `Super+D`
    abre el menú de aplicaciones y `Super+Shift+X` bloquea la pantalla.
 
 ## 6. Pasos manuales

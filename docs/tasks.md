@@ -17,6 +17,9 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] Tras el push, cada carpeta numerada muestra su README en GitHub, con el selector de idioma y las tablas bien formadas
 - [ ] Tras el push, el diagrama de «How it works» del README raíz se dibuja en GitHub, en inglés y en español
 - [ ] Los enlaces de la tabla de carpetas del README raíz abren el README de cada carpeta en su idioma
+- [ ] Tras el push, el diagrama de `docs/getting-started` se dibuja en GitHub
+- [ ] [PC nueva] Seguir `docs/getting-started` de principio a fin en una VM limpia: `./bootstrap.sh --dry-run` no pide sudo ni cambia nada, y `./install.sh --check` acaba en «All installed»
+- [ ] [PC nueva] En Parrot sin VMware, `./bootstrap.sh` no instala `open-vm-tools-desktop` y `sudo ./70-system/setup.sh` dice «Not a VMware VM; skipped» en el paso 8
 - [ ] Lo que dice cada README (adónde se enlaza, cómo se recarga) coincide con lo que ves en esta PC
 
 ## Comentarios y salida de los scripts en inglés
@@ -176,16 +179,6 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 # Fase 7 — Documentación
 
-## Guía de PC nueva de principio a fin
-
-**Plataforma:** Instalación.
-**Prioridad:** P2.
-**Requiere:** nada.
-
-- [ ] `docs/getting-started` con diagrama del flujo, `./bootstrap.sh --dry-run` antes de instalar y `./install.sh --check` al final
-- [ ] Cubrir también Parrot instalado sin VMware: hoy la guía da por hecha la VM
-- [ ] Ejecutar cada comando antes de escribirlo
-
 ## Guía de firma GPG y SSH
 
 **Plataforma:** Repositorio.
@@ -214,7 +207,7 @@ cabecera) y el repo no incluye su licencia.
 ## Prueba en una PC limpia
 
 **Plataforma:** Instalación.
-**Requiere:** «Guía de PC nueva de principio a fin».
+**Requiere:** nada.
 
 - [ ] Seguir `docs/getting-started` en un Parrot recién instalado y anotar cada paso que falte o falle
 - [ ] Publicar la versión en `CHANGELOG` con su etiqueta firmada (`git tag -s`)
