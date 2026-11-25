@@ -53,29 +53,9 @@ CLAUDE_CODE_VERSION="2.1.332"
 CLAUDE_LAYER_REPO="https://github.com/M1gu3l4ngel/dotfiles-windows.git"
 CLAUDE_LAYER_CLONE="$HOME/dotfiles-windows"
 
-# ==== APT PACKAGES ====
-APT_PACKAGES=(
-  # Desktop: window manager, hotkeys, bar, compositor, launcher, terminal, wallpaper,
-  # notifications, file manager and X11 tools (xkbcomp for the keymap, xset).
-  bspwm sxhkd polybar picom rofi kitty feh dunst libnotify-bin nautilus
-  x11-xkb-utils x11-xserver-utils
-  # Shell and terminal tools.
-  zsh zsh-autosuggestions zsh-syntax-highlighting
-  bat lsd fzf tmux ripgrep jq xclip
-  # Development: git, the GitHub CLI (rulesets, topics and the new-repo skill), shell script
-  # checks, what Mason (nvim) needs to fetch LSPs and formatters, and VSCodium (VS Code without
-  # telemetry, from Parrot's repository).
-  git gh shellcheck shfmt curl wget unzip xz-utils tar codium
-  # Security: firewall, anonymity, automatic patches, keys and secrets.
-  ufw anonsurf unattended-upgrades gnupg pinentry-gnome3 pass keychain
-  # Pentesting: the labs' VPN (HTB, THM), whose tun0 interface polybar's VPN module shows, and
-  # dig for the anonymity DNS leak tests (docs/anonymity.md).
-  openvpn bind9-dnsutils
-  # Fonts and HTTPS downloads, and glxinfo (mesa-utils) to check graphics acceleration
-  # (docs/vmware.md).
-  fontconfig ca-certificates mesa-utils
-  firefox-esr
-)
+# The apt package list, one per line with `#` comments, kept out of the script as Windows keeps
+# 60-apps/: what is installed changes far more often than how.
+APT_LIST="$DOTFILES_DIR/60-apps/apt.txt"
 
 # ==== HELPERS ====
 BOLD='\033[1m'
@@ -154,7 +134,13 @@ check_prerequisites() {
 
 install_apt_packages() {
   step "Paquetes del sistema (apt)"
-  local packages=("${APT_PACKAGES[@]}")
+  [ -f "$APT_LIST" ] || die "No existe la lista de paquetes: $APT_LIST"
+  local packages=() line
+  while IFS= read -r line; do
+    line=${line%%#*}
+    line=${line//[[:space:]]/}
+    [ -n "$line" ] && packages+=("$line")
+  done <"$APT_LIST"
   # VMware integration: clipboard, resolution, shared folder.
   if [ "$(systemd-detect-virt 2>/dev/null || true)" = "vmware" ]; then
     packages+=(open-vm-tools-desktop)

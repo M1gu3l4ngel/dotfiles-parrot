@@ -72,7 +72,7 @@ cambios.
 
 | Paso | Qué instala o configura |
 |---|---|
-| 1 | Paquetes de apt: entorno gráfico, herramientas de terminal, seguridad, openvpn, VSCodium |
+| 1 | Paquetes de apt de `60-apps/apt.txt`: entorno gráfico, herramientas de terminal, seguridad, openvpn, VSCodium |
 | 2 | Fuentes Nerd Fonts (CaskaydiaCove y Hack) en `~/.local/share/fonts/` |
 | 3 | Neovim oficial en `/opt`, enlazado en `/usr/local/bin/nvim` |
 | 4 | oh-my-posh (prompt) en `~/.local/bin/` |
@@ -177,6 +177,7 @@ cada una, cada componente mantiene su estructura `<componente>/.config/<componen
 | `30-editor/nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `30-editor/vscodium/` | Ajustes, atajos y extensiones del editor VSCodium | `~/.config/Visual Studio Code/User/` |
 | `40-format/` | Estilo por defecto de Prettier y EditorConfig para proyectos, idéntico al de Windows | `~/.prettierrc.json`, `~/.editorconfig` |
+| `60-apps/` | Lista de paquetes de apt que instala `bootstrap.sh` | No se instala (la lee `bootstrap.sh`) |
 | `70-system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
 | `docs/` | Guías detalladas | No se instala |

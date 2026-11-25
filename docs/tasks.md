@@ -53,6 +53,12 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` antes de instalar nada lista los paquetes, fuentes, Neovim, oh-my-posh, Node, el clon de dotfiles-windows y los enlaces que faltan
 - [ ] [PC nueva] `./bootstrap.sh` clona dotfiles-windows en `~/dotfiles-windows` y Claude Code arranca con la capa enlazada
 
+## Lista de paquetes en 60-apps
+
+**Plataforma:** Instalación.
+
+- [ ] [PC nueva] `./bootstrap.sh --dry-run` lista los paquetes de `60-apps/apt.txt` que faltan
+
 ## Cabecera del README con los logos de Parrot
 
 **Plataforma:** Repositorio.
@@ -123,18 +129,15 @@ en esta máquina.
 
 # Fase 4 — Carpetas numeradas por capa
 
-## Lista de paquetes en 60-apps
+## Paquetes opcionales en bootstrap.sh
 
 **Plataforma:** Instalación.
-**Prioridad:** P2.
+**Prioridad:** Mejora.
 **Requiere:** nada.
-**Estado:** en curso.
 
-Windows tiene `60-apps/essential.json` y `optional.json`; aquí la lista vive en `APT_PACKAGES` de
-`bootstrap.sh`.
+Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `60-apps/apt.txt`.
 
-- [ ] `60-apps/apt.txt` (un paquete por línea, comentarios con `#`, como `extensions.txt`) y `bootstrap.sh` la lee
-- [ ] Separar lo esencial de lo opcional (pentesting, VMware) si `bootstrap.sh` gana una opción para omitirlo
+- [ ] Separar lo esencial de lo opcional (pentesting) en dos listas si `bootstrap.sh` gana una opción para omitir lo opcional
 
 # Fase 5 — Calidad y CI
 
@@ -143,6 +146,7 @@ Windows tiene `60-apps/essential.json` y `optional.json`; aquí la lista vive en
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] El CI corre lo mismo que `./tools/check.sh`: shellcheck, shfmt, tests, docs bilingües, check del panel, check de comentarios y gitleaks
 - [ ] Segundo `actions/checkout` de dotfiles-windows, fijado por SHA, para las herramientas compartidas

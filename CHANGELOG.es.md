@@ -70,9 +70,10 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 ### Cambiado
 
 - Las configuraciones viven en capas numeradas, como en dotfiles-windows:
-  `10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format`
-  y `70-system`. `install.sh` (o el hook `post-merge`) rehace los enlaces a las
-  rutas viejas sin copias de seguridad.
+  `10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format`,
+  `60-apps` y `70-system`. `install.sh` (o el hook `post-merge`) rehace los
+  enlaces a las rutas viejas sin copias de seguridad. La lista de apt pasa de
+  `bootstrap.sh` a `60-apps/apt.txt`.
 - La capa de Claude Code sale de `50-claude/` del clon de dotfiles-windows
   (`links.json`), e `install.sh` fusiona `~/.claude/settings.json` con su
   `install-settings.mjs` en vez de copiar una plantilla.

@@ -4,8 +4,8 @@ Dotfiles para Parrot OS con bspwm, sxhkd, polybar, picom, rofi, kitty, dunst,
 zsh y Neovim (NvChad). Repo público.
 
 Los componentes van en carpetas numeradas por capa, como en dotfiles-windows:
-`10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format` y
-`70-system`. Dentro, cada componente sigue el patrón
+`10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format`,
+`60-apps` (lista de apt que lee `bootstrap.sh`) y `70-system`. Dentro, cada componente sigue el patrón
 `<capa>/<componente>/.config/<componente>/`, que `install.sh` enlaza en
 `~/.config/` según `lib/links.sh`. `70-system/` se instala como copias con root.
 

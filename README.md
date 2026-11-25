@@ -72,7 +72,7 @@ each step would do, without sudo, downloads or changes.
 
 | Step | What it installs or configures |
 |---|---|
-| 1 | apt packages: desktop, terminal tools, security, openvpn, VSCodium |
+| 1 | apt packages from `60-apps/apt.txt`: desktop, terminal tools, security, openvpn, VSCodium |
 | 2 | Nerd Fonts (CaskaydiaCove and Hack) in `~/.local/share/fonts/` |
 | 3 | Official Neovim in `/opt`, linked as `/usr/local/bin/nvim` |
 | 4 | oh-my-posh (prompt) in `~/.local/bin/` |
@@ -177,6 +177,7 @@ each one, every component keeps its `<component>/.config/<component>/` layout.
 | `30-editor/nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
 | `30-editor/vscodium/` | VSCodium settings, shortcuts and extensions | `~/.config/Visual Studio Code/User/` |
 | `40-format/` | Default Prettier and EditorConfig style for projects, identical to Windows | `~/.prettierrc.json`, `~/.editorconfig` |
+| `60-apps/` | apt package list that `bootstrap.sh` installs | Not installed (read by `bootstrap.sh`) |
 | `70-system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copies) |
 | `assets/` | Desktop screenshot and default wallpaper | `~/.config/wallpaper.jpg` (the wallpaper) |
 | `docs/` | Detailed guides | Not installed |

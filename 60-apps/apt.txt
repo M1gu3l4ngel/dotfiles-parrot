@@ -1,0 +1,65 @@
+# apt packages that bootstrap.sh installs, one per line; `#` starts a comment. Only the missing
+# ones are installed, in a single apt transaction. open-vm-tools-desktop is not listed: bootstrap.sh
+# adds it only inside VMware.
+
+# Desktop: window manager, hotkeys, bar, compositor, launcher, terminal, wallpaper, notifications,
+# file manager and X11 tools (xkbcomp for the keymap, xset).
+bspwm
+sxhkd
+polybar
+picom
+rofi
+kitty
+feh
+dunst
+libnotify-bin
+nautilus
+x11-xkb-utils
+x11-xserver-utils
+
+# Shell and terminal tools.
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+bat
+lsd
+fzf
+tmux
+ripgrep
+jq
+xclip
+
+# Development: git, the GitHub CLI (rulesets, topics and the new-repo skill), shell script checks,
+# what Mason (nvim) needs to fetch LSPs and formatters, and VSCodium (VS Code without telemetry,
+# from Parrot's repository).
+git
+gh
+shellcheck
+shfmt
+curl
+wget
+unzip
+xz-utils
+tar
+codium
+
+# Security: firewall, anonymity, automatic patches, keys and secrets.
+ufw
+anonsurf
+unattended-upgrades
+gnupg
+pinentry-gnome3
+pass
+keychain
+
+# Pentesting: the labs' VPN (HTB, THM), whose tun0 interface polybar's VPN module shows, and dig
+# for the anonymity DNS leak tests (docs/anonymity.md).
+openvpn
+bind9-dnsutils
+
+# Fonts and HTTPS downloads, and glxinfo (mesa-utils) to check graphics acceleration
+# (docs/vmware.md).
+fontconfig
+ca-certificates
+mesa-utils
+firefox-esr
