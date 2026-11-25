@@ -10,6 +10,13 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 # Por probar
 
+## README de cada carpeta
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, cada carpeta numerada muestra su README en GitHub, con el selector de idioma y las tablas bien formadas
+- [ ] Lo que dice cada README (adónde se enlaza, cómo se recarga) coincide con lo que ves en esta PC
+
 ## Comentarios y salida de los scripts en inglés
 
 **Plataforma:** Repositorio.
@@ -172,18 +179,11 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 **Plataforma:** Repositorio.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 - [ ] Tabla de carpetas numeradas con enlace a su README y tabla de recargas (hoy solo en `CLAUDE.md`)
 - [ ] Diagrama Mermaid: `bootstrap.sh` → apt, fuentes, Neovim, oh-my-posh, Node → `install.sh` → enlaces → programas, la capa de Claude desde dotfiles-windows y `git pull` → `post-merge`
 - [ ] Secciones de `--check`, `--dry-run` y «Mantener otra PC al día», como en Windows
-
-## README de cada carpeta
-
-**Plataforma:** Repositorio.
-**Prioridad:** P2.
-**Requiere:** nada.
-
-- [ ] Un README en pareja por carpeta numerada: qué contiene, adónde se enlaza cada archivo, cómo se recarga y qué no tocar (hoy solo `system/` y `claude/`)
 
 ## Guía de PC nueva de principio a fin
 
