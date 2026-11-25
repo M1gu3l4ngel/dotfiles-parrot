@@ -3,7 +3,7 @@
 # (~/Dev/projects, ~/Dev/scratch). A project with its own .editorconfig and `root = true` stops
 # the search: this one never overrides a project's.
 #
-# Same values as format/prettierrc.json (~/.prettierrc.json): this file covers what Prettier does
+# Same values as 40-format/prettierrc.json (~/.prettierrc.json): this file covers what Prettier does
 # not format (shell, SQL, TOML, .env...) and the indentation the editor inserts while typing. It
 # applies when the file is opened; VSCodium needs the EditorConfig.EditorConfig extension.
 
