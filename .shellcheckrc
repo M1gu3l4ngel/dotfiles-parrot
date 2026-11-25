@@ -1,6 +1,5 @@
-# .shellcheckrc
-# Permite a shellcheck seguir los archivos que cargan los scripts con `.`
-# (p. ej. 25-desktop/scripts/.config/scripts/palette.sh), buscándolos junto al script.
-# Sin esto, avisaría de variables "no definidas" que sí vienen del archivo cargado.
+# Lets shellcheck follow the files the scripts load with `.` (such as
+# 25-desktop/scripts/.config/scripts/palette.sh), looking for them next to the script. Without it,
+# it would warn about variables that do come from the loaded file.
 source-path=SCRIPTDIR
 external-sources=true

@@ -1,18 +1,13 @@
-# .prettierignore
-# Archivos del repo que Prettier no debe reformatear al guardar en VSCodium.
-# El estilo del repo está en .prettierrc.json (2 espacios, como .editorconfig);
-# sin él, el repo heredaría el estilo global de ~/.prettierrc.json, que usa
-# tabuladores.
+# Files Prettier must not reformat on save in VSCodium. The repo's style is in .prettierrc.json
+# (2 spaces, like .editorconfig); without it the repo would inherit the global ~/.prettierrc.json,
+# which uses tabs.
 
-# ----- MARKDOWN -----
-# Las listas anidadas van con 4 espacios (.claude/rules/documentation.md) y
-# Prettier las realinea a 2. tools/check.sh vigila su estructura.
+# Nested lists take 4 spaces (.claude/rules/documentation.md) and Prettier realigns them to 2.
+# tools/check.sh watches their structure.
 *.md
 
-# ----- COMPARTIDOS CON DOTFILES-WINDOWS -----
-# Idéntico byte a byte en los dos repos: reformatearlo aquí lo separaría.
+# Byte for byte the same in dotfiles-windows: reformatting it here would split the two copies.
 10-shell/oh-my-posh/capr4n.omp.json
 
-# ----- PROTEGIDOS -----
-# Lock file que escribe lazy.nvim.
+# lazy.nvim writes this lock file.
 30-editor/nvim/.config/nvim/lazy-lock.json

@@ -1,35 +1,32 @@
-# === Backups creados durante migración ===
+# Backups that install.sh leaves next to what it replaces.
 *.bak
 *.pre-dotfiles.bak
 
-# === Editor temp files ===
+# Editor temporary files.
 *.swp
 *.swo
 *~
 
-# === OS junk ===
+# Operating system leftovers.
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# === Asistentes de IA / agentes ===
-# Se versionan las instrucciones del proyecto para Claude Code: CLAUDE.md y
-# .claude/rules/. Se ignoran solo las partes personales de cada usuario, como
-# indica la documentación oficial de Claude Code.
+# AI assistants: the project's Claude Code instructions (CLAUDE.md and .claude/rules/) are
+# versioned; only each user's personal parts are ignored, as Claude Code's documentation says.
 CLAUDE.local.md
 .claude/settings.local.json
 .cursor/
 .aider*
 .windsurfrules
 
-# === Log files ===
 *.log
+*.tmp
 
-# === Cache de aplicaciones ===
 .cache/
 *.cache
 
-# === Datos sensibles (NUNCA commitear) ===
+# Secrets and keys: never committed, the repo is public.
 .env
 .env.*
 *.key
@@ -40,16 +37,7 @@ CLAUDE.local.md
 secrets/
 .config/bin/target
 
-# === Fuentes ===
-# No se versionan binarios de fuentes: bootstrap.sh las descarga en versión
-# fijada y verificada por SHA-256 (evita inflar el repo y problemas de licencia).
+# No font binaries: bootstrap.sh downloads them at a pinned version checked by SHA-256, which keeps
+# the repo small and clear of license problems.
 *.ttf
 *.otf
-
-# === Lock files que crean ruido (excepto los importantes) ===
-# Nvim: SÍ versionamos lazy-lock.json (versiones reproducibles)
-# Polybar/picom: nada que ignorar
-
-# === Logs generados por scripts ===
-*.tmp
-
