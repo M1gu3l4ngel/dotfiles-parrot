@@ -1,4 +1,4 @@
-// /etc/apt/apt.conf.d/20auto-upgrades  (fuente: dotfiles/system/apt/20auto-upgrades)
+// /etc/apt/apt.conf.d/20auto-upgrades  (fuente: dotfiles/70-system/apt/20auto-upgrades)
 // Activa la ejecución diaria de unattended-upgrades (vía los timers
 // apt-daily.timer y apt-daily-upgrade.timer de systemd). Sin este archivo,
 // la config de 52parrot-hardening.conf existe pero nunca se ejecuta.

@@ -11,8 +11,8 @@
 
 # ----- COMPARTIDOS CON DOTFILES-WINDOWS -----
 # Idéntico byte a byte en los dos repos: reformatearlo aquí lo separaría.
-oh-my-posh/capr4n.omp.json
+10-shell/oh-my-posh/capr4n.omp.json
 
 # ----- PROTEGIDOS -----
 # Lock file que escribe lazy.nvim.
-nvim/.config/nvim/lazy-lock.json
+30-editor/nvim/.config/nvim/lazy-lock.json

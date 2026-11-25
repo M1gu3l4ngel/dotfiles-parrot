@@ -36,7 +36,7 @@ para siempre en el historial.
 - Validar antes de instalar (p. ej. `visudo -c` sobre una copia temporal): un
   sudoers roto en su sitio puede dejar sudo inutilizable.
 - El grupo `docker` equivale a root (`docker run -v /:/host`): no añadir
-  usuarios a él. `system/setup.sh` lo retira si el daemon no está instalado.
+  usuarios a él. `70-system/setup.sh` lo retira si el daemon no está instalado.
 
 ## .gitignore
 

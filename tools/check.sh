@@ -85,7 +85,7 @@ else
 fi
 
 # ----- 2b. FORMATO (SHFMT) -----
-# Mismas opciones que usa Neovim al formatear (nvim/.../configs/conform.lua):
+# Mismas opciones que usa Neovim al formatear (30-editor/nvim/.../configs/conform.lua):
 # 2 espacios e indentación de los `case`. -d muestra la diferencia sin tocar
 # nada; para aplicar el formato: shfmt -i 2 -ci -w <archivo>.
 if have shfmt; then
@@ -100,7 +100,7 @@ fi
 
 # ----- 3. ZSH -----
 if have zsh; then
-  if zsh -n zsh/.zshrc; then pass "Sintaxis de zsh/.zshrc"; else fail "sintaxis zsh: zsh/.zshrc"; fi
+  if zsh -n 10-shell/zsh/.zshrc; then pass "Sintaxis de .zshrc"; else fail "sintaxis zsh: 10-shell/zsh/.zshrc"; fi
 else
   skip "zsh no instalado"
 fi
@@ -139,7 +139,7 @@ fi
 STRIP_JSONC='import json, re, sys; json.loads(re.sub(r"(?m)^\s*//.*$", "", open(sys.argv[1]).read()))'
 errors=0
 while IFS= read -r f; do
-  if [[ "$f" == vscodium/* ]]; then
+  if [[ "$f" == 30-editor/vscodium/* ]]; then
     python3 -c "$STRIP_JSONC" "$f" >/dev/null 2>&1
   else
     python3 -m json.tool "$f" >/dev/null 2>&1
@@ -153,18 +153,18 @@ done < <(git ls-files '*.json')
 # ----- 6. SUDOERS Y XKB -----
 if have visudo || [ -x /usr/sbin/visudo ]; then
   tmp=$(mktemp)
-  sed 's/__USER__/root/g' system/sudoers.d/anon_toggle >"$tmp"
-  if PATH="$PATH:/usr/sbin" visudo -c -q -f "$tmp"; then pass "Regla sudoers válida"; else fail "sudoers inválido: system/sudoers.d/anon_toggle"; fi
+  sed 's/__USER__/root/g' 70-system/sudoers.d/anon_toggle >"$tmp"
+  if PATH="$PATH:/usr/sbin" visudo -c -q -f "$tmp"; then pass "Regla sudoers válida"; else fail "sudoers inválido: 70-system/sudoers.d/anon_toggle"; fi
   rm -f "$tmp"
 else
   skip "visudo no disponible"
 fi
 if have xkbcomp; then
   tmp=$(mktemp)
-  if xkbcomp -w 0 -I"xkb/.config/xkb" xkb/.config/xkb/keymap.xkb "$tmp" 2>/dev/null; then
+  if xkbcomp -w 0 -I"25-desktop/xkb/.config/xkb" 25-desktop/xkb/.config/xkb/keymap.xkb "$tmp" 2>/dev/null; then
     pass "Keymap XKB compila"
   else
-    fail "keymap XKB no compila: xkb/.config/xkb/keymap.xkb"
+    fail "keymap XKB no compila: 25-desktop/xkb/.config/xkb/keymap.xkb"
   fi
   rm -f "$tmp"
 else
@@ -203,7 +203,7 @@ if ! have node || [ ! -f "$docs_tool" ]; then
   else
     skip "Documentación bilingüe: falta node o $docs_tool"
   fi
-elif out=$(node "$docs_tool" . --exclude nvim/.config/nvim/README.md 2>&1); then
+elif out=$(node "$docs_tool" . --exclude 30-editor/nvim/.config/nvim/README.md 2>&1); then
   pass "$out"
 else
   fail "Documentación bilingüe desincronizada:"

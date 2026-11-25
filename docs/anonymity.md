@@ -10,7 +10,7 @@ what Tor cannot carry and checks that the exit really is Tor.
 Once, after installing. From `~/dotfiles`, requires sudo:
 
 ```bash
-sudo ./system/setup.sh
+sudo ./70-system/setup.sh
 ```
 
 It installs the sudoers rule that lets the toggle run, without a password,
@@ -43,7 +43,7 @@ without anonymity being active (`anonsurf status` shows `AnonSurf: inactive`).
 | Outgoing ICMP to DROP | Blocks ping and traceroute | Tor only carries TCP |
 | Check | Queries `check.torproject.org` and requires `IsTor: true` | Verify the real exit, not just that Tor is running |
 
-The IPv6 and ICMP rules live in `system/sbin/anon-harden`. The sudoers rule
+The IPv6 and ICMP rules live in `70-system/sbin/anon-harden`. The sudoers rule
 allows that script with fixed arguments and never `iptables` directly:
 `iptables --modprobe=<program>` would run any program as root.
 
@@ -135,7 +135,7 @@ No rule with the comment `anon_toggle_icmp` must show up.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| "Tor no arrancó" | The sudoers rule is missing | `sudo ./system/setup.sh` from `~/dotfiles` |
+| "Tor no arrancó" | The sudoers rule is missing | `sudo ./70-system/setup.sh` from `~/dotfiles` |
 | "No se confirmó salida por Tor" | Tor did not finish connecting or the network blocks it | Wait a minute and turn it on again |
 | The button does not change color | polybar is not reading the state | `~/.config/polybar/launch.sh` |
 

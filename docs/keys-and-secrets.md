@@ -70,7 +70,7 @@ Every commit publishes the author's email. On GitHub, Settings -> Emails:
 
 ## GPG
 
-`gnupg/.gnupg/gpg-agent.conf` (linked by `install.sh`) sets up the agent to
+`15-git/gnupg/.gnupg/gpg-agent.conf` (linked by `install.sh`) sets up the agent to
 ask for the passphrase in a graphical dialog (in the terminal when there is no
 graphical session, e.g. over SSH) and to remember it for 10 minutes since the
 last use, 2 hours at most: the same values as on Windows.

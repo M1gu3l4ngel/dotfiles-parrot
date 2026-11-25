@@ -10,7 +10,7 @@ lo que Tor no puede transportar y verifica que la salida es realmente Tor.
 Una sola vez, tras la instalación. Desde `~/dotfiles`, requiere sudo:
 
 ```bash
-sudo ./system/setup.sh
+sudo ./70-system/setup.sh
 ```
 
 Instala la regla sudoers que permite al toggle ejecutar sin contraseña solo
@@ -43,7 +43,7 @@ el anonimato esté activo (`anonsurf status` muestra `AnonSurf: inactive`).
 | ICMP saliente a DROP | Bloquea ping y traceroute | Tor solo transporta TCP |
 | Verificación | Consulta `check.torproject.org` y exige `IsTor: true` | Comprobar la salida real, no solo que Tor esté arrancado |
 
-Las reglas de IPv6 e ICMP están en `system/sbin/anon-harden`. La regla sudoers
+Las reglas de IPv6 e ICMP están en `70-system/sbin/anon-harden`. La regla sudoers
 autoriza ese script con argumentos fijos y nunca `iptables` directamente:
 `iptables --modprobe=<programa>` ejecutaría cualquier programa como root.
 
@@ -135,7 +135,7 @@ No debe aparecer ninguna regla con el comentario `anon_toggle_icmp`.
 
 | Síntoma | Causa | Solución |
 |---|---|---|
-| "Tor no arrancó" | Falta la regla sudoers | `sudo ./system/setup.sh` desde `~/dotfiles` |
+| "Tor no arrancó" | Falta la regla sudoers | `sudo ./70-system/setup.sh` desde `~/dotfiles` |
 | "No se confirmó salida por Tor" | Tor no terminó de conectar o hay bloqueo de red | Esperar un minuto y volver a activar |
 | El botón no cambia de color | polybar no está leyendo el estado | `~/.config/polybar/launch.sh` |
 

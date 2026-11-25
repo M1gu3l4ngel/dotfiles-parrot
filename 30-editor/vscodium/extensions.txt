@@ -1,4 +1,4 @@
-# vscodium/extensions.txt
+# 30-editor/vscodium/extensions.txt
 # Extensiones de VSCodium, desde Open VSX (el catálogo de VSCodium). Las
 # instala bootstrap.sh (solo las que faltan). Una por línea; # comenta.
 # Para añadir una: búscala en https://open-vsx.org y copia su identificador

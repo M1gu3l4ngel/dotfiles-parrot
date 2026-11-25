@@ -130,7 +130,7 @@
   // ----- FORMATO -----
   // El estilo no vive aquí sino en archivos que también lee el CLI de
   // Prettier: el .prettierrc de cada proyecto o, si no tiene, ~/.prettierrc.json
-  // (format/prettierrc.json). Así el editor, la terminal y el CI formatean
+  // (40-format/prettierrc.json). Así el editor, la terminal y el CI formatean
   // igual. Los ajustes "prettier.*" del editor solo se usarían sin ningún
   // archivo de configuración, y bajo ~ siempre hay uno.
   "editor.formatOnSave": true,

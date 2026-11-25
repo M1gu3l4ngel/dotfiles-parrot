@@ -1,5 +1,5 @@
 #!/bin/bash
-# system/setup.sh
+# 70-system/setup.sh
 # Configuración y hardening a nivel sistema (fuera de $HOME) que install.sh no
 # puede manejar: requiere root y son copias, no symlinks (un archivo de /etc
 # enlazado a un repo del usuario le daría a ese usuario control sobre root).
@@ -20,7 +20,7 @@
 #  10. Desactiva los servicios de pentest que Parrot arranca solos y fallan
 #
 # Uso (desde la raíz del repo):
-#   sudo ./system/setup.sh
+#   sudo ./70-system/setup.sh
 
 set -euo pipefail
 
@@ -35,7 +35,7 @@ fi
 # El usuario de la regla sudoers sale de SUDO_USER. Ejecutado como root
 # directo no hay forma fiable de saber para quién es: fallar explícito.
 if [ -z "${SUDO_USER:-}" ]; then
-  echo "ERROR: ejecutar con 'sudo ./system/setup.sh', no como root directo."
+  echo "ERROR: ejecutar con 'sudo ./70-system/setup.sh', no como root directo."
   echo "       Hace falta \$SUDO_USER para escribir la regla sudoers."
   exit 1
 fi
@@ -150,7 +150,7 @@ done
 if [ -z "$PENTEST_PROFILE" ]; then
   echo "      INFO: no existe el perfil *.pentest todavía."
   echo "      Créalo con: firefox -CreateProfile pentest"
-  echo "      Y vuelve a ejecutar: sudo ./system/setup.sh"
+  echo "      Y vuelve a ejecutar: sudo ./70-system/setup.sh"
 else
   install -m 0644 -o "$TARGET_USER" -g "$TARGET_USER" \
     "$USERJS_SRC" "$PENTEST_PROFILE/user.js"
@@ -165,7 +165,7 @@ echo "[7/10] Configurando unattended-upgrades"
 if ! command -v unattended-upgrade >/dev/null; then
   echo "      INFO: 'unattended-upgrades' no está instalado."
   echo "      Instálalo con: sudo apt install unattended-upgrades"
-  echo "      Y vuelve a ejecutar: sudo ./system/setup.sh"
+  echo "      Y vuelve a ejecutar: sudo ./70-system/setup.sh"
 else
   install -m 0644 -o root -g root "$REPO_DIR/apt/52parrot-hardening.conf" \
     /etc/apt/apt.conf.d/52parrot-hardening.conf

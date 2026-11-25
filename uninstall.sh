@@ -5,7 +5,7 @@
 #
 # Solo toca enlaces de este repo: un archivo real o un enlace a otro sitio se
 # deja como está. No desinstala paquetes de apt, no revierte el hardening de
-# system/setup.sh ni los ajustes que install.sh aplica sin enlaces (modo oscuro
+# 70-system/setup.sh ni los ajustes que install.sh aplica sin enlaces (modo oscuro
 # de GTK4, gestor de archivos por defecto, indexador desactivado).
 #
 # Es idempotente: una segunda ejecución no encuentra nada que quitar.

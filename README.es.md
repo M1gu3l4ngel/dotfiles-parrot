@@ -53,8 +53,8 @@ cambios.
 | 5 | nvm, Node 24, pnpm y Claude Code |
 | 6 | Clona [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en `~/dotfiles-windows`, de donde sale la capa de Claude Code |
 | 7 | Enlaces de las configuraciones en `~/.config/` y `~/.claude/` y fusión de `~/.claude/settings.json` (`install.sh`) |
-| 8 | Extensiones de VSCodium desde Open VSX (`vscodium/extensions.txt`) |
-| 9 | Hardening del sistema (`system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
+| 8 | Extensiones de VSCodium desde Open VSX (`30-editor/vscodium/extensions.txt`) |
+| 9 | Hardening del sistema (`70-system/setup.sh`): firewall, sudoers, parches automáticos, pantalla de login |
 | 10 | zsh como shell por defecto |
 | 11 | Muestra los pasos manuales pendientes |
 
@@ -114,7 +114,7 @@ originales. Como usuario normal, desde `~/dotfiles`:
 3. Cerrar sesión y volver a entrar para usar la configuración original.
 
 Solo quita enlaces de este repo: si en un destino hay un archivo tuyo, lo deja
-y avisa. No desinstala paquetes ni revierte el hardening de `system/setup.sh`,
+y avisa. No desinstala paquetes ni revierte el hardening de `70-system/setup.sh`,
 ni los ajustes que `install.sh` aplica sin enlaces (modo oscuro de GTK4,
 Nautilus como gestor de carpetas e indexador desactivado). Las copias con
 fecha (`.pre-dotfiles.bak.<fecha>`), de reinstalaciones, no se restauran: el
@@ -128,25 +128,29 @@ clon de [dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows) en
 
 ## Estructura del repo
 
+Las configuraciones se agrupan en capas numeradas, en el mismo orden que
+[dotfiles-windows](https://github.com/M1gu3l4ngel/dotfiles-windows); dentro de
+cada una, cada componente mantiene su estructura `<componente>/.config/<componente>/`.
+
 | Directorio | Contenido | Se instala en |
 |---|---|---|
-| `bspwm/` | Gestor de ventanas y script de redimensionado | `~/.config/bspwm/` |
-| `sxhkd/` | Atajos de teclado | `~/.config/sxhkd/` |
-| `polybar/` | Barras, paleta de colores y lanzador | `~/.config/polybar/` |
-| `picom/` | Compositor (esquinas, transparencias) | `~/.config/picom/` |
-| `rofi/` | Lanzador de aplicaciones y temas | `~/.config/rofi/` |
-| `kitty/` | Terminal | `~/.config/kitty/` |
-| `dunst/` | Notificaciones | `~/.config/dunst/` |
-| `gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
-| `vscodium/` | Ajustes, atajos y extensiones del editor VSCodium | `~/.config/Visual Studio Code/User/` |
-| `xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
-| `zsh/` | Shell | `~/.zshrc` |
-| `nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
-| `gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
-| `format/` | Estilo por defecto de Prettier y EditorConfig para proyectos | `~/.prettierrc.json`, `~/.editorconfig` |
-| `oh-my-posh/` | Tema del prompt | Se lee desde el repo |
-| `scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
-| `system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
+| `10-shell/zsh/` | Shell | `~/.zshrc` |
+| `10-shell/oh-my-posh/` | Tema del prompt, idéntico al de Windows | Se lee desde el repo |
+| `15-git/gnupg/` | Configuración del agente GPG | `~/.gnupg/gpg-agent.conf` |
+| `20-terminal/kitty/` | Terminal | `~/.config/kitty/` |
+| `25-desktop/bspwm/` | Gestor de ventanas y script de redimensionado | `~/.config/bspwm/` |
+| `25-desktop/sxhkd/` | Atajos de teclado | `~/.config/sxhkd/` |
+| `25-desktop/polybar/` | Barras, paleta de colores y lanzador | `~/.config/polybar/` |
+| `25-desktop/picom/` | Compositor (esquinas, transparencias) | `~/.config/picom/` |
+| `25-desktop/rofi/` | Lanzador de aplicaciones y temas | `~/.config/rofi/` |
+| `25-desktop/dunst/` | Notificaciones | `~/.config/dunst/` |
+| `25-desktop/gtk/` | Colores y ajustes del gestor de archivos (GTK4) | `~/.config/gtk-4.0/` |
+| `25-desktop/xkb/` | Distribución de teclado (us y latam) | `~/.config/xkb/` |
+| `25-desktop/scripts/` | Módulos de polybar, target y anonimato | `~/.config/scripts/` |
+| `30-editor/nvim/` | Neovim (NvChad) | `~/.config/nvim/` |
+| `30-editor/vscodium/` | Ajustes, atajos y extensiones del editor VSCodium | `~/.config/Visual Studio Code/User/` |
+| `40-format/` | Estilo por defecto de Prettier y EditorConfig para proyectos, idéntico al de Windows | `~/.prettierrc.json`, `~/.editorconfig` |
+| `70-system/` | Hardening, sudoers, Firefox, apt | `/etc`, `/usr/local/sbin` (copias) |
 | `assets/` | Captura del escritorio y fondo por defecto | `~/.config/wallpaper.jpg` (el fondo) |
 | `docs/` | Guías detalladas | No se instala |
 | `githooks/` | `post-merge`: ejecuta `install.sh` tras cada `git pull` con cambios | `core.hooksPath` del clon |
@@ -221,8 +225,8 @@ Para el flujo de pentesting (VPN, target, qué IP usar) ver
 | `glxinfo` dice `Accelerated: no` | Falso positivo del driver de VMware | Mirar el renderer: `SVGA3D` es correcto |
 | Iconos como cuadrados | Faltan las fuentes Nerd Font | Volver a ejecutar `./bootstrap.sh` |
 | Un cambio en `.zshrc` no se aplica | Cada terminal conserva lo que cargó al abrirse | `exec zsh` en esa terminal |
-| keychain pide la passphrase en cada terminal | La clave SSH no se llama `id_ed25519` | Ajustar el nombre en la línea de keychain de `zsh/.zshrc` |
-| El anonimato falla con "Tor no arrancó" | Falta la regla sudoers | `sudo ./system/setup.sh` desde `~/dotfiles` |
+| keychain pide la passphrase en cada terminal | La clave SSH no se llama `id_ed25519` | Ajustar el nombre en la línea de keychain de `10-shell/zsh/.zshrc` |
+| El anonimato falla con "Tor no arrancó" | Falta la regla sudoers | `sudo ./70-system/setup.sh` desde `~/dotfiles` |
 | Las notificaciones salen arriba y en azul | dunst arrancó antes de existir su configuración | `dunstctl reload` |
 | polybar consume mucha CPU | Un módulo con `interval = 0` | Usar un intervalo mayor que 0 |
 

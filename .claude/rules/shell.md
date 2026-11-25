@@ -3,13 +3,14 @@
 # en directorios ocultos, así que `**/bspwmrc` no coincidiría con nada.
 paths:
   - "**/*.sh"
-  - "bspwm/.config/bspwm/bspwmrc"
-  - "bspwm/.config/bspwm/scripts/*"
-  - "polybar/.config/polybar/launch.sh"
-  - "scripts/.config/scripts/*"
-  - "system/sbin/*"
+  - "25-desktop/bspwm/.config/bspwm/bspwmrc"
+  - "25-desktop/bspwm/.config/bspwm/scripts/*"
+  - "25-desktop/polybar/.config/polybar/launch.sh"
+  - "25-desktop/scripts/.config/scripts/*"
+  - "70-system/sbin/*"
+  - "githooks/*"
   - "tools/*"
-  - "zsh/.zshrc"
+  - "10-shell/zsh/.zshrc"
 ---
 
 # Scripts de shell
@@ -19,11 +20,11 @@ paths:
   imprimir un texto aunque falle un comando; con `-e` la barra quedaría vacía.
 - shellcheck sin avisos (`./tools/check.sh`). Formato con shfmt: `-i 2 -ci`.
 - En `#!/bin/sh` nada de bashismos: `sh` es dash. Ejemplo real: `$UID` no
-  existe en dash (usar `id -u`), y rompía la espera de `polybar/launch.sh`.
+  existe en dash (usar `id -u`), y rompía la espera de `25-desktop/polybar/.config/polybar/launch.sh`.
 - Variables siempre entre comillas; `$(...)` en vez de backticks; arrays para
   comandos con argumentos (`cmd=(rofi -theme "$tema")`).
 - Idempotencia: comprobar el estado antes de actuar, para que ejecutar dos
-  veces no duplique nada (`install.sh`, `system/setup.sh` y `bootstrap.sh` lo
+  veces no duplique nada (`install.sh`, `70-system/setup.sh` y `bootstrap.sh` lo
   cumplen).
 - Scripts que polybar ejecuta cada segundo: sin procesos externos si se puede
   (`read` en vez de `cat`/`awk`). Cada fork por segundo suma CPU en todo el
@@ -32,7 +33,7 @@ paths:
   `CLAUDE.md`. `bspwmrc` lanza los demonios con `run_once` para no duplicarlos
   en cada recarga.
 - `sudo -n` en scripts no interactivos: falla en vez de colgarse pidiendo
-  contraseña. Solo funciona con comandos autorizados en `system/sudoers.d/`.
+  contraseña. Solo funciona con comandos autorizados en `70-system/sudoers.d/`.
 
 ## zsh (`.zshrc`)
 

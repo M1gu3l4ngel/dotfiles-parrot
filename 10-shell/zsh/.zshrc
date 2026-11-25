@@ -30,8 +30,8 @@ export GPG_TTY=$TTY
 # el comando no se encontraría aquí. Para cambiar de tema, edita el .omp.json
 # o sustituye por otro de ~/.cache/oh-my-posh/themes/ (built-ins).
 # La ruta del repo se deduce del propio .zshrc, que es un enlace a
-# <repo>/zsh/.zshrc: `%x` es este archivo, `:A` resuelve el enlace y `:h:h`
-# sube dos niveles. Así el prompt funciona aunque el repo no esté en ~/dotfiles.
+# <repo>/10-shell/zsh/.zshrc: `%x` es este archivo, `:A` resuelve el enlace y
+# `:h:h` sube dos niveles, a 10-shell/, donde está oh-my-posh/. Así el prompt funciona aunque el repo no esté en ~/dotfiles.
 _dotfiles_dir=${${(%):-%x}:A:h:h}
 [ -x "$HOME/.local/bin/oh-my-posh" ] && eval "$("$HOME/.local/bin/oh-my-posh" init zsh --config "$_dotfiles_dir/oh-my-posh/capr4n.omp.json")"
 unset _dotfiles_dir

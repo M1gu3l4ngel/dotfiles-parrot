@@ -13,7 +13,7 @@ el escritorio siga viéndose como un conjunto.
 
 | Elemento | Valor | Dónde |
 |---|---|---|
-| Paleta | Monokai Soda (la de kitty) | `scripts/.config/scripts/palette.sh`, `polybar/.config/polybar/colors.ini`, `rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css`, `vscodium/settings.json` |
+| Paleta | Monokai Soda (la de kitty) | `25-desktop/scripts/.config/scripts/palette.sh`, `25-desktop/polybar/.config/polybar/colors.ini`, `25-desktop/rofi/.config/rofi/themes/monokai-soda.rasi`, `gtk/.config/gtk-4.0/gtk.css`, `30-editor/vscodium/settings.json` |
 | Fuente | CaskaydiaCove Nerd Font en todo; Hack solo en el logo de Parrot | `kitty.conf`, `current.ini`, `workspace.ini`, `dunstrc`, `monokai-soda.rasi` |
 | Tamaño de texto | 12 pt (16 px) en barras, menú y kitty (igual que Windows Terminal) | |
 | Radios | Ventanas 10 px; barras, notificaciones y menú 8 px; elementos internos 4 px | `picom.conf`, `current.ini`, `dunstrc`, `monokai-soda.rasi` |
@@ -47,12 +47,12 @@ ln -sfn /path/to/your-wallpaper.jpg ~/.config/wallpaper.jpg
 Aplica el cambio con `Super+Alt+R`.
 
 La pantalla de login y de bloqueo (`Super+Shift+X`) usa una copia de
-`assets/wallpaper.jpg` instalada por `system/setup.sh` (paso 9), porque el
+`assets/wallpaper.jpg` instalada por `70-system/setup.sh` (paso 9), porque el
 login no puede leer tu home. El enlace de arriba solo cambia el escritorio.
 
 ## Prompt (oh-my-posh)
 
-El prompt usa `oh-my-posh/capr4n.omp.json`. Para cambiarlo, edita ese archivo
+El prompt usa `10-shell/oh-my-posh/capr4n.omp.json`. Para cambiarlo, edita ese archivo
 o usa uno de los temas incluidos en oh-my-posh.
 
 1. Ver los temas disponibles:
@@ -68,7 +68,7 @@ o usa uno de los temas incluidos en oh-my-posh.
     ```
 
 3. Para dejarlo fijo, cambia la ruta de `--config` en la línea de oh-my-posh de
-   `zsh/.zshrc` y ejecuta `exec zsh`.
+   `10-shell/zsh/.zshrc` y ejecuta `exec zsh`.
 
 El prompt muestra tu usuario. Para mostrar otro nombre, igual que con
 `POSH_NAME` en Windows, guárdalo en `~/.zshenv` (local, no se versiona) y abre
@@ -104,34 +104,34 @@ demo off
 
 `demo` sin argumentos dice si está activo. No cambia la red ni tu target real:
 solo lo que se muestra. Los valores están en `_DEMO_VALUES`, en
-`zsh/.zshrc`. La salida de comandos como `ip a` o `whoami` sigue siendo real:
+`10-shell/zsh/.zshrc`. La salida de comandos como `ip a` o `whoami` sigue siendo real:
 no los muestres en pantalla.
 
 ## Colores de polybar
 
 Los colores están en dos archivos con los mismos valores:
 
-- `polybar/.config/polybar/colors.ini`: fondo, texto, bordes y workspaces.
-- `scripts/.config/scripts/palette.sh`: colores de estado de los módulos
+- `25-desktop/polybar/.config/polybar/colors.ini`: fondo, texto, bordes y workspaces.
+- `25-desktop/scripts/.config/scripts/palette.sh`: colores de estado de los módulos
   (VPN, target, anonimato, lanzadores).
 
 `colors_dark.ini` y `colors_light.ini` son alternativas a `colors.ini`. Para
 usar una, cópiala encima de la activa y recarga:
 
 ```bash
-cp polybar/.config/polybar/colors_dark.ini polybar/.config/polybar/colors.ini
+cp 25-desktop/polybar/.config/polybar/colors_dark.ini 25-desktop/polybar/.config/polybar/colors.ini
 ```
 
 ```bash
 ~/.config/polybar/launch.sh
 ```
 
-Para volver a la paleta original: `git checkout polybar/.config/polybar/colors.ini`.
+Para volver a la paleta original: `git checkout 25-desktop/polybar/.config/polybar/colors.ini`.
 
 ## Tema de rofi
 
 El tema activo es `monokai-soda`, con la paleta del resto del escritorio. Hay
-otros 25 en `rofi/.config/rofi/themes/`. En `rofi/.config/rofi/config.rasi`,
+otros 25 en `25-desktop/rofi/.config/rofi/themes/`. En `25-desktop/rofi/.config/rofi/config.rasi`,
 comenta la línea `@theme` activa (con `//` delante) y descomenta o escribe la
 del tema que quieras:
 
@@ -148,13 +148,13 @@ ejecutables del `$PATH`, para herramientas de terminal sin entrada de menú.
 ## Tema de Neovim
 
 - Probar temas: dentro de Neovim, `Espacio` + `t` + `h`.
-- Dejarlo fijo: en `nvim/.config/nvim/lua/chadrc.lua`, cambia el valor de
+- Dejarlo fijo: en `30-editor/nvim/.config/nvim/lua/chadrc.lua`, cambia el valor de
   `theme` (por defecto `"monekai"`).
 
 ## Editor (VSCodium)
 
-Los ajustes están en `vscodium/settings.json` y los atajos en
-`vscodium/keybindings.json`, enlazados por `install.sh`. El
+Los ajustes están en `30-editor/vscodium/settings.json` y los atajos en
+`30-editor/vscodium/keybindings.json`, enlazados por `install.sh`. El
 código usa el tema Monokai; la interfaz, la paleta del sistema, definida en
 `workbench.colorCustomizations` bajo `"[Monokai]"`. Los cambios se aplican al
 guardar el archivo.
@@ -163,7 +163,7 @@ guardar el archivo.
 - Usar otro tema: cambia `workbench.colorTheme`. El bloque `"[Monokai]"` solo
   afecta a Monokai, así que el tema nuevo se verá con sus colores originales.
 - Añadir una extensión: búscala en [Open VSX](https://open-vsx.org) (el
-  catálogo de VSCodium), añade su identificador a `vscodium/extensions.txt` y
+  catálogo de VSCodium), añade su identificador a `30-editor/vscodium/extensions.txt` y
   ejecuta `./bootstrap.sh`, que instala solo las que falten.
 
 La confianza del espacio de trabajo queda activa: al abrir material de labs o
@@ -177,8 +177,8 @@ CLI de Prettier, el CI), no en los ajustes del editor:
 
 | Archivo | Enlazado a | Qué formatea |
 |---|---|---|
-| `format/prettierrc.json` | `~/.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown y YAML |
-| `format/editorconfig` | `~/.editorconfig` | Sangría y finales de línea del resto (shell, SQL, TOML, `.env`) |
+| `40-format/prettierrc.json` | `~/.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown y YAML |
+| `40-format/editorconfig` | `~/.editorconfig` | Sangría y finales de línea del resto (shell, SQL, TOML, `.env`) |
 
 Gana la configuración más cercana al archivo, sin mezclarse:
 
@@ -197,7 +197,7 @@ Para cambiar el estilo, edita los dos archivos con los mismos valores.
 ## Fuente de la terminal
 
 kitty usa `CaskaydiaCove Nerd Font`, tamaño 12 (`font_family` y `font_size`
-en `kitty/.config/kitty/kitty.conf`). Recarga con `Ctrl+Shift+F5` dentro de
+en `20-terminal/kitty/.config/kitty/kitty.conf`). Recarga con `Ctrl+Shift+F5` dentro de
 kitty.
 
 `bootstrap.sh` instala solo las fuentes que usa el setup: CaskaydiaCove para
@@ -207,7 +207,7 @@ existentes; no copies archivos de fuentes al repo.
 
 ## Notificaciones
 
-Colores, posición y tiempos en `dunst/.config/dunst/dunstrc`. Aplica y prueba:
+Colores, posición y tiempos en `25-desktop/dunst/.config/dunst/dunstrc`. Aplica y prueba:
 
 ```bash
 dunstctl reload
@@ -219,7 +219,7 @@ notify-send -u critical "Test" "Critical notification"
 
 ## Atajos de teclado
 
-Los atajos están en `sxhkd/.config/sxhkd/sxhkdrc`. Formato: la combinación en
+Los atajos están en `25-desktop/sxhkd/.config/sxhkd/sxhkdrc`. Formato: la combinación en
 una línea y el comando en la siguiente, indentado con un tabulador:
 
 ```

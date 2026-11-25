@@ -1,6 +1,6 @@
 [English](README.md) | **Español**
 
-# system/
+# 70-system/
 
 Configuración y hardening fuera de `$HOME` que el `install.sh` principal
 **no puede manejar** porque requiere root (sudoers, ufw, `/etc/...`). Aquí
@@ -34,7 +34,7 @@ Después del `install.sh` principal y de instalar `ufw`, `anonsurf` y
 `unattended-upgrades` con `apt`, desde la raíz del repo:
 
 ```bash
-sudo ./system/setup.sh
+sudo ./70-system/setup.sh
 ```
 
 El script:
@@ -73,7 +73,7 @@ Para pasar archivos entre el host y la VM en ambos sentidos:
    compartas el disco entero: si la VM se compromete, solo alcanza esa carpeta.
 2. En VMware: **VM → Settings → Options → Shared Folders → Always enabled →
    Add…**, con esa carpeta y el nombre `VMShare`.
-3. En la VM: `sudo ./system/setup.sh` (paso 8).
+3. En la VM: `sudo ./70-system/setup.sh` (paso 8).
 
 Todo lo que dejes en `C:\VMShare` aparece en `~/VMShare` y viceversa. Para
 secretos (claves, backups), bórralos de la carpeta en ambos lados en cuanto

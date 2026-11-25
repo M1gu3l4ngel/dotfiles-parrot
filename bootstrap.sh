@@ -338,7 +338,7 @@ link_dotfiles() {
 
 install_vscodium_extensions() {
   step "Extensiones de VSCodium"
-  local list="$DOTFILES_DIR/vscodium/extensions.txt"
+  local list="$DOTFILES_DIR/30-editor/vscodium/extensions.txt"
   if ! command -v codium >/dev/null; then
     warn "VSCodium no está instalado; se omiten las extensiones"
     return
@@ -372,12 +372,12 @@ install_vscodium_extensions() {
 }
 
 harden_system() {
-  step "Hardening del sistema (system/setup.sh)"
+  step "Hardening del sistema (70-system/setup.sh)"
   if [ "$DRY_RUN" -eq 1 ]; then
-    planned "Ejecutaría sudo system/setup.sh (idempotente: solo aplica lo que falte)"
+    planned "Ejecutaría sudo 70-system/setup.sh (idempotente: solo aplica lo que falte)"
     return
   fi
-  sudo "$DOTFILES_DIR/system/setup.sh"
+  sudo "$DOTFILES_DIR/70-system/setup.sh"
 }
 
 set_default_shell() {

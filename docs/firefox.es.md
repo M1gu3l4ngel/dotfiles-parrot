@@ -27,7 +27,7 @@ Una sola vez tras la instalación, como usuario normal:
 2. Copiarle el `user.js`. Desde `~/dotfiles`, requiere sudo:
 
     ```bash
-    sudo ./system/setup.sh
+    sudo ./70-system/setup.sh
     ```
 
     En el paso `[6/9]` debe aparecer `Copiado al perfil pentest`.
@@ -39,7 +39,7 @@ reabrir Firefox.
 
 ## Qué protege el perfil pentest
 
-Configuración en `system/firefox/pentest.user.js` (validada en Firefox ESR 140):
+Configuración en `70-system/firefox/pentest.user.js` (validada en Firefox ESR 140):
 
 | Bloque | Qué hace | Porqué |
 |---|---|---|

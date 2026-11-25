@@ -33,7 +33,7 @@ código y ya causaron problemas reales.
 
 ## Teclado
 
-- El keymap se carga con `xkbcomp` desde `xkb/.config/xkb/keymap.xkb`, no con
+- El keymap se carga con `xkbcomp` desde `25-desktop/xkb/.config/xkb/keymap.xkb`, no con
   `setxkbmap`: setxkbmap no admite el símbolo propio `capsfix`, que hace que
   Caps Lock se apague al pulsar (en XKB estándar se apaga al soltar).
 

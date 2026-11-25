@@ -7,7 +7,7 @@ paths:
 
 Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a
 `CLAUDE.md` ni a `.claude/rules/` (instrucciones para el agente, solo en
-español) ni a `nvim/.config/nvim/README.md` (protegido).
+español) ni a `30-editor/nvim/.config/nvim/README.md` (protegido).
 
 ## Idioma: toda la documentación es bilingüe
 

@@ -3,7 +3,7 @@
 # Paleta Monokai Soda (la de kitty) con un rol fijo para cada color. La cargan
 # los módulos de polybar con `. "${0%/*}/palette.sh"`: cambiar un color aquí
 # lo cambia en todas las barras. Los mismos valores están en
-# polybar/.config/polybar/colors.ini para la configuración de las barras.
+# 25-desktop/polybar/.config/polybar/colors.ini para la configuración de las barras.
 #
 # Regla de diseño: el color comunica estado. Gris (MUTED) = apagado o vacío;
 # color = activo. Contraste de texto verificado (WCAG, mínimo 4.5:1 sobre el

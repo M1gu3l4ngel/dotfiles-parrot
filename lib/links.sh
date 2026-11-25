@@ -7,31 +7,31 @@
 
 # shellcheck disable=SC2034 # LINKS is used by the scripts that source this file.
 LINKS=(
-  "$DOTFILES_DIR/bspwm/.config/bspwm/bspwmrc|$HOME/.config/bspwm/bspwmrc"
-  "$DOTFILES_DIR/bspwm/.config/bspwm/scripts|$HOME/.config/bspwm/scripts"
-  "$DOTFILES_DIR/sxhkd/.config/sxhkd/sxhkdrc|$HOME/.config/sxhkd/sxhkdrc"
-  "$DOTFILES_DIR/kitty/.config/kitty|$HOME/.config/kitty"
-  "$DOTFILES_DIR/picom/.config/picom|$HOME/.config/picom"
-  "$DOTFILES_DIR/polybar/.config/polybar|$HOME/.config/polybar"
-  "$DOTFILES_DIR/rofi/.config/rofi|$HOME/.config/rofi"
-  "$DOTFILES_DIR/dunst/.config/dunst|$HOME/.config/dunst"
-  "$DOTFILES_DIR/xkb/.config/xkb|$HOME/.config/xkb"
-  # File by file, not the whole ~/.config/gtk-4.0: other apps keep their state there.
-  "$DOTFILES_DIR/gtk/.config/gtk-4.0/gtk.css|$HOME/.config/gtk-4.0/gtk.css"
-  "$DOTFILES_DIR/gtk/.config/gtk-4.0/settings.ini|$HOME/.config/gtk-4.0/settings.ini"
-  # Parrot's VSCodium reads its settings from "Visual Studio Code", not from VSCodium.
-  "$DOTFILES_DIR/vscodium/settings.json|$HOME/.config/Visual Studio Code/User/settings.json"
-  "$DOTFILES_DIR/vscodium/keybindings.json|$HOME/.config/Visual Studio Code/User/keybindings.json"
+  "$DOTFILES_DIR/10-shell/zsh/.zshrc|$HOME/.zshrc"
   # Only the file: ~/.gnupg holds the private keys and must stay a real 700 folder outside any
   # repo (install.sh creates it that way before linking).
-  "$DOTFILES_DIR/gnupg/.gnupg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"
-  "$DOTFILES_DIR/nvim/.config/nvim|$HOME/.config/nvim"
-  "$DOTFILES_DIR/scripts/.config/scripts|$HOME/.config/scripts"
-  "$DOTFILES_DIR/zsh/.zshrc|$HOME/.zshrc"
+  "$DOTFILES_DIR/15-git/gnupg/.gnupg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"
+  "$DOTFILES_DIR/20-terminal/kitty/.config/kitty|$HOME/.config/kitty"
+  "$DOTFILES_DIR/25-desktop/bspwm/.config/bspwm/bspwmrc|$HOME/.config/bspwm/bspwmrc"
+  "$DOTFILES_DIR/25-desktop/bspwm/.config/bspwm/scripts|$HOME/.config/bspwm/scripts"
+  "$DOTFILES_DIR/25-desktop/sxhkd/.config/sxhkd/sxhkdrc|$HOME/.config/sxhkd/sxhkdrc"
+  "$DOTFILES_DIR/25-desktop/picom/.config/picom|$HOME/.config/picom"
+  "$DOTFILES_DIR/25-desktop/polybar/.config/polybar|$HOME/.config/polybar"
+  "$DOTFILES_DIR/25-desktop/rofi/.config/rofi|$HOME/.config/rofi"
+  "$DOTFILES_DIR/25-desktop/dunst/.config/dunst|$HOME/.config/dunst"
+  "$DOTFILES_DIR/25-desktop/xkb/.config/xkb|$HOME/.config/xkb"
+  "$DOTFILES_DIR/25-desktop/scripts/.config/scripts|$HOME/.config/scripts"
+  # File by file, not the whole ~/.config/gtk-4.0: other apps keep their state there.
+  "$DOTFILES_DIR/25-desktop/gtk/.config/gtk-4.0/gtk.css|$HOME/.config/gtk-4.0/gtk.css"
+  "$DOTFILES_DIR/25-desktop/gtk/.config/gtk-4.0/settings.ini|$HOME/.config/gtk-4.0/settings.ini"
+  "$DOTFILES_DIR/30-editor/nvim/.config/nvim|$HOME/.config/nvim"
+  # Parrot's VSCodium reads its settings from "Visual Studio Code", not from VSCodium.
+  "$DOTFILES_DIR/30-editor/vscodium/settings.json|$HOME/.config/Visual Studio Code/User/settings.json"
+  "$DOTFILES_DIR/30-editor/vscodium/keybindings.json|$HOME/.config/Visual Studio Code/User/keybindings.json"
   # Default style for projects without their own. No leading dot in the repo, or it would apply
-  # to format/ itself.
-  "$DOTFILES_DIR/format/prettierrc.json|$HOME/.prettierrc.json"
-  "$DOTFILES_DIR/format/editorconfig|$HOME/.editorconfig"
+  # to 40-format/ itself.
+  "$DOTFILES_DIR/40-format/prettierrc.json|$HOME/.prettierrc.json"
+  "$DOTFILES_DIR/40-format/editorconfig|$HOME/.editorconfig"
 )
 
 # The dotfiles-windows clone sits next to this repo, as Windows keeps ~\dotfiles-parrot.

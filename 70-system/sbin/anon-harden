@@ -1,5 +1,5 @@
 #!/bin/sh
-# /usr/local/sbin/anon-harden  (fuente: dotfiles/system/sbin/anon-harden)
+# /usr/local/sbin/anon-harden  (fuente: dotfiles/70-system/sbin/anon-harden)
 # Kill switch de las capas que anonsurf no cubre. Lo invoca
 # ~/.config/scripts/toggle_anonymity.sh vía `sudo -n` al activar/desactivar
 # el anonimato (Super+A o click en polybar).
@@ -11,7 +11,7 @@
 # `up` o `down` y ejecuta reglas fijas, así la regla sudoers puede limitarse
 # a esos dos comandos exactos.
 #
-# Lo instala system/setup.sh como root:root 0755 (el usuario no puede
+# Lo instala 70-system/setup.sh como root:root 0755 (el usuario no puede
 # modificarlo; si pudiera, la restricción no serviría de nada).
 #
 # Uso: anon-harden up|down

@@ -3,8 +3,11 @@
 Dotfiles para Parrot OS con bspwm, sxhkd, polybar, picom, rofi, kitty, dunst,
 zsh y Neovim (NvChad). Repo público.
 
-Cada componente sigue el patrón `<componente>/.config/<componente>/`, que
-`install.sh` enlaza en `~/.config/`. `system/` se instala como copias con root.
+Los componentes van en carpetas numeradas por capa, como en dotfiles-windows:
+`10-shell`, `15-git`, `20-terminal`, `25-desktop`, `30-editor`, `40-format` y
+`70-system`. Dentro, cada componente sigue el patrón
+`<capa>/<componente>/.config/<componente>/`, que `install.sh` enlaza en
+`~/.config/` según `lib/links.sh`. `70-system/` se instala como copias con root.
 
 ## Reglas
 
@@ -25,7 +28,7 @@ Las reglas detalladas están en `.claude/rules/` y se cargan solas:
 | Instalación completa | `./bootstrap.sh` |
 | Solo symlinks (lista en `lib/links.sh`) | `./install.sh` |
 | Quitar los symlinks y restaurar originales | `./uninstall.sh` (`--dry-run` para simular) |
-| Hardening del sistema | `sudo ./system/setup.sh` |
+| Hardening del sistema | `sudo ./70-system/setup.sh` |
 | Comprobaciones (igual que el CI) | `./tools/check.sh` |
 
 `./tools/check.sh` debe pasar antes de proponer un commit.

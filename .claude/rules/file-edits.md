@@ -17,7 +17,7 @@ por las herramientas de edición.
 - En scripts de shell, escribirlos como escapes UTF-8:
   `ICON=$'\xef\x8c\xa9' # U+F329 nf-linux-parrot`.
 - Para obtener los bytes de un glifo existente: `xxd` o `iconv -t utf-32be`.
-- Por eso los iconos de polybar viven en `scripts/.config/scripts/*_module.sh`
+- Por eso los iconos de polybar viven en `25-desktop/scripts/.config/scripts/*_module.sh`
   y no en los `.ini`.
 
 ## Archivos protegidos
@@ -26,6 +26,6 @@ No modificar sin permiso explícito del usuario:
 
 - `LICENSE`
 - `assets/`
-- `nvim/.config/nvim/lazy-lock.json`: lock file de lazy.nvim.
-- `nvim/.config/nvim/LICENSE` y `nvim/.config/nvim/README.md`: heredados de
+- `30-editor/nvim/.config/nvim/lazy-lock.json`: lock file de lazy.nvim.
+- `30-editor/nvim/.config/nvim/LICENSE` y `30-editor/nvim/.config/nvim/README.md`: heredados de
   la plantilla de NvChad.

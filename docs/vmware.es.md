@@ -51,7 +51,7 @@ Para pasar archivos entre Windows y Linux en ambos sentidos.
 4. Móntala. Desde `~/dotfiles`, requiere sudo:
 
     ```bash
-    sudo ./system/setup.sh
+    sudo ./70-system/setup.sh
     ```
 
     El paso `[8/9]` la monta en `/mnt/vmshare`, crea el acceso directo

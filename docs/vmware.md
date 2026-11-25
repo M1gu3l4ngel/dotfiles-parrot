@@ -52,7 +52,7 @@ To move files between Windows and Linux in both directions.
 4. Mount it. From `~/dotfiles`, requires sudo:
 
     ```bash
-    sudo ./system/setup.sh
+    sudo ./70-system/setup.sh
     ```
 
     Step `[8/9]` mounts it at `/mnt/vmshare`, creates the `~/VMShare`
