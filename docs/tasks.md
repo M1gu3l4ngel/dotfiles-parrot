@@ -59,6 +59,14 @@ máquina. Lo que puede romper algo se prueba antes en modo de prueba.
 
 - [ ] [PC nueva] `./bootstrap.sh --dry-run` lista los paquetes de `60-apps/apt.txt` que faltan
 
+## Recarga de polybar por IPC
+
+**Plataforma:** Escritorio.
+
+- [ ] [Esta PC] Cerrar sesión y volver a entrar en bspwm: aparecen las 7 barras una sola vez
+- [ ] [Esta PC] Después, `Super+Alt+R` recarga las barras sin duplicarlas y sin el aviso «hay barras sin IPC»
+- [ ] [Esta PC] `ls /run/user/$(id -u)/polybar/` muestra un socket por barra
+
 ## CI con tests de instalación y Dependabot
 
 **Plataforma:** Repositorio.
@@ -146,17 +154,7 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 
 - [ ] Separar lo esencial de lo opcional (pentesting) en dos listas si `bootstrap.sh` gana una opción para omitir lo opcional
 
-# Fase 5 — Calidad y CI
 
-
-## Recarga de polybar sin killall
-
-**Plataforma:** Escritorio.
-**Prioridad:** Mejora.
-**Requiere:** nada.
-**Estado:** en curso.
-
-- [ ] `polybar/launch.sh` cierra las barras con `polybar-msg cmd quit` (con `enable-ipc = true` en las barras) en vez de `killall -q polybar`
 
 # Fase 6 — Comentarios en inglés
 
@@ -165,6 +163,7 @@ Windows separa `60-apps/essential.json` y `optional.json`; aquí todo está en `
 **Plataforma:** Repositorio, Claude Code.
 **Prioridad:** P2.
 **Requiere:** nada.
+**Estado:** en curso.
 
 `docs/contributing/comments.md` de dotfiles-windows es la guía. `.claude/rules/style.md`,
 `documentation.md` y `CONTRIBUTING` dicen hoy «comentarios en español».

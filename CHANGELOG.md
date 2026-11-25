@@ -76,6 +76,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- polybar: `launch.sh` closes the bars over IPC (`polybar-msg cmd quit`,
+  `enable-ipc` on every bar) instead of `killall`, and waits at most 5 s: a
+  bar without IPC left over from an older config stops it with a warning
+  rather than duplicating the bars.
 - CI step names and comments in English; the dotfiles-windows checkout moves
   to the commit whose docs checker also validates HTML `href`, `src` and
   `srcset`.

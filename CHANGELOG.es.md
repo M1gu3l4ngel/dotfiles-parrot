@@ -75,6 +75,10 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- polybar: `launch.sh` cierra las barras por IPC (`polybar-msg cmd quit`,
+  `enable-ipc` en cada barra) en vez de con `killall`, y espera como mucho
+  5 s: una barra sin IPC que quede de una config anterior lo para con un
+  aviso en lugar de duplicar las barras.
 - Pasos y comentarios del CI en inglés; el checkout de dotfiles-windows pasa
   al commit cuyo check de docs valida también `href`, `src` y `srcset` de HTML.
 - Las configuraciones viven en capas numeradas, como en dotfiles-windows:
