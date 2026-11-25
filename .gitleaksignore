@@ -1,0 +1,5 @@
+# Findings gitleaks reports that are not secrets, one fingerprint per line (commit:file:rule:line),
+# so the scan of the whole history stays strict for everything else.
+
+# The fake signing key tools/test-install.sh writes to a throwaway ~/.gitconfig.
+46c1b82f5fa7a85c8d949e23b90ace5341f25cbd:tools/test-install.sh:generic-api-key:54
