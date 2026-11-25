@@ -178,6 +178,7 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 `documentation.md`, `CONTRIBUTING` y `claude/CLAUDE.md` dicen hoy «comentarios en español».
 
 - [ ] Sección «Idioma del código: inglés» en `CLAUDE.md`, como la de dotfiles-windows, antes de migrar nada
+- [ ] `.claude/rules/documentation.md` deja de decir «solo en español: la salida de los scripts»: el `CLAUDE.md` global pide en inglés comentarios, salida de los scripts, `reason` de los hooks y nombres de los tests
 - [ ] `.claude/rules/style.md`: banners `# ----- X -----` fuera (la guía los prohíbe) y comentarios en inglés
 - [ ] `docs/contributing/comments.md` y `.es.md` adaptados a los formatos de Parrot (shell, zsh, Lua, `.ini`, `.rasi`, `.conf`, XKB, sxhkdrc)
 
@@ -187,7 +188,7 @@ deja la clave de firma y las organizaciones privadas en `~/.gitconfig.local`.
 **Prioridad:** P2.
 **Requiere:** «Regla de idioma del código en el repo», «Reorganizar en carpetas numeradas».
 
-Unas 1860 líneas de comentario en 70 archivos; el check compartido encuentra hoy 513 en español.
+Unas 1860 líneas de comentario en 70 archivos; el check compartido (dotfiles-windows `87a6791`) encuentra hoy 454 en español y ningún nombre de test, porque el repo no tiene tests todavía.
 
 - [ ] `.claude/comments.json` con lo que el check no reconoce solo (`xkb/.config/xkb/symbols/capsfix`, de estilo `//`)
 - [ ] Un commit por carpeta numerada, con la salida de los scripts en inglés en el mismo paso
