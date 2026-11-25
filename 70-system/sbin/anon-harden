@@ -1,39 +1,31 @@
 #!/bin/sh
-# /usr/local/sbin/anon-harden  (fuente: dotfiles/70-system/sbin/anon-harden)
-# Kill switch de las capas que anonsurf no cubre. Lo invoca
-# ~/.config/scripts/toggle_anonymity.sh vía `sudo -n` al activar/desactivar
-# el anonimato (Super+A o click en polybar).
+# Installed as /usr/local/sbin/anon-harden. The kill switch for the layers anonsurf leaves out,
+# run by ~/.config/scripts/toggle_anonymity.sh through `sudo -n` when anonymity turns on or off
+# (Super+A or a click in polybar). Usage: anon-harden up|down
 #
-# Por qué existe este script en vez de dar sudo a iptables directamente:
-# iptables acepta `--modprobe=<programa>`, que ejecuta ese programa como root.
-# Una regla NOPASSWD sobre iptables con argumentos libres equivale a root sin
-# contraseña para cualquier proceso del usuario. Este script solo acepta
-# `up` o `down` y ejecuta reglas fijas, así la regla sudoers puede limitarse
-# a esos dos comandos exactos.
-#
-# Lo instala 70-system/setup.sh como root:root 0755 (el usuario no puede
-# modificarlo; si pudiera, la restricción no serviría de nada).
-#
-# Uso: anon-harden up|down
+# Why a script instead of sudo on iptables: iptables takes `--modprobe=<program>`, which runs that
+# program as root, so a NOPASSWD rule on iptables with free arguments is passwordless root for any
+# of the user's processes. This script takes only `up` or `down` and runs fixed rules, so the
+# sudoers rule can be limited to those two exact commands. 70-system/setup.sh installs it as
+# root:root 0755: if the user could change it, the restriction would be worthless.
 
 set -eu
 
-# Rutas absolutas: sudo limpia el entorno, pero así no depende de él.
+# Absolute paths: sudo cleans the environment, but this way it does not depend on it.
 IPTABLES=/usr/sbin/iptables
 IP6TABLES=/usr/sbin/ip6tables
-# Etiqueta de la regla ICMP propia, para quitarla sin tocar reglas ajenas.
+# The label of our own ICMP rule, to remove it without touching anyone else's.
 TAG=anon_toggle_icmp
 
 case "${1:-}" in
   up)
-    # IPv6 todo a DROP: anonsurf solo redirige IPv4 a Tor; sin esto, en una
-    # red con IPv6 ese tráfico saldría directo, con la IP real.
+    # All IPv6 to DROP: anonsurf sends only IPv4 through Tor, and on a network with IPv6 that traffic
+    # would leave directly, with the real IP.
     "$IP6TABLES" -P OUTPUT DROP
     "$IP6TABLES" -P INPUT DROP
     "$IP6TABLES" -P FORWARD DROP
-    # ICMP saliente a DROP: Tor solo transporta TCP, así que un ping o un
-    # traceroute saldrían por fuera revelando la IP real. -C evita duplicar la
-    # regla si se llama dos veces.
+    # Outgoing ICMP to DROP: Tor carries only TCP, so a ping or a traceroute would leave outside it
+    # and reveal the real IP. -C keeps a second call from duplicating the rule.
     if ! "$IPTABLES" -C OUTPUT -p icmp -m comment --comment "$TAG" -j DROP 2>/dev/null; then
       "$IPTABLES" -A OUTPUT -p icmp -m comment --comment "$TAG" -j DROP
     fi
@@ -42,13 +34,13 @@ case "${1:-}" in
     "$IP6TABLES" -P OUTPUT ACCEPT
     "$IP6TABLES" -P INPUT ACCEPT
     "$IP6TABLES" -P FORWARD ACCEPT
-    # Quita todas las copias de la regla etiquetada (idempotente).
+    # Removes every copy of the labeled rule.
     while "$IPTABLES" -C OUTPUT -p icmp -m comment --comment "$TAG" -j DROP 2>/dev/null; do
       "$IPTABLES" -D OUTPUT -p icmp -m comment --comment "$TAG" -j DROP
     done
     ;;
   *)
-    echo "Uso: $0 up|down" >&2
+    echo "Usage: $0 up|down" >&2
     exit 2
     ;;
 esac

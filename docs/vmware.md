@@ -55,7 +55,7 @@ To move files between Windows and Linux in both directions.
     sudo ./70-system/setup.sh
     ```
 
-    Step `[8/9]` mounts it at `/mnt/vmshare`, creates the `~/VMShare`
+    Step `[8/10]` mounts it at `/mnt/vmshare`, creates the `~/VMShare`
     shortcut and adds it to `/etc/fstab`. Only your user can read it, and if
     you disable it in VMware the system still boots.
 

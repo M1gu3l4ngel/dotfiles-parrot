@@ -1,42 +1,36 @@
 #!/bin/bash
-# 70-system/setup.sh
-# Configuración y hardening a nivel sistema (fuera de $HOME) que install.sh no
-# puede manejar: requiere root y son copias, no symlinks (un archivo de /etc
-# enlazado a un repo del usuario le daría a ese usuario control sobre root).
+# System-wide setup and hardening (outside $HOME) that install.sh cannot do: it needs root, and it
+# installs copies, not links (a file in /etc linked to a user's repo would give that user control
+# over root). Idempotent: each step checks the state and applies only what is missing.
 #
-# Idempotente: correr varias veces es seguro. Cada paso comprueba el estado y
-# solo aplica lo que falta.
+# Steps:
+#   1. /usr/local/sbin/anon-harden, the toggle's IPv6 and ICMP kill switch
+#   2. /etc/sudoers.d/anon_toggle, NOPASSWD only for exact commands
+#   3. ufw's baseline rules, IPv6 included, and turns it on
+#   4. Repairs /etc/profile if it puts the current directory in PATH
+#   5. Removes the user from the docker group when the Docker daemon is not installed
+#   6. Copies user.js to the "pentest" Firefox profile if it exists
+#   7. unattended-upgrades configuration (security patches only)
+#   8. On VMware: mounts the folder shared with the host on /mnt/vmshare
+#   9. Login and lock screen (slick-greeter) with the desktop wallpaper
+#  10. Turns off the pentest services Parrot starts on its own, which fail
 #
-# Qué hace:
-#   1. Instala /usr/local/sbin/anon-harden (kill switch IPv6/ICMP del toggle)
-#   2. Instala /etc/sudoers.d/anon_toggle (NOPASSWD solo para comandos exactos)
-#   3. Aplica las reglas baseline de ufw, con IPv6 incluido, y lo activa
-#   4. Repara /etc/profile si mete el directorio actual en el PATH
-#   5. Saca al usuario del grupo docker si el daemon de Docker no está instalado
-#   6. Copia user.js al perfil de Firefox "pentest" si existe
-#   7. Instala la config de unattended-upgrades (solo parches de seguridad)
-#   8. En VMware: monta la carpeta compartida con el host en /mnt/vmshare
-#   9. Pantalla de login/bloqueo (slick-greeter) con el fondo del escritorio
-#  10. Desactiva los servicios de pentest que Parrot arranca solos y fallan
-#
-# Uso (desde la raíz del repo):
-#   sudo ./70-system/setup.sh
+# Usage, from the repo root: sudo ./70-system/setup.sh
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# ----- 0. COMPROBACIONES PREVIAS -----
 if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: este script requiere root. Ejecutar con: sudo $0"
+  echo "ERROR: this script needs root. Run it with: sudo $0"
   exit 1
 fi
 
-# El usuario de la regla sudoers sale de SUDO_USER. Ejecutado como root
-# directo no hay forma fiable de saber para quién es: fallar explícito.
+# The sudoers rule's user comes from SUDO_USER. Run as root directly there is no reliable way to
+# know who it is for, so it fails plainly.
 if [ -z "${SUDO_USER:-}" ]; then
-  echo "ERROR: ejecutar con 'sudo ./70-system/setup.sh', no como root directo."
-  echo "       Hace falta \$SUDO_USER para escribir la regla sudoers."
+  echo "ERROR: run it with 'sudo ./70-system/setup.sh', not as root directly."
+  echo "       \$SUDO_USER is needed to write the sudoers rule."
   exit 1
 fi
 TARGET_USER="$SUDO_USER"
@@ -44,102 +38,86 @@ TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
 
 for bin in ufw anonsurf visudo install; do
   if ! command -v "$bin" >/dev/null; then
-    echo "ERROR: '$bin' no está instalado. Instálalo primero (apt install $bin)."
+    echo "ERROR: '$bin' is not installed. Install it first (apt install $bin)."
     exit 1
   fi
 done
 
-# Archivo temporal para validar sudoers antes de instalarlo; se borra al salir
-# pase lo que pase.
+# A temporary file to validate the sudoers rule before installing it, removed on exit whatever
+# happens.
 TMP_SUDOERS=$(mktemp)
 trap 'rm -f "$TMP_SUDOERS"' EXIT
 
-# ----- 1. KILL SWITCH DEL ANONIMATO -----
-# root:root 0755: el usuario puede ejecutarlo (vía sudo) pero no modificarlo.
-# Si pudiera editarlo, la restricción de la regla sudoers no serviría de nada.
-echo "[1/10] Instalando /usr/local/sbin/anon-harden"
+# root:root 0755: the user can run it (through sudo) but not change it. If they could edit it, the
+# sudoers rule's restriction would be worthless.
+echo "[1/10] Installing /usr/local/sbin/anon-harden"
 install -m 0755 -o root -g root "$REPO_DIR/sbin/anon-harden" /usr/local/sbin/anon-harden
 
-# ----- 2. SUDOERS DEL TOGGLE DE ANONIMATO -----
-# El template usa __USER__ para no publicar el nombre de usuario en el repo.
-# Se valida con visudo sobre una copia temporal ANTES de instalarla: un
-# sudoers con errores de sintaxis en /etc/sudoers.d/ puede dejar sudo
-# inutilizable. 0440 es obligatorio (sudo ignora el archivo con otro modo).
-echo "[2/10] Instalando /etc/sudoers.d/anon_toggle (usuario: $TARGET_USER)"
+# The template uses __USER__ so the user name is not published in the repo. visudo checks a
+# temporary copy before it is installed: a sudoers file with a syntax error in /etc/sudoers.d/ can
+# leave sudo unusable. 0440 is required (sudo ignores the file with any other mode).
+echo "[2/10] Installing /etc/sudoers.d/anon_toggle (user: $TARGET_USER)"
 sed "s/__USER__/$TARGET_USER/g" "$REPO_DIR/sudoers.d/anon_toggle" >"$TMP_SUDOERS"
 if ! visudo -c -q -f "$TMP_SUDOERS"; then
-  echo "ERROR: la regla sudoers no es válida; no se ha instalado nada."
+  echo "ERROR: the sudoers rule is not valid; nothing was installed."
   exit 1
 fi
 install -m 0440 -o root -g root "$TMP_SUDOERS" /etc/sudoers.d/anon_toggle
 
-# ----- 3. FIREWALL (UFW) -----
-# deny incoming        -> se descarta cualquier conexión entrante no pedida.
-# allow outgoing       -> tráfico saliente libre (anonsurf filtra encima).
-# allow in on lo       -> loopback: apps locales que hablan entre sí.
-# allow in on tun+     -> VPN (HTB/THM): reverse shells y callbacks en
-#                         cualquier puerto. OJO: en labs compartidos otros
-#                         usuarios de la VPN también pueden alcanzarte; no
-#                         dejes servicios sensibles escuchando mientras estés
-#                         conectado.
-# IPV6=yes             -> sin esto ufw solo filtra IPv4.
-# Cada `ufw allow` es idempotente: si la regla existe no la duplica.
-# Su salida normal se descarta: ufw repite avisos como "be sure to update your
-# rules accordingly" en cada ejecución aunque no cambie nada. Los errores van
-# a stderr, se siguen viendo, y `set -e` detiene el script.
-echo "[3/10] Aplicando reglas baseline de ufw"
+# Firewall. Incoming connections nobody asked for are dropped; outgoing traffic is free (anonsurf
+# filters on top); loopback is allowed for local apps; and the VPN (tun+, HTB and THM) is allowed
+# on any port, for reverse shells and callbacks. On shared labs other VPN users can reach you too:
+# leave no sensitive service listening while connected. IPV6=yes, or ufw filters IPv4 only.
+# Each `ufw allow` is idempotent. Its normal output is dropped: ufw repeats warnings such as "be
+# sure to update your rules accordingly" on every run even when nothing changes; errors still go
+# to stderr and `set -e` stops the script.
+echo "[3/10] Applying ufw's baseline rules"
 ufw default deny incoming >/dev/null
 ufw default allow outgoing >/dev/null
 ufw allow in on lo >/dev/null
 ufw allow in on tun+ from any >/dev/null
 if ! grep -q "^IPV6=yes" /etc/default/ufw; then
-  echo "      IPV6 no estaba en yes, lo aplico"
+  echo "      IPV6 was not yes, setting it"
   sed -i 's/^IPV6=.*/IPV6=yes/' /etc/default/ufw
 fi
-# --force evita el prompt "may disrupt ssh sessions [y|n]".
+# --force skips the "may disrupt ssh sessions [y|n]" prompt.
 ufw --force enable >/dev/null
-echo "      Activo: entrada bloqueada salvo loopback y VPN (tun+), IPv4 e IPv6"
+echo "      On: incoming blocked except loopback and VPN (tun+), IPv4 and IPv6"
 
-# ----- 4. PATH DE /etc/profile -----
-# Una entrada vacía en PATH (`::`) equivale al directorio actual: ejecutar
-# `ls` dentro de una carpeta con un `ls` malicioso lo lanzaría a él. Se
-# restaura la versión del paquete base-files, dejando copia de la actual.
-echo "[4/10] Revisando PATH de /etc/profile"
+# An empty PATH entry (`::`) means the current directory: running `ls` in a folder with a malicious
+# `ls` would run that one. The base-files version is restored, keeping a copy of the current one.
+echo "[4/10] Checking /etc/profile's PATH"
 if grep -qE '^PATH=.*(::|=":|:")' /etc/profile; then
   BACKUP="/etc/profile.bak-$(date +%Y%m%d%H%M%S)"
   cp -p /etc/profile "$BACKUP"
   install -m 0644 -o root -g root /usr/share/base-files/profile /etc/profile
-  echo "      Tenía una entrada vacía en PATH. Restaurado (copia en $BACKUP)"
+  echo "      It had an empty PATH entry. Restored (copy in $BACKUP)"
 else
-  echo "      Correcto, sin entradas vacías"
+  echo "      Fine, no empty entries"
 fi
 
-# ----- 5. GRUPO DOCKER -----
-# Pertenecer al grupo docker equivale a root (`docker run -v /:/host`). Si el
-# daemon no está instalado (p. ej. se usa podman, que no necesita grupo), no
-# aporta nada y es un riesgo latente: se quita. Si Docker está instalado solo
-# se avisa, para no romper un flujo de trabajo que lo use.
-echo "[5/10] Revisando pertenencia al grupo docker"
+# The docker group is the same as root (`docker run -v /:/host`). Without the daemon (podman needs
+# no group) it adds nothing and stays a latent risk, so it goes. With Docker installed it only
+# warns, so a workflow that uses it does not break.
+echo "[5/10] Checking docker group membership"
 if id -nG "$TARGET_USER" | tr ' ' '\n' | grep -qx docker; then
   if command -v dockerd >/dev/null; then
-    echo "      AVISO: $TARGET_USER está en el grupo docker (equivale a root)."
-    echo "      Considera usar 'sudo docker' o podman rootless en su lugar."
+    echo "      WARNING: $TARGET_USER is in the docker group (the same as root)."
+    echo "      Consider 'sudo docker' or rootless podman instead."
   else
     gpasswd -d "$TARGET_USER" docker >/dev/null
-    echo "      Quitado del grupo docker (daemon no instalado). Efectivo al"
-    echo "      volver a iniciar sesión."
+    echo "      Removed from the docker group (daemon not installed). Takes effect at the"
+    echo "      next login."
   fi
 else
-  echo "      Correcto, no pertenece al grupo docker"
+  echo "      Fine, not in the docker group"
 fi
 
-# ----- 6. FIREFOX: USER.JS DEL PERFIL PENTEST -----
-# Si existe un perfil *.pentest (creado con `firefox -CreateProfile pentest`)
-# se le copia el user.js endurecido. Si no existe aún, se indica cómo crearlo;
-# no es un error fatal.
-echo "[6/10] Firefox: user.js del perfil pentest"
+# A *.pentest profile (made with `firefox -CreateProfile pentest`) gets the hardened user.js. If it
+# does not exist yet, the script says how to create it; that is not fatal.
+echo "[6/10] Firefox: the pentest profile's user.js"
 USERJS_SRC="$REPO_DIR/firefox/pentest.user.js"
-# Glob en vez de parsear `ls`: soporta rutas con espacios o caracteres raros.
+# A glob rather than parsing `ls`: it handles paths with spaces or odd characters.
 PENTEST_PROFILE=""
 for dir in "$TARGET_HOME"/.mozilla/firefox/*.pentest; do
   [ -d "$dir" ] && {
@@ -148,57 +126,51 @@ for dir in "$TARGET_HOME"/.mozilla/firefox/*.pentest; do
   }
 done
 if [ -z "$PENTEST_PROFILE" ]; then
-  echo "      INFO: no existe el perfil *.pentest todavía."
-  echo "      Créalo con: firefox -CreateProfile pentest"
-  echo "      Y vuelve a ejecutar: sudo ./70-system/setup.sh"
+  echo "      INFO: there is no *.pentest profile yet."
+  echo "      Create it with: firefox -CreateProfile pentest"
+  echo "      And run again: sudo ./70-system/setup.sh"
 else
   install -m 0644 -o "$TARGET_USER" -g "$TARGET_USER" \
     "$USERJS_SRC" "$PENTEST_PROFILE/user.js"
-  echo "      Copiado al perfil pentest"
+  echo "      Copied to the pentest profile"
 fi
 
-# ----- 7. UNATTENDED-UPGRADES -----
-# 52parrot-hardening.conf: qué se auto-instala (solo parrot-security) y qué no.
-# 20auto-upgrades: activa la ejecución diaria. Solo se crea si falta, para
-# respetar un valor que el usuario haya cambiado a propósito.
-echo "[7/10] Configurando unattended-upgrades"
+# 52parrot-hardening.conf says what installs on its own (only parrot-security) and what does not;
+# 20auto-upgrades turns on the daily run. The latter is created only if missing, to respect a value
+# the user changed on purpose.
+echo "[7/10] Setting up unattended-upgrades"
 if ! command -v unattended-upgrade >/dev/null; then
-  echo "      INFO: 'unattended-upgrades' no está instalado."
-  echo "      Instálalo con: sudo apt install unattended-upgrades"
-  echo "      Y vuelve a ejecutar: sudo ./70-system/setup.sh"
+  echo "      INFO: 'unattended-upgrades' is not installed."
+  echo "      Install it with: sudo apt install unattended-upgrades"
+  echo "      And run again: sudo ./70-system/setup.sh"
 else
   install -m 0644 -o root -g root "$REPO_DIR/apt/52parrot-hardening.conf" \
     /etc/apt/apt.conf.d/52parrot-hardening.conf
   if [ ! -f /etc/apt/apt.conf.d/20auto-upgrades ]; then
     install -m 0644 -o root -g root "$REPO_DIR/apt/20auto-upgrades" \
       /etc/apt/apt.conf.d/20auto-upgrades
-    echo "      Creado /etc/apt/apt.conf.d/20auto-upgrades"
+    echo "      Created /etc/apt/apt.conf.d/20auto-upgrades"
   fi
-  echo "      Activo: parches de seguridad diarios (kernel y Tor incluidos)"
+  echo "      On: daily security patches (kernel and Tor included)"
 fi
 
-# ----- 8. CARPETA COMPARTIDA CON EL HOST (SOLO VMWARE) -----
-# Intercambio rápido de archivos Windows <-> Linux mediante Shared Folders de
-# VMware. Requisito en el host: VM Settings -> Options -> Shared Folders ->
-# Always enabled -> Add, con una carpeta DEDICADA (p. ej. C:\VMShare) y el
-# nombre de SHARE_NAME. Nunca compartir el disco entero: si la VM se
-# compromete (malware, targets hostiles), solo alcanza esa carpeta.
-# Opciones de montaje:
-#   nofail + x-systemd.automount -> se monta al primer acceso; si el share se
-#                                   desactiva en VMware el arranque no se cuelga.
-#   allow_other + uid/gid        -> el montaje lo hace root, pero los archivos
-#                                   son del usuario.
-#   umask=077                    -> nadie más que ese usuario puede leerlos.
+# Quick Windows <-> Linux file exchange through VMware's Shared Folders. On the host: VM Settings
+# -> Options -> Shared Folders -> Always enabled -> Add, with a dedicated folder (such as
+# C:\VMShare) named SHARE_NAME. Never share the whole disk: if the VM is compromised (malware,
+# hostile targets), it reaches only that folder. Mount options:
+#   nofail + x-systemd.automount  mounts on first access; boot does not hang if the share is off
+#   allow_other + uid/gid         root mounts it, but the files belong to the user
+#   umask=077                     nobody but that user can read them
 SHARE_NAME="VMShare"
 SHARE_MNT="/mnt/vmshare"
-echo "[8/10] Carpeta compartida de VMware"
+echo "[8/10] VMware shared folder"
 if [ "$(systemd-detect-virt 2>/dev/null || true)" != "vmware" ]; then
-  echo "      No es una VM de VMware; se omite"
+  echo "      Not a VMware VM; skipped"
 elif ! command -v vmhgfs-fuse >/dev/null; then
-  echo "      INFO: falta vmhgfs-fuse. Instálalo con: sudo apt install open-vm-tools-desktop"
+  echo "      INFO: vmhgfs-fuse is missing. Install it with: sudo apt install open-vm-tools-desktop"
 elif ! vmware-hgfsclient 2>/dev/null | grep -qx "$SHARE_NAME"; then
-  echo "      INFO: VMware no comparte ninguna carpeta llamada '$SHARE_NAME'."
-  echo "      Configúrala en VM Settings -> Options -> Shared Folders y vuelve a ejecutar."
+  echo "      INFO: VMware shares no folder named '$SHARE_NAME'."
+  echo "      Set it up in VM Settings -> Options -> Shared Folders and run again."
 else
   TARGET_UID=$(id -u "$TARGET_USER")
   TARGET_GID=$(id -g "$TARGET_USER")
@@ -206,51 +178,46 @@ else
   if ! grep -q "^\.host:/$SHARE_NAME " /etc/fstab; then
     cp -p /etc/fstab "/etc/fstab.bak-$(date +%Y%m%d%H%M%S)"
     echo ".host:/$SHARE_NAME $SHARE_MNT fuse.vmhgfs-fuse nofail,x-systemd.automount,allow_other,uid=$TARGET_UID,gid=$TARGET_GID,umask=077 0 0" >>/etc/fstab
-    echo "      Añadido a /etc/fstab (copia de la versión previa en /etc/fstab.bak-*)"
+    echo "      Added to /etc/fstab (previous version copied to /etc/fstab.bak-*)"
   fi
   systemctl daemon-reload
   systemctl start "$(systemd-escape -p --suffix=automount "$SHARE_MNT")"
-  # Acceso directo en el home para no tener que recordar la ruta de montaje.
+  # A shortcut in the home folder, so the mount path need not be remembered.
   sudo -u "$TARGET_USER" ln -sfn "$SHARE_MNT" "$TARGET_HOME/VMShare"
-  # Marcador en la barra lateral del gestor de archivos (Nautilus lee los
-  # marcadores de gtk-3.0 también en GTK4). Solo se añade si falta.
+  # A bookmark in the file manager's sidebar (Nautilus reads gtk-3.0's bookmarks in GTK4 too),
+  # added only if missing.
   BOOKMARKS="$TARGET_HOME/.config/gtk-3.0/bookmarks"
   if ! grep -qs "^file://$TARGET_HOME/VMShare " "$BOOKMARKS"; then
     sudo -u "$TARGET_USER" mkdir -p "$(dirname "$BOOKMARKS")"
     echo "file://$TARGET_HOME/VMShare VMShare" | sudo -u "$TARGET_USER" tee -a "$BOOKMARKS" >/dev/null
   fi
-  echo "      Disponible en $SHARE_MNT (acceso directo: ~/VMShare)"
+  echo "      Available on $SHARE_MNT (shortcut: ~/VMShare)"
 fi
 
-# ----- 9. PANTALLA DE LOGIN Y BLOQUEO (SLICK-GREETER) -----
-# Mismo fondo que el escritorio (ver lightdm/slick-greeter.conf). El fondo se
-# copia a /usr/share/backgrounds porque el usuario lightdm no puede leer los
-# home. La config de Parrot se guarda una sola vez en .parrot: al repetir el
-# script no se sobrescribe con la nuestra.
+# The same wallpaper as the desktop (lightdm/slick-greeter.conf), copied to /usr/share/backgrounds
+# because the lightdm user cannot read home folders. Parrot's config is saved once, to .parrot: a
+# later run does not overwrite it with ours.
 GREETER_CONF=/etc/lightdm/slick-greeter.conf
-echo "[9/10] Pantalla de login y bloqueo"
+echo "[9/10] Login and lock screen"
 if ! command -v slick-greeter >/dev/null; then
-  echo "      slick-greeter no está instalado; se omite"
+  echo "      slick-greeter is not installed; skipped"
 else
   install -m 0644 -o root -g root "$REPO_DIR/../assets/wallpaper.jpg" \
     /usr/share/backgrounds/dotfiles-wallpaper.jpg
   if [ -f "$GREETER_CONF" ] && [ ! -f "$GREETER_CONF.parrot" ]; then
     cp -p "$GREETER_CONF" "$GREETER_CONF.parrot"
-    echo "      Config original guardada en $GREETER_CONF.parrot"
+    echo "      Original config saved to $GREETER_CONF.parrot"
   fi
   install -m 0644 -o root -g root "$REPO_DIR/lightdm/slick-greeter.conf" "$GREETER_CONF"
-  echo "      Fondo del escritorio aplicado (se ve en el próximo login o bloqueo)"
+  echo "      Desktop wallpaper applied (shows at the next login or lock)"
 fi
 
-# ----- 10. SERVICIOS DE PENTEST QUE ARRANCAN SOLOS -----
-# Parrot los deja activados en el arranque sin configuración, así que fallan
-# en cada inicio (las líneas rojas tras el logo) y lo alargan. Además, un
-# punto de acceso falso o un servidor DHCP no deben levantarse sin pedirlo.
-# cpupower-gui falla porque en la VM no hay control de frecuencia de CPU.
-# Se desactivan, no se enmascaran: siguen disponibles con
-# `sudo systemctl start <servicio>` cuando hagan falta, y apt respeta el
-# estado desactivado al actualizar el paquete.
-echo "[10/10] Servicios de pentest que arrancan solos"
+# Parrot enables them at boot with no configuration, so they fail on every start (the red lines
+# after the logo) and make it longer; a fake access point or a DHCP server must not come up
+# unasked either. cpupower-gui fails because the VM has no CPU frequency control. Disabled, not
+# masked: still available with `sudo systemctl start <service>`, and apt keeps the disabled state
+# when it updates the package.
+echo "[10/10] Pentest services that start on their own"
 for svc in hostapd-wpe isc-dhcp-server sslh cpupower-gui; do
   if ! systemctl cat "$svc.service" >/dev/null 2>&1; then
     continue
@@ -258,14 +225,14 @@ for svc in hostapd-wpe isc-dhcp-server sslh cpupower-gui; do
   if systemctl --quiet is-enabled "$svc.service" 2>/dev/null; then
     systemctl --quiet disable --now "$svc.service"
     systemctl reset-failed "$svc.service" 2>/dev/null || true
-    echo "      $svc desactivado"
+    echo "      $svc disabled"
   else
-    echo "      $svc ya estaba desactivado"
+    echo "      $svc was already disabled"
   fi
 done
 
 echo
-echo "Setup completo. Verificar con:"
+echo "Setup complete. Check with:"
 echo "  sudo ufw status verbose"
-echo "  sudo -l -U $TARGET_USER          # debe listar solo anonsurf/anon-harden como NOPASSWD"
+echo "  sudo -l -U $TARGET_USER          # must list only anonsurf/anon-harden as NOPASSWD"
 echo "  sudo unattended-upgrade --dry-run --debug"

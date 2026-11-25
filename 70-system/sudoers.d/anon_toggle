@@ -1,13 +1,10 @@
-# /etc/sudoers.d/anon_toggle  (fuente: dotfiles/70-system/sudoers.d/anon_toggle)
-# Permite al toggle de anonimato (Super+A) ejecutar SOLO estos comandos
-# exactos como root sin pedir contraseña. Al listar los argumentos, sudo
-# rechaza cualquier otra variante (p. ej. `anonsurf changeid` o
-# `anon-harden --lo-que-sea` piden contraseña o fallan).
+# Installed as /etc/sudoers.d/anon_toggle. Lets the anonymity toggle (Super+A) run only these exact
+# commands as root without a password. With the arguments listed, sudo refuses any other variant
+# (`anonsurf changeid` or `anon-harden --anything` ask for a password or fail).
 #
-# Nunca dar NOPASSWD a iptables/ip6tables directamente: `--modprobe=<prog>`
-# ejecuta cualquier programa como root. Por eso las reglas del kill switch
-# viven en /usr/local/sbin/anon-harden, que solo acepta up|down.
+# Never NOPASSWD on iptables or ip6tables themselves: `--modprobe=<prog>` runs any program as root.
+# That is why the kill switch rules live in /usr/local/sbin/anon-harden, which takes only up|down.
 #
-# __USER__ es un placeholder: 70-system/setup.sh lo sustituye por $SUDO_USER al
-# instalar, para no publicar el nombre de usuario en el repo.
+# __USER__ is a placeholder that 70-system/setup.sh replaces with $SUDO_USER on install, so the user
+# name is not published in the repo.
 __USER__ ALL=(root) NOPASSWD: /usr/bin/anonsurf start, /usr/bin/anonsurf stop, /usr/local/sbin/anon-harden up, /usr/local/sbin/anon-harden down

@@ -30,7 +30,7 @@ Once after installing, as a regular user:
     sudo ./70-system/setup.sh
     ```
 
-    Step `[6/9]` must show `Copiado al perfil pentest`.
+    Step `[6/10]` must show `Copied to the pentest profile`.
 
 3. Open it with `Super+Shift+P`.
 
