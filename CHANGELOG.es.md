@@ -8,6 +8,13 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [2.1.0] - 2026-11-25
+
+La identidad de git ya no viene del repo, así que un clon de la 2.0.0 la pierde
+tras `git pull`: ejecuta `./bootstrap.sh` (o pasa tu propio `--git-name` y
+`--git-email`) para escribirla en `~/.gitconfig.local`. Después ejecuta
+`sudo ./70-system/setup.sh` para instalar el `anon-harden` nuevo.
+
 ### Añadido
 
 - `SECURITY` y `CODE_OF_CONDUCT` en inglés y español, una plantilla de pull
@@ -28,7 +35,6 @@ siguen [versionado semántico](https://semver.org/lang/es/).
 - `tools/check.sh` falla si falta un archivo que lleva un repo público
   (`check-docs --community public`), y el CI descarga el commit de
   dotfiles-windows que lo añade.
-
 - El toggle de anonimato pregunta en rofi antes de que anonsurf cierre un
   navegador o cliente abierto, comprueba la salida por Tor durante hasta un
   minuto en vez de una sola vez y hace un solo cambio a la vez. El fantasma se
@@ -274,6 +280,7 @@ Primera versión publicada.
   el historial.
 - Documentación en `docs/` y reglas para Claude Code en `.claude/rules/`.
 
-[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...HEAD
+[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/releases/tag/v1.0.0

@@ -8,6 +8,13 @@ Notable changes to the project. The format follows
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-25
+
+The git identity no longer comes from the repo, so a 2.0.0 clone loses it
+after `git pull`: run `./bootstrap.sh` (or pass your own `--git-name` and
+`--git-email`) to write it to `~/.gitconfig.local`. Then run
+`sudo ./70-system/setup.sh` to install the new `anon-harden`.
+
 ### Added
 
 - `SECURITY` and `CODE_OF_CONDUCT` in English and Spanish, a pull request
@@ -28,7 +35,6 @@ Notable changes to the project. The format follows
 - `tools/check.sh` fails if a file a public repo carries is missing
   (`check-docs --community public`), and CI checks out the dotfiles-windows
   commit that adds it.
-
 - The anonymity toggle asks in rofi before anonsurf closes an open browser or
   client, checks the Tor exit for up to a minute instead of once, and runs one
   change at a time. The ghost turns orange while Tor connects.
@@ -278,6 +284,7 @@ First published version.
   the whole history.
 - Documentation in `docs/` and rules for Claude Code in `.claude/rules/`.
 
-[Unreleased]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-parrot/releases/tag/v1.0.0
