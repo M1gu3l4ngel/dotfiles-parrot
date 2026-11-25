@@ -198,6 +198,13 @@ if [ -z "$paths" ]; then pass "Sin rutas /home/<usuario> hardcodeadas"; else
   fail "Rutas de home hardcodeadas:"
   echo "$paths"
 fi
+# Both the index and the working tree: .gitattributes fixes new checkouts, but a file committed
+# with CRLF before it, or edited on Windows, still breaks a script on Linux.
+crlf=$(git ls-files --eol | grep -E '^[iw]/(crlf|mixed)|[[:space:]]w/(crlf|mixed)' | cut -f2 || true)
+if [ -z "$crlf" ]; then pass "LF line endings"; else
+  fail "CRLF line endings in:"
+  echo "$crlf"
+fi
 
 # ----- 7b. DOCUMENTACIÓN BILINGÜE SINCRONIZADA -----
 # Cada X.md (inglés) tiene su X.es.md (español) con la misma estructura,

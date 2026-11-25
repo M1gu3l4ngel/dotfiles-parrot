@@ -1,0 +1,11 @@
+# Line endings for every clone, whatever its core.autocrlf: text is stored and checked out as LF.
+# A Windows clone would otherwise check out CRLF, and a script or bspwmrc with CRLF does not run.
+* text=auto eol=lf
+
+# Binary files: git never converts or diffs their bytes.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ttf binary
+*.otf binary
